@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAMFBMVEX///////39//7//v/+/v/+/v79/v7+/vz9/f3+/fv8/fz6/fz29/i9wsZrdX8NITcq5aEvAAAEFUlEQVR42rWVW2wUVRjHfzM7U1vL5cxKi1x3duvtpXFL8UVJWCFCogaXkqLxhZqYPvggPhhDQgwkBkKCl/hgIkSRaEwIG+LU6wPVtMRbhJUFAg9atiNFoi3tOaAI6Xbm+DDdWbb1AWM8T+ec/Ob/fec75z8f/O/DAHgqy/cewCNrAYoFwN6UDbbfskJZML733fbTt58WAIyfLLetcNBLboAFgEPAMsycNgQwIcs4Kil0oiozZ1iP9d4FuyhqrcfdRuxDfCnDZsAE2LcBPngczuzd5cPI2zvzFY7+IaEKXFqtAAiCZyXhGEXwaR5GV4ET6xTZT4HS2R1IT+HZxX61taZw+E9JCSgEaquST8gx8gVT7lYxwLUtBgBe+Je6po0BsF9lngpjAB+9EagMTGh1YhwK+fzLSscKDRpFEqAEhMcBD3wCqoUyIABAQ8KbCxBCLYcwpWVuFIBD0g8GgEowmdCVKqCPP3/ejZLJjV618wAf880o1RAGKb9yEMBMXbAyiwHoTdsACYBwXrDnx6amxhusLWdIHZDA+otj7R/GSXqAEoC+v+28bwL80DF0uVYoAC0ViDnO4v3TpRGL64HovL4zt2cpgD2xStizACctsLKlaCGMf1DARbQ+E50CMQt4ssFtcKZMF8DIZEnMBIwXjM9ZKhoArprMDtHepvqEs8YkDxtERZgzgbO0DmJ8sQzoNkWXiEsd6Qud3TxnBGPRejvr0XF9EKMOsHrD0omkgMzhqT0k3KfPUJ9D2P/VsaQDmJlk4y598Fh0vzWFAFR0dIyun1ducpihQDFYXR4GdHm4bNci12arTq177tKIYOKl1q6QCdUxAwCst64Pd+hzL8oQc/+3n6RmhLDQxaYt6EcNz6ew4A05S0GEcmCHCj4aKhS6K+8575/SM4D0fhr3cTGchAIL97aoeoWpfnM+hDKyA6MtD6hZl+WAjyIKbuR1WKeQyJ7KFBHcJl3ohkzktjqFcueULxOMTC9V7Avzs596fk0Xw87+5rHHxv2jPufODTW1Ln8njBXa0juBfq7sPj5xINqa/E3G3myysroapoWcmHZ3nXGUmHZP5cKSQQBK4VQMBHz98I0cAJW7XXqib5bfFwP6l0HnZAhgVZJLWqMy9FaM2FmTARwEyAOBeU8eWNnm3mScBNOEWAD4HuAa3GSc6lvzXAwhKgD+/Jue3OaFgzoH0C0ahWWsAez0FcuJjZNOOijANldsFHf2hVnIp8S2msId2wQ6BfmOh/pwPK51gyOMmrPufVNcVha200ka47vfXzvDZnG9L3JvtaEsasHe4xa11uO5TPeDR932qKFYQP51F3qGClhHMkDySPl8wJGMiP/VHlJKgJKjpZQS4ftKaCmDf99Y7VcAgu3R9NYa638ffwPd65NfREDefAAAAABJRU5ErkJggg==">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAMFBMVEX///////39//7//v/+/v/+/v79/v7+/vz9/f3+/fv8/fz6/fz29/i9wsZrdX8NITcq5aEvAAAEFUlEQVR42rWVW2wUVRjHfzM7U1vL5cxKi1x3duvtpXFL8UVJWCFCogaXkqLxhZqYPvggPhhDQgwkBkKCl/hgIkSRaEwIG+LU6wPVtMRbhJUFAg9atiNFoi3tOaAI6Xbm+DDdWbb1AWM8T+ec/Ob/fec75z8f/O/DAHgqy/cewCNrAYoFwN6UDbbfskJZML733fbTt58WAIyfLLetcNBLboAFgEPAMsycNgQwIcs4Kil0oiozZ1iP9d4FuyhqrcfdRuxDfCnDZsAE2LcBPngczuzd5cPI2zvzFY7+IaEKXFqtAAiCZyXhGEXwaR5GV4ET6xTZT4HS2R1IT+HZxX61taZw+E9JCSgEaquST8gx8gVT7lYxwLUtBgBe+Je6po0BsF9lngpjAB+9EagMTGh1YhwK+fzLSscKDRpFEqAEhMcBD3wCqoUyIABAQ8KbCxBCLYcwpWVuFIBD0g8GgEowmdCVKqCPP3/ejZLJjV618wAf880o1RAGKb9yEMBMXbAyiwHoTdsACYBwXrDnx6amxhusLWdIHZDA+otj7R/GSXqAEoC+v+28bwL80DF0uVYoAC0ViDnO4v3TpRGL64HovL4zt2cpgD2xStizACctsLKlaCGMf1DARbQ+E50CMQt4ssFtcKZMF8DIZEnMBIwXjM9ZKhoArprMDtHepvqEs8YkDxtERZgzgbO0DmJ8sQzoNkWXiEsd6Qud3TxnBGPRejvr0XF9EKMOsHrD0omkgMzhqT0k3KfPUJ9D2P/VsaQDmJlk4y598Fh0vzWFAFR0dIyun1ducpihQDFYXR4GdHm4bNci12arTq177tKIYOKl1q6QCdUxAwCst64Pd+hzL8oQc/+3n6RmhLDQxaYt6EcNz6ew4A05S0GEcmCHCj4aKhS6K+8575/SM4D0fhr3cTGchAIL97aoeoWpfnM+hDKyA6MtD6hZl+WAjyIKbuR1WKeQyJ7KFBHcJl3ohkzktjqFcueULxOMTC9V7Avzs596fk0Xw87+5rHHxv2jPufODTW1Ln8njBXa0juBfq7sPj5xINqa/E3G3myysroapoWcmHZ3nXGUmHZP5cKSQQBK4VQMBHz98I0cAJW7XXqib5bfFwP6l0HnZAhgVZJLWqMy9FaM2FmTARwEyAOBeU8eWNnm3mScBNOEWAD4HuAa3GSc6lvzXAwhKgD+/Jue3OaFgzoH0C0ahWWsAez0FcuJjZNOOijANldsFHf2hVnIp8S2msId2wQ6BfmOh/pwPK51gyOMmrPufVNcVha200ka47vfXzvDZnG9L3JvtaEsasHe4xa11uO5TPeDR932qKFYQP51F3qGClhHMkDySPl8wJGMiP/VHlJKgJKjpZQS4ftKaCmDf99Y7VcAgu3R9NYa638ffwPd65NfREDefAAAAABJRU5ErkJggg==">
+<title>Virtual STEM Lab: Joints</title>
+<style>
+/* Layout: model stage on the left, step panel on the right; book-maroon accent, warm neutrals */
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fbf4f3;--surf:#fff;--ink:#2a1a1d;--mute:#6e5a5e;--line:#ecd3d6;--acc:#a8233a;--onacc:#fff;--acc2:#d9761f;--warn:#b3261e;--ok:#1f7a4d;--stage:#f6e8e6;--tray:#f8eceb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1214;--surf:#271a1d;--ink:#f4e8ea;--mute:#c0a5aa;--line:#46313a;--acc:#f06b80;--onacc:#1c1214;--acc2:#ffb35c;--warn:#ff8f87;--ok:#4cc98a;--stage:#302124;--tray:#22171a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c1214;--surf:#271a1d;--ink:#f4e8ea;--mute:#c0a5aa;--line:#46313a;--acc:#f06b80;--onacc:#1c1214;--acc2:#ffb35c;--warn:#ff8f87;--ok:#4cc98a;--stage:#302124;--tray:#22171a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+header{padding:16px 18px 8px;max-width:1100px;margin:auto}
+h1{font:700 1.5rem/1.2 Georgia,"Times New Roman",serif;margin:0 0 4px}
+header p{margin:0;color:var(--mute)}
+nav{display:flex;gap:6px;flex-wrap:wrap;max-width:1100px;margin:8px auto;padding:0 18px}
+nav button{flex:1 1 105px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:inherit;font-size:.9rem;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc);font-weight:700}
+nav button:disabled{opacity:.45;cursor:not-allowed}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;max-width:1100px;margin:auto;padding:6px 18px 30px}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:14px}
+#stage{background:var(--stage);padding:8px;align-self:start}
+@media(min-width:821px){#stage{position:sticky;top:8px}}
+svg{width:100%;height:auto;display:block}
+h2{font:700 1.15rem/1.3 Georgia,serif;margin:0 0 6px}
+h3{font:700 1.02rem/1.3 Georgia,serif;margin:10px 0 4px}
+.panel{display:none}.panel.on{display:block}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:8px;margin:8px 0}
+.tray button,.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:7px 10px;font:inherit;font-size:.88rem;cursor:pointer}
+.tray button:hover,.btn:hover{border-color:var(--acc)}
+.tray button.used{opacity:.35;pointer-events:none;text-decoration:line-through}
+.btn.pri{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.pick{border-color:var(--ok);font-weight:700}
+.btn.miss{border-color:var(--warn)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.msg{min-height:2.6em;padding:8px 10px;border-radius:8px;background:var(--tray);margin:6px 0;font-size:.93rem}
+.msg.bad{color:var(--warn)}.msg.good{color:var(--ok);font-weight:700}
+.row{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin:6px 0}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+select,input[type=number],input[type=text]{font:inherit;padding:6px;border-radius:6px;border:2px solid var(--line);background:var(--surf);color:var(--ink);width:100%}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.script{min-height:120px;border:2px dashed var(--line);border-radius:8px;padding:8px;margin:6px 0}
+.blk{padding:6px 10px;border-radius:6px;margin:3px 0;color:#fff;font-size:.88rem}
+.hat{background:#d9922b}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+pre{background:#1a1013;color:#f6d3da;padding:10px;border-radius:8px;font-size:.78rem;overflow-x:auto;margin:6px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center;font-variant-numeric:tabular-nums}
+.stats div{background:var(--tray);border-radius:8px;padding:6px}.stats b{display:block;font-size:1.15rem}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.goal{display:block;margin:3px 0}
+.small{font-size:.85rem;color:var(--mute)}
+.bk{display:inline-block;width:18px;height:11px;border-radius:2px;background:currentColor;position:relative;margin:0 7px 0 3px;vertical-align:-1px}
+.bk::before{content:"";position:absolute;top:-3px;left:2px;width:4px;height:3px;border-radius:1px 1px 0 0;background:currentColor;box-shadow:8px 0 0 currentColor}
+details{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;background:var(--tray)}
+summary{cursor:pointer;font-weight:700}
+details ul,details ol{margin:6px 0 2px;padding-left:20px}
+.tasks{list-style:none;padding:0;margin:6px 0}.tasks li{padding:4px 8px;border-radius:6px;margin:3px 0;background:var(--tray)}
+.tasks li.done{color:var(--ok);font-weight:700}.tasks li.done::before{content:"✔ "}
+.credit{margin:14px 0 0;padding-top:8px;border-top:1px solid var(--line);font-size:.8rem;color:var(--mute)}
+.finish{border:2px solid var(--acc);border-radius:10px;padding:12px 14px;margin:10px 0;background:var(--tray)}
+.finish h3{font:700 1.2rem/1.3 Georgia,serif;margin:0 0 4px;color:var(--ok)}
+.finish ol{margin:6px 0;padding-left:20px}
+.ex{border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0;background:var(--surf)}
+.ex h3{margin:0 0 2px}
+.ex .tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--acc2);margin-bottom:4px}
+.ex svg,#armSvg{background:var(--stage);border-radius:8px;margin:6px 0}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.9rem}@media(max-width:520px){.pc{grid-template-columns:1fr}}
+.pc div{background:var(--tray);border-radius:8px;padding:6px 9px}.pc b:first-child{display:block}
+.opt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}
+.opt label{display:flex;flex-direction:column;gap:3px;font-size:.88rem;font-weight:700}
+.chk{list-style:none;padding:0;margin:6px 0}.chk li{padding:2px 0}
+.chk .y{color:var(--ok)}.chk .n{color:var(--warn)}
+#dz textarea{width:100%;min-height:54px;font:inherit;padding:6px;border-radius:6px;border:2px solid var(--line);background:var(--surf);color:var(--ink)}
+#dz label.q{display:block;font-weight:700;font-size:.9rem;margin-top:8px}
+.dcard{border:2px solid var(--acc);border-radius:10px;padding:12px;margin-top:10px;background:var(--tray)}
+.dcard h3{margin:0 0 6px}.dcard p{margin:4px 0;white-space:pre-wrap}
+.sent{display:grid;gap:6px;margin:6px 0}.sent label{font-size:.9rem;font-weight:700}
+.vbar{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:0 0 6px}
+.vbar .btn{padding:5px 9px;font-size:.82rem}.vbar .btn.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.vbar .sep{flex:1}
+#v3{position:relative;border-radius:8px;overflow:hidden;background:linear-gradient(var(--stage),var(--tray))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}#cv3:active{cursor:grabbing}
+#hud3{position:absolute;left:10px;top:8px;font-weight:700;font-size:.95rem;pointer-events:none}
+#tip3{position:absolute;right:10px;bottom:8px;font-size:.75rem;color:var(--mute);pointer-events:none}
+.codebox{position:relative}.codebox .btn{position:absolute;right:6px;top:6px;padding:4px 9px;font-size:.8rem}
+#kneeBox{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.kh{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline}
+#kneeT{font-weight:700;font-variant-numeric:tabular-nums}#kneeT.warn{color:var(--warn)}
+#knee{max-width:420px;margin:4px auto 0}
+#knee text{font-size:11px;fill:var(--ink)}
+footer{max-width:1100px;margin:0 auto;padding:4px 18px 26px;text-align:center;font-size:.85rem;color:var(--mute)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;margin:6px 0}th,td{border:1px solid var(--line);padding:4px 6px;text-align:left}
+.nl text{font-size:11px;fill:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<header>
+<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap"><h1>Virtual STEM Lab: Joints</h1><button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button></div>
+<p>Project 1: Joints. Build a hinge joint model, wire the servo, code it, then test it like a biomedical engineer.</p>
+<p class="small">Created by Fatma Alruffai</p>
+</header>
+<nav id="nav"></nav>
+<main>
+<div class="card" id="stage">
+<div class="vbar" id="vbar"><b style="font-size:.9rem">View:</b>
+<span id="vbtns" style="display:flex;gap:5px;flex-wrap:wrap"><button class="btn" data-v="iso">3D</button><button class="btn" data-v="side">Side</button><button class="btn" data-v="front">Front</button><button class="btn" data-v="left">Left</button><button class="btn" data-v="top">Top</button><button class="btn" data-v="spin">⟳ Spin</button></span></div>
+<div id="v3"><canvas id="cv3" aria-label="3D joint model. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud3"></div><div id="tip3">Drag to turn · scroll or pinch to zoom</div></div>
+<svg id="scene" style="display:none" viewBox="0 0 460 360" role="img" aria-label="Joint model being assembled">
+<defs>
+<pattern id="hY" x="0" y="0" width="20" height="18" patternUnits="userSpaceOnUse"><circle cx="10" cy="9" r="4" fill="#9c6f07"/></pattern>
+<pattern id="hB" x="0" y="-8" width="18" height="16" patternUnits="userSpaceOnUse"><circle cx="9" cy="8" r="3.5" fill="#0f2a6b"/></pattern>
+</defs>
+<g id="g_arc" display="none">
+<path d="M320 175 A120 120 0 0 0 80 175" fill="none" stroke="var(--mute)" stroke-width="1.5" stroke-dasharray="4 5"/>
+<path id="wedge" d="M200 175 L320 175 Z" fill="var(--acc)" fill-opacity=".14" stroke="var(--acc)" stroke-width="1.5"/>
+<g font-size="11" fill="var(--mute)" text-anchor="middle"><text x="332" y="179" text-anchor="start">0°</text><text x="200" y="47">90°</text><text x="68" y="179" text-anchor="end">180°</text></g>
+</g>
+<g id="g_base" display="none"><rect x="40" y="322" width="320" height="16" rx="2" fill="#3f8f4e"/><rect x="40" y="333" width="320" height="5" fill="#2e6b3a"/><line x1="44" y1="319" x2="356" y2="319" stroke="#58ad66" stroke-width="6" stroke-dasharray="14 8"/></g>
+<g id="g_frame" display="none">
+<rect x="198" y="168" width="20" height="154" rx="2" fill="#d9a514" opacity=".7"/>
+<rect x="188" y="164" width="22" height="158" rx="2" fill="#f2c230"/><rect x="188" y="164" width="22" height="158" fill="url(#hY)" opacity=".8"/>
+<rect x="176" y="250" width="46" height="24" rx="3" fill="#d8322f"/><rect x="176" y="250" width="46" height="6" fill="#ef5b54"/>
+<rect x="168" y="300" width="62" height="22" rx="3" fill="#2f7d3b"/>
+</g>
+<g id="g_servo" display="none">
+<rect x="150" y="146" width="66" height="54" rx="5" fill="#e24a2d"/><rect x="140" y="160" width="12" height="10" rx="2" fill="#b8361f"/><rect x="214" y="160" width="12" height="10" rx="2" fill="#b8361f"/>
+<text x="183" y="194" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">SERVO</text>
+</g>
+<g id="g_wire" display="none"><path d="M180 200 C180 270 320 250 370 262" stroke="#7a4a2b" stroke-width="3" fill="none"/><path d="M186 200 C186 280 330 262 370 272" stroke="#e03a3a" stroke-width="3" fill="none"/><path d="M192 200 C192 290 340 274 370 282" stroke="#f08a24" stroke-width="3" fill="none"/></g>
+<g id="g_gear" display="none"><circle id="gearC" cx="200" cy="175" r="30" fill="#aab3ba" stroke="#5b656c" stroke-width="6" stroke-dasharray="5 4.4"/><circle cx="200" cy="175" r="14" fill="#8a949b"/></g>
+<g id="limb">
+<g id="g_limb" display="none"><path d="M-12 -10 L120 -10 L120 10 L-12 10 Z" fill="#2457c5" transform="translate(200 175)"/><rect x="188" y="165" width="132" height="20" fill="url(#hB)" opacity=".7"/><rect x="186" y="161" width="30" height="28" rx="6" fill="#1b46a3"/></g>
+<g id="g_hand" display="none"><rect x="318" y="151" width="44" height="48" rx="3" fill="none" stroke="#f2c230" stroke-width="9"/><rect x="340" y="163" width="26" height="24" rx="3" fill="#2f7d3b"/></g>
+</g>
+<g id="g_pin" display="none"><circle cx="200" cy="175" r="7" fill="#2b3238"/><circle cx="200" cy="175" r="3" fill="#c7ced3"/></g>
+<g id="g_ctrl" display="none"><rect x="368" y="240" width="84" height="66" rx="6" fill="#26323a"/><rect x="380" y="252" width="30" height="20" fill="#f2d633"/><text x="410" y="294" text-anchor="middle" font-size="10" fill="#fff">Smart Kit</text><text x="380" y="234" font-size="10" fill="var(--mute)">Uno board</text></g>
+<text id="angLbl" x="12" y="24" font-size="15" font-weight="700" fill="var(--ink)" display="none">0°</text>
+</svg>
+<p class="small" style="margin:6px 4px 0">The book's joint model, built from your kit: Lego Technic beams, the grey 270° servo and the Kidsuno mainboard. Use <b>Side</b> to watch the joint bend.</p>
+</div>
+
+<div>
+<!-- Step 1 -->
+<section class="card panel" id="p0">
+<h2>1. Build the joint model (book steps 1–3)</h2>
+<p>A physical therapist needs a simple model to show patients how a hinge joint moves, like a knee. Follow the book: choose the part for each step. Some parts in the tray are not needed.</p>
+<div class="msg" id="m0"></div>
+<div class="tray" id="tray"></div>
+<div id="kneeBox">
+<div class="kh"><b>Meet the real knee joint</b><span id="kneeT">Straight leg: 0°</span></div>
+<p class="small" style="margin:2px 0 4px">Your Lego model copies this joint. Drag the slider to bend the knee, and drag the model to turn it.</p>
+<label for="kS"><b>Bend the knee</b></label><input type="range" id="kS" min="0" max="150" value="0">
+<div class="vbar" style="margin-top:4px"><button class="btn on" id="k3b">3D knee model</button><button class="btn" id="k2b">Labelled drawing</button></div>
+<div id="kv3" style="position:relative;border-radius:8px;overflow:hidden;background:linear-gradient(var(--stage),var(--tray))"><canvas id="kcv" style="display:block;width:100%;touch-action:none;cursor:grab" aria-label="3D model of a human knee joint. Drag to turn it."></canvas><div style="position:absolute;right:10px;bottom:6px;font-size:.75rem;color:var(--mute);pointer-events:none">Drag to turn · scroll or pinch to zoom</div></div>
+<p class="small" id="kneeLeg" style="margin:4px 4px 0"><b>White:</b> bones (femur, tibia, fibula, patella) · <b style="color:#c9806a">Pink:</b> ligaments and tendons that hold the knee together · <b>Cream rings:</b> menisci (cartilage cushions)</p>
+<svg id="knee" viewBox="-40 0 360 250" role="img" aria-label="Human leg seen from the side, bending at the knee to the same angle as the robot joint">
+<line x1="110" y1="128" x2="110" y2="236" stroke="var(--mute)" stroke-width="1" stroke-dasharray="3 4"/>
+<path id="kArc" d="" fill="var(--acc)" fill-opacity=".15" stroke="var(--acc)" stroke-width="1.5"/>
+<g id="kShin">
+<path d="M88 130 L93 214 Q108 226 125 214 L132 130 Z" fill="#f2c4a8" fill-opacity=".6" stroke="#d9a07f"/>
+<path d="M93 210 L152 216 Q162 226 150 236 L93 236 Q86 224 93 210 Z" fill="#f2c4a8" fill-opacity=".75" stroke="#d9a07f"/>
+<rect x="98" y="129" width="24" height="9" rx="4" fill="#f5efe0" stroke="#b8a98a"/>
+<rect x="105" y="134" width="10" height="82" rx="4" fill="#f5efe0" stroke="#b8a98a"/>
+<line x1="121" y1="140" x2="120" y2="210" stroke="#d8ccb0" stroke-width="4" stroke-linecap="round"/>
+<rect x="99" y="124" width="22" height="5" rx="2" fill="#8ec9e8"/>
+<text id="kTibT" x="86" y="182" text-anchor="end">Tibia (shin bone)</text>
+</g>
+<path d="M84 12 Q110 0 140 12 L136 128 Q110 146 84 128 Z" fill="#f2c4a8" fill-opacity=".6" stroke="#d9a07f"/>
+<rect x="105" y="16" width="10" height="98" rx="4" fill="#f5efe0" stroke="#b8a98a"/>
+<ellipse cx="110" cy="117" rx="13" ry="9" fill="#f5efe0" stroke="#b8a98a"/>
+<ellipse id="kPat" cx="131" cy="118" rx="5" ry="9" fill="#efe2c2" stroke="#b8a98a"/>
+<circle id="kDot" cx="110" cy="124" r="4" fill="var(--acc)"/>
+<text x="150" y="60">Femur (thigh bone)</text><line x1="148" y1="57" x2="117" y2="57" stroke="var(--mute)"/>
+<text x="150" y="112">Patella (kneecap)</text><line x1="148" y1="109" x2="138" y2="114" stroke="var(--mute)"/>
+<text x="150" y="134">Knee = hinge joint</text><line x1="148" y1="131" x2="116" y2="125" stroke="var(--mute)"/>
+<text x="150" y="150" style="fill:#3c8fc0">Cartilage (cushion)</text>
+</svg>
+<p class="small" style="margin:2px 4px 0">The robot joint and your knee are both hinge joints: they open and close in one direction, like a door. A real knee bends only about 135°.</p>
+</div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- Step 2 -->
+<section class="card panel" id="p1">
+<h2>2. Wire and connect the servo (book steps 4–6)</h2>
+<h3>Book step 4: wire the servo to the Kidsuno mainboard</h3>
+<p>The grey 270° servo has three wires. Connect each one to the correct terminal.</p>
+<div class="row"><span><i class="dot" style="background:#7a4a2b"></i>Brown wire</span><select id="w0"></select></div>
+<div class="row"><span><i class="dot" style="background:#e03a3a"></i>Red wire</span><select id="w1"></select></div>
+<div class="row"><span><i class="dot" style="background:#f08a24"></i>Orange wire</span><select id="w2"></select></div>
+<button class="btn pri" id="c1">Connect wires</button>
+<div class="msg" id="m1">Hint: brown is ground, red is power, orange is the signal.</div>
+<div id="s5" hidden><h3>Book step 5: join the servo to the joint</h3><p>Put the gear on the hinge axle, stand the servo on a yellow brick, then join them with a long black axle.</p><div class="tray" id="tray2"></div><div class="msg" id="m1b"></div></div>
+<div id="s6" hidden><h3>Book step 6: move the servo close</h3><p>Slide the servo right up to the gear so the joint is strong and does not wobble.</p><button class="btn pri" id="slide">Slide the servo to the gear</button><div class="msg" id="m1c"></div></div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- Step 3 -->
+<section class="card panel" id="p2">
+<h2>3. Tell the servo an angle</h2>
+<p>A <b>servo motor</b> does not spin freely like a fan. You send it an angle from <b>0° to 180°</b> and it turns to that exact position and holds it. Complete the three tasks.</p>
+<ul class="tasks" id="atasks"></ul>
+<div class="row"><input type="number" id="aIn" min="0" max="180" placeholder="Angle in degrees" aria-label="Angle in degrees"><button class="btn pri" id="aGo">Send angle</button></div>
+<div class="msg" id="m2"></div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- Step 4 -->
+<section class="card panel" id="p3">
+<h2>4. Program the Sweep</h2>
+<p>The book uses the Arduino example <b>File → Examples → Servo → Sweep</b>. Build it with blocks: the joint should open from 0° to 180°, then close back to 0°, forever.</p>
+<div class="tray" id="blocks"></div>
+<div class="script" id="script"></div>
+<button class="btn" id="undo">Undo last</button> <button class="btn" id="clr">Clear</button> <button class="btn pri" id="c3">Check program</button>
+<div class="msg" id="m3"></div>
+<div class="codebox"><pre id="code">// your Arduino code appears here</pre><button class="btn" id="cpy">Copy code</button></div>
+<p class="small">Not sure how to build it? Open <b>Guidance → The finished code</b> to copy the whole program.</p>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- Step 5 -->
+<section class="card panel" id="p4">
+<h2>5. Test and measure</h2>
+<div class="choices"><button class="btn pri" id="swp">▶ Run Sweep</button><button class="btn" id="swStop">⏸ Stop</button></div>
+<label for="dly"><b>Wait time per degree:</b> <span id="dlyT">15 ms</span></label>
+<input type="range" id="dly" min="5" max="40" value="15">
+<p class="small" id="swInfo"></p>
+<label for="man"><b>Or move the joint yourself</b></label>
+<input type="range" id="man" min="0" max="180" value="0">
+<div class="stats"><div><span class="small">Angle</span><b id="sDeg">0°</b></div><div><span class="small">Radians</span><b id="sRad">0</b></div><div><span class="small">Full sweeps</span><b id="sCyc">0</b></div></div>
+<div style="margin-top:8px"><b>Measure your success</b>
+<label class="goal"><input type="checkbox" id="g1" disabled> Biomimics a joint hinge using the servo motor (complete one full sweep)</label>
+<label class="goal"><input type="checkbox" id="g2" disabled> Creates limbs using the building blocks</label></div>
+
+<h2 style="margin-top:14px">Math and science connection</h2>
+<p><b>1.</b> A full circle is 360 degrees. This equals 2π radians. Your joint model moves 270 degrees.</p>
+<p><b>a.</b> Write 270 degrees in radians.</p>
+<div class="choices" id="q1a"></div><div class="msg" id="mq1a"></div>
+<p><b>b.</b> Mark the value from question 1 on the number line. Start at 0. Click where it belongs. (Use π ≈ 3.14)</p>
+<svg id="nl" class="nl" viewBox="0 0 440 62" role="img" aria-label="Number line from minus 10 to 10; click to place your answer" style="cursor:crosshair;background:var(--tray);border-radius:8px"></svg>
+<div class="msg" id="mq1b"></div>
+<p><b>2.</b> When the joint returns to its starting position, it turns −270 degrees. <b>a.</b> Write −270 degrees in radians.</p>
+<div class="choices" id="q2a"></div><div class="msg" id="mq2a"></div>
+
+<h2 style="margin-top:14px">Reflect: Good Health and Well-being</h2>
+<p><b>3.</b> How does your joint model support Good Health and Well-being?</p>
+<div class="choices" id="q3"></div><div class="msg" id="mq3"></div>
+<p><b>4.</b> Which STEM career fits this project?</p>
+<div class="choices" id="q4"></div><div class="msg" id="mq4"></div>
+
+<h2 style="margin-top:14px">Feedback</h2>
+<p class="small">Complete the sentences, then practise saying them to your friends.</p>
+<div class="sent">
+<label for="f1">I built a…</label><input type="text" id="f1" placeholder="joint model of a knee">
+<label for="f2">It helps…</label><input type="text" id="f2" placeholder="people understand how joints bend">
+<label for="f3">One way I made my model effective was…</label><input type="text" id="f3" placeholder="using a servo so it stops at exact angles">
+</div>
+<div class="choices"><button class="btn" id="say">🗣 Read my sentences aloud</button></div>
+<div class="msg" id="mSay"></div>
+
+<p class="small" id="fhint">To finish, tick both success goals: run the Sweep until the joint opens and closes once.</p>
+<div class="finish" id="fin" hidden>
+<h3>🎉 Project complete!</h3>
+<p>You built a hinge joint model, wired a servo, coded the Sweep, and measured its movement in degrees and radians.</p>
+<p><b>Team reflection</b> (the Reporter shares your answers with the class):</p>
+<ol><li>Why is a servo better than a DC motor for a joint?</li><li>Which joints in your body work like your model? Which do not?</li><li>How could a physical therapist use your model with a patient?</li></ol>
+<p>Ready for more? Press <b>Extra challenges</b>.</p>
+</div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- Guidance -->
+<section class="card panel" id="p5">
+<h2>Guidance: everything you need for this project</h2>
+<p class="small">Open any section when you are stuck. You can come back here at any time.</p>
+<details open><summary>Goals and rules</summary><p><b>Your joint model should:</b></p><ul><li>Biomimic a joint hinge using the servo motor.</li><li>Create limbs using the building blocks.</li></ul><p><b>Your joint model must:</b></p><ul><li>Use only the materials provided.</li><li>Include design ideas from every team member.</li></ul></details>
+<details><summary>Define the problem</summary><p>A <b>physical therapist</b> helps people recover movement after injury. She needs simple joint models to show how joints move. Your task is to design a joint model that shows hinge movement, like a knee or an elbow.</p><p>Globally, about 1 in 5 adults over 60 suffer from osteoarthritis, which causes pain and reduced mobility. Joint models help people understand their movement and recover after injury.</p></details>
+<details><summary>Team roles</summary><ul><li><b>Leader:</b> keeps the team on task.</li><li><b>Material Manager:</b> chooses and tracks the parts.</li><li><b>Reporter:</b> explains the design to the class.</li><li><b>Testing Supervisor:</b> runs the tests and records results.</li></ul></details>
+<details><summary>Parts: needed and not needed</summary><p><b>Needed:</b> Kidsuno mainboard, USB cable, grey 270° servo, 20 cm or 30 cm wires, building blocks (beams, connectors, axle, gear, base plate).<br><b>Not needed here:</b> DC motor, wheels, ultrasonic sensor, buzzer, joystick, LED, IR receiver, remote, temperature sensor.</p></details>
+<details><summary>Technology in focus: the servo motor</summary><ul><li>A servo turns to a <b>specific angle</b> and holds it. It does not spin freely like a fan.</li><li>You control how far it turns with code, from 0° to 180°.</li><li>With a servo you can move robot arms, move parts to exact positions, and create sweeping movements.</li><li>A DC motor only spins round and round, so it cannot stop at an exact joint angle.</li><li>Your kit has two servos. Use the <b>grey 270° servo</b>: it turns to exact angles (up to 270°, which is why the book says the joint moves 270°). The <b>orange 360° servo</b> spins round continuously, so it cannot hold a joint angle.</li></ul></details>
+<details><summary>Build steps from the book</summary><ol><li><b>Step 1:</b> stand two long yellow beams side by side and join them with a red connector (an H shape).</li><li><b>Step 2:</b> put the blue bent beam at the top and push an axle through the top holes. This is the hinge joint (knee).</li><li><b>Step 3:</b> attach the yellow frame to the side for support, and add green bricks at the bottom as the foot (ankle).</li><li><b>Step 4:</b> wire the servo to the Kidsuno mainboard: Brown → GND, Red → V, Orange → D13.</li><li><b>Step 5:</b> put a gear on the hinge axle, stand the servo on a yellow brick, and join servo and gear with a long black axle.</li><li><b>Step 6:</b> slide the servo up to the gear so the joint is firm.</li></ol></details>
+<details><summary>Wiring table</summary><table><tr><th>Wire</th><th>Meaning</th><th>Connects to</th></tr><tr><td>Brown</td><td>Ground</td><td>GND</td></tr><tr><td>Red</td><td>Power</td><td>V</td></tr><tr><td>Orange</td><td>Signal</td><td>D13</td></tr></table></details>
+<details><summary>How the Sweep program works</summary><ol><li><code>#include &lt;Servo.h&gt;</code> loads the servo library. <code>Servo myservo;</code> creates the servo.</li><li><code>myservo.attach(13);</code> tells the board the servo is on pin 13. The book example says 9: change it to 13.</li><li>The first <code>for</code> loop counts <code>pos</code> from 0 up to 180, one degree at a time.</li><li><code>myservo.write(pos);</code> moves the joint to that angle, and <code>delay(15);</code> waits 15 ms.</li><li>The second <code>for</code> loop counts back from 180 to 0, so the joint closes again.</li><li>Click <b>Upload</b> to send the program to the board.</li></ol></details>
+<details><summary>The finished code (copy and upload)</summary>
+<ol><li>Open the <b>Arduino IDE</b> and choose <b>File → New</b>.</li><li>Delete everything in the window, then press <b>Copy code</b> below and paste it in.</li><li>Choose <b>Tools → Board → Arduino Uno</b> and <b>Tools → Port</b> (the USB port of your board).</li><li>Click <b>Upload</b> (the → arrow). The joint starts sweeping.</li></ol>
+<p><b>Joint Sweep</b> (one servo on D13)</p><div class="codebox"><pre id="codeSweep">#include &lt;Servo.h&gt;
+
+Servo myservo;  // create the servo
+int pos = 0;    // the servo angle
+
+void setup() {
+  myservo.attach(13);  // orange signal wire is on D13
+}
+
+void loop() {
+  for (pos = 0; pos &lt;= 180; pos += 1) {  // open: 0 to 180 degrees
+    myservo.write(pos);                  // move the joint to pos
+    delay(15);                           // wait 15 ms
+  }
+  for (pos = 180; pos &gt;= 0; pos -= 1) {  // close: 180 back to 0
+    myservo.write(pos);
+    delay(15);
+  }
+}</pre><button class="btn" data-copy="codeSweep">Copy code</button></div>
+<p><b>Humanoid arm challenge</b> (elbow servo on D13, wrist servo on D12). If your kit uses a different port for the second servo, change 12 to that number.</p><div class="codebox"><pre id="codeArm">#include &lt;Servo.h&gt;
+
+Servo elbow;  // elbow servo on D13
+Servo wrist;  // wrist servo on D12
+
+void setup() {
+  elbow.attach(13);
+  wrist.attach(12);
+  elbow.write(90);   // start straight
+  wrist.write(90);
+  delay(1000);
+}
+
+void loop() {
+  for (int pos = 90; pos &lt;= 150; pos += 1) {  // lift the forearm
+    elbow.write(pos);
+    delay(15);
+  }
+  for (int i = 0; i &lt; 3; i++) {               // wave the hand 3 times
+    for (int pos = 60; pos &lt;= 120; pos += 1) { wrist.write(pos); delay(8); }
+    for (int pos = 120; pos &gt;= 60; pos -= 1) { wrist.write(pos); delay(8); }
+  }
+  wrist.write(90);
+  for (int pos = 150; pos &gt;= 90; pos -= 1) {  // lower the forearm
+    elbow.write(pos);
+    delay(15);
+  }
+  delay(1000);
+}</pre><button class="btn" data-copy="codeArm">Copy code</button></div>
+<p class="small">To make a real knee (it bends about 135°), change both 180s in the Sweep code to 135.</p></details>
+<details><summary>Degrees and radians</summary><ul><li>A full circle is 360° = 2π radians, so 180° = π radians.</li><li>To change degrees to radians, multiply by π and divide by 180.</li><li>90° = π/2, 270° = 3π/2 ≈ 4.71, and −270° = −3π/2.</li></ul></details>
+<details><summary>Vocabulary</summary><table><tr><th>Word</th><th>Meaning</th></tr><tr><td>Joint</td><td>A place where two parts connect and move</td></tr><tr><td>Hinge</td><td>A joint that opens and closes like a door</td></tr><tr><td>Humanoid</td><td>A robot that looks or moves like a human</td></tr><tr><td>Servo motor</td><td>A motor that turns to an exact angle</td></tr><tr><td>Biomimicry</td><td>Copying ideas from living things in a design</td></tr></table></details>
+<details><summary>Troubleshooting</summary><ul><li>Servo does not move: check that the code says <code>attach(13)</code> and the orange wire is in D13.</li><li>Servo shakes or buzzes: the limb may be too heavy. Make it shorter or lighter.</li><li>Limb hits the frame: limit the angles in the code, for example 0 to 135 instead of 0 to 180.</li><li>Joint is loose on the axle: press the gear and the beam firmly onto the axle so they turn together.</li></ul></details>
+<details><summary>Why it matters</summary><p>Good Health means helping people move and live well. Joint models help people understand how joints bend, help engineers test designs that make movement safer, and can be shared to help more patients.</p></details>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- Challenges -->
+<section class="card panel" id="p6">
+<h2>7. Extra challenges</h2>
+<h3>Your challenge: a humanoid arm</h3>
+<p>The book asks you to build a humanoid arm that hinges at the <b>elbow</b> and the <b>wrist</b>, each with its own servo. Move the two servos so the hand touches each target.</p>
+<svg id="armSvg" viewBox="0 0 260 230" role="img" aria-label="Humanoid arm with elbow and wrist servos and a target to reach"></svg>
+<label for="eS"><b>Elbow servo:</b> <span id="eT">90°</span></label><input type="range" id="eS" min="0" max="180" step="5" value="90">
+<label for="wS"><b>Wrist servo:</b> <span id="wT">90°</span></label><input type="range" id="wS" min="0" max="180" step="5" value="90">
+<div class="msg" id="mArm"></div>
+
+<h3>Quick questions</h3>
+<div class="msg" id="cscore">Solved: 0 of 4</div>
+<details open><summary>Challenge 1: Sweep time</summary>
+<p>The Sweep moves 1 degree, then waits 15 ms. How many milliseconds does it take to go from 0° to 180°?</p>
+<div class="row"><input type="number" id="x1" placeholder="ms" aria-label="Time in milliseconds"><button class="btn pri" data-c="1">Check</button></div><div class="msg" id="r1"></div></details>
+<details open><summary>Challenge 2: Right angle</summary>
+<p>Your elbow is bent at 90°. What is 90° in radians?</p>
+<div class="row"><select id="x2" aria-label="90 degrees in radians"><option>(choose)</option><option>π</option><option>π/2</option><option>2π</option><option>π/4</option></select><button class="btn pri" data-c="2">Check</button></div><div class="msg" id="r2"></div></details>
+<details open><summary>Challenge 3: Wrong pin</summary>
+<p>Your servo is wired to D13, but you forgot to change <code>myservo.attach(9)</code>. What happens?</p>
+<div class="row"><select id="x3" aria-label="What happens"><option>(choose)</option><option>The servo spins faster</option><option>The servo does not move</option><option>The servo moves the wrong way</option></select><button class="btn pri" data-c="3">Check</button></div><div class="msg" id="r3"></div></details>
+<details open><summary>Challenge 4: Not a hinge</summary>
+<p>Which of these joints is <b>not</b> a hinge joint?</p>
+<div class="row"><select id="x4" aria-label="Which joint is not a hinge"><option>(choose)</option><option>Knee</option><option>Elbow</option><option>Shoulder</option><option>Finger</option></select><button class="btn pri" data-c="4">Check</button></div><div class="msg" id="r4"></div></details>
+<details><summary>Team build challenges</summary>
+<ol>
+<li><b>Two servos:</b> build the humanoid arm with an elbow servo on D13 and a wrist servo on D12. The ready code is in <b>Guidance → The finished code</b>.</li>
+<li><b>Wave hello:</b> hold the elbow at 90° and sweep the wrist from 60° to 120° three times.</li>
+<li><b>Real knee:</b> a real knee bends about 135°. Change the Sweep so it only goes from 0° to 135°.</li>
+<li><b>Gentle therapy:</b> change <code>delay(15)</code> to <code>delay(30)</code>. How long does one sweep take now? Why is slower safer for a patient?</li>
+<li><b>Dial control:</b> add the potentiometer from the mixer project so turning the dial bends the joint.</li>
+</ol></details>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- Other designs -->
+<section class="card panel" id="p7">
+<h2>8. Other ways to build a joint</h2>
+<p>The book puts the servo right on the hinge. Your body does it differently: <b>muscles and tendons pull on your bones</b>. Study two designs that copy this, then invent your own.</p>
+<label for="dspd"><b>Speed for all models</b></label>
+<input type="range" id="dspd" min="0" max="100" value="45">
+
+<div class="ex">
+<span class="tag">Example 1</span>
+<h3>Tendon finger (rope and rubber band)</h3>
+<p>Three finger pieces are joined by hinges. A rope runs under them like the tendon in your finger. When the servo pulls the rope, the whole finger curls. A rubber band on top pulls it straight again, like the muscle on the back of your hand.</p>
+<svg id="exA" viewBox="0 0 300 200" role="img" aria-label="Tendon finger: a servo pulls a rope and the finger curls"></svg>
+<div class="pc"><div><b>✔ Good</b>One servo moves <b>three joints</b> at once, just like a real finger.</div><div><b>✘ Watch out</b>A rope can only pull. Without the rubber band, the finger will not straighten.</div></div>
+<p class="small"><b>Parts:</b> servo motor, rope, rubber band, 3 short beams, 3 axles (hinge pins), base plate.</p>
+</div>
+
+<div class="ex">
+<span class="tag">Example 2</span>
+<h3>Push-rod elbow (like the biceps muscle)</h3>
+<p>The servo sits at the shoulder. A stiff rod joins the servo arm to the forearm, just below the elbow, where your biceps attaches. When the servo turns, the rod pulls the forearm up.</p>
+<svg id="exB" viewBox="0 0 300 220" role="img" aria-label="Push-rod elbow: a servo at the shoulder pulls a rod that lifts the forearm"></svg>
+<div class="pc"><div><b>✔ Good</b>The heavy servo is near the body, so the arm is <b>lighter</b> to move.</div><div><b>✘ Watch out</b>The rod must be the right length, or the arm will jam.</div></div>
+<p class="small"><b>Parts:</b> servo motor, 2 long beams (upper arm and forearm), 1 beam as the rod, 3 axles, base plate.</p>
+</div>
+
+<div class="ex"><h3>Compare the designs</h3>
+<div style="overflow-x:auto"><table><tr><th></th><th>Book design</th><th>Tendon finger</th><th>Push-rod elbow</th></tr>
+<tr><td>Copies</td><td>A hinge joint</td><td>Finger tendons</td><td>The biceps muscle</td></tr>
+<tr><td>Servos needed</td><td>1 per joint</td><td>1 for all joints</td><td>1 per joint</td></tr>
+<tr><td>Range</td><td>Up to 180°</td><td>About 70° per joint</td><td>About 120°</td></tr>
+<tr><td>How hard to build</td><td>Easy</td><td>Hard</td><td>Medium</td></tr></table></div></div>
+
+<div class="ex" id="dz">
+<span class="tag">Example 3 · Your turn</span>
+<h3>Design your own joint model</h3>
+<p>Now your team invents a design. Choose the joint, how the servo moves it, and the limb. Watch your model, read the engineer's check, then write your plan. Every team member should add at least one idea.</p>
+<div class="opt">
+<label>Joint to copy<select id="dJoint"><option value="knee">Knee (bends 135°)</option><option value="elbow">Elbow (bends 145°)</option><option value="wrist">Wrist (bends 140°)</option><option value="finger">Finger (bends 90°)</option></select></label>
+<label>How the servo moves it<select id="dDrive"><option value="direct">Servo on the hinge</option><option value="gear">Gears (small to big)</option><option value="rod">Push rod</option><option value="tendon">Rope tendon</option></select></label>
+<label>Number of hinges<select id="dNum"><option>1</option><option selected>2</option><option>3</option></select></label>
+<label>Limb length<select id="dLen"><option value="s">Short</option><option value="m" selected>Medium</option><option value="l">Long</option></select></label>
+</div>
+<svg id="exC" viewBox="0 0 300 170" role="img" aria-label="Preview of your own joint design"></svg>
+<div class="stats"><div><span class="small">Range per hinge</span><b id="dRng">0°</b></div><div><span class="small">Servos needed</span><b id="dSrv">1</b></div><div><span class="small">Strength</span><b id="dStr">×1</b></div></div>
+<b>Engineer's check</b><ul class="chk" id="dChk"></ul>
+<label class="q" for="dName">1. Name your design</label><textarea id="dName" placeholder="e.g. The Robo-Knee"></textarea>
+<label class="q" for="dParts">2. Parts you will use (only the materials provided)</label><textarea id="dParts"></textarea>
+<label class="q" for="dSteps">3. Build steps</label><textarea id="dSteps"></textarea>
+<label class="q" for="dWhy">4. Why is your design better than the book design?</label><textarea id="dWhy"></textarea>
+<label class="q" for="dTest">5. How will you test it? (What will you measure?)</label><textarea id="dTest"></textarea>
+<div class="row" style="grid-template-columns:auto auto;justify-content:start;margin-top:10px"><button class="btn pri" id="dMake">Make my design card</button><span class="small" id="dSaved"></span></div>
+<div id="dCard"></div>
+</div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<div class="row" style="margin-top:10px"><button class="btn" id="back">Back</button><button class="btn pri" id="next" disabled>Next step</button></div>
+</div>
+</main>
+<footer><div style="font:800 clamp(24px,4vw,32px)/1.15 var(--fD,system-ui,sans-serif);letter-spacing:.3px;color:var(--ink,inherit)">Britus Education</div><div style="font-size:12px;opacity:.8;margin-top:4px;font-weight:600">Virtual STEM Lab: Joints · © 2026 Fatma Alruffai</div></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const S=['Build','Wire & connect','Servo angles','Program','Test','Guidance','Challenges','Other designs'];
+let finished=false,solved=new Set(),step=0,unlocked=0,placed=0,connected=false,wired=false,placed2=0;
+let ang=0,tgt=0,lastAng=0,sweep=false,sDir=1,sPos=0,sAcc=0,cycles=0,hit180=false;
+const P={x:200,y:175};
+// 3D model (three.js): book design built from kit parts, drag/touch orbit and view buttons
+const J3=(function(){try{if(!window.THREE)throw new Error('three.js did not load');
+ const box=$('v3'),cv=$('cv3');const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(38,460/360,0.1,300);
+ sc.add(new THREE.HemisphereLight(0xffffff,0x8f8a86,0.85));const dl=new THREE.DirectionalLight(0xffffff,0.7);dl.position.set(10,16,12);sc.add(dl);const dl2=new THREE.DirectionalLight(0xffffff,0.35);dl2.position.set(-12,8,-8);sc.add(dl2);
+ const mats={};const M=(c,o)=>{const k=c+'|'+(o||1);return mats[k]||(mats[k]=o?new THREE.MeshPhongMaterial({color:c,transparent:true,opacity:o,shininess:90,depthWrite:false}):new THREE.MeshLambertMaterial({color:c}))};
+ const Bx=(w,h,d,c,x,y,z,par,o)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c,o));m.position.set(x,y,z);par.add(m);return m};
+ const Cy=(r,h,c,x,y,z,ax,par,seg,o)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg||20),M(c,o));m.position.set(x,y,z);if(ax=='z')m.rotation.x=Math.PI/2;if(ax=='x')m.rotation.z=Math.PI/2;par.add(m);return m};
+ const G={};const grp=(n,par)=>{const g=new THREE.Group();g.visible=false;(par||sc).add(g);G[n]=g;return g};
+ const H=7,YEL=0xf5c400,YH=0x9c7a00,BLU=0x2457c5,BH=0x0f2a6b;
+ // Technic beam with holes facing x: vertical (dir 'y') or along z (dir 'z')
+ function tbeam(par,x,y,z,len,dir,col,hole){const w=dir=='y'?[0.7,len,0.8]:[0.7,0.8,len];Bx(w[0],w[1],w[2],col,x,y,z,par);const n=Math.round(len/0.8);
+  for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8;Cy(0.24,0.72,hole,x,dir=='y'?y+t:y,dir=='z'?z+t:z,'x',par,12)}}
+ // grey baseplate from the kit
+ const plate=new THREE.Group();sc.add(plate);Bx(22,0.5,15,0x7c8186,-2,0.25,-0.5,plate);for(let i=0;i<11;i++)for(let k=0;k<7;k++)Cy(0.3,0.24,0x8d9297,-12+i*2,0.62,-7+k*2,'y',plate,12);
+ // Book step 1: two yellow beams + red connector (H)
+ let g=grp('beams');tbeam(g,-0.75,4.45,0,6.4,'y',YEL,YH);tbeam(g,0.75,4.45,0,6.4,'y',YEL,YH);
+ g=grp('conn');Bx(0.8,1.2,1.6,0xd8322f,0,3.0,0,g);Cy(0.2,2.2,0x6b1a17,0,3.0,0,'x',g,10);
+ // Book step 2: axle (hinge) + blue bent beam
+ g=grp('axle');Cy(0.16,4.7,0x8a949b,0.25,H,0,'x',g,12);Cy(0.3,0.25,0x5b656c,2.5,H,0,'x',g,14);
+ const pivot=new THREE.Group();pivot.position.set(0,H,0);sc.add(pivot);
+ g=grp('blue',pivot);tbeam(g,1.25,0,2.8,6.4,'z',BLU,BH);const bend=new THREE.Group();bend.position.set(0,0,6.0);bend.rotation.x=0.85;g.add(bend);tbeam(bend,1.25,0,1.2,2.4,'z',BLU,BH);
+ // Book step 3: yellow frame (support) + green bricks (foot)
+ g=grp('frame');Bx(0.6,0.5,3.4,YEL,1.2,4.15,2.1,g);Bx(0.6,0.5,3.4,YEL,1.2,1.85,2.1,g);Bx(0.6,2.8,0.5,YEL,1.2,3.0,3.55,g);Bx(0.6,2.8,0.5,YEL,1.2,3.0,0.65,g);
+ for(let z=1.2;z<=3.2;z+=0.8){Cy(0.18,0.62,YH,1.2,4.15,z,'x',g,10);Cy(0.18,0.62,YH,1.2,1.85,z,'x',g,10)}
+ g=grp('foot');Bx(2.8,1,2.4,0x2f7d3b,0,1.0,0,g);for(let i=0;i<3;i++)for(let k=0;k<2;k++)Cy(0.28,0.22,0x3f9a4c,-0.9+i*0.9,1.6,-0.5+k*1.0,'y',g,12);
+ // Book step 5: gear on the hinge axle (turns with the limb)
+ g=grp('gear',pivot);Cy(1.5,0.35,0xa9b0b5,-1.45,0,0,'x',g,30);Cy(0.55,0.4,0x7f898f,-1.45,0,0,'x',g,16);for(let i=0;i<20;i++){const a=i/20*Math.PI*2,t=Bx(0.34,0.36,0.34,0x9199a0,-1.45,1.63*Math.cos(a),1.63*Math.sin(a),g);t.rotation.x=-a}
+ for(let i=0;i<4;i++){const a=i/4*Math.PI*2;Cy(0.2,0.42,0x5b656c,-1.45,0.95*Math.cos(a),0.95*Math.sin(a),'x',g,10)}
+ // grey 270° servo from the kit, shaft pointing +x
+ const servo=grp('servo');Bx(1.3,2.2,2.4,0x9aa0a6,0,0,0,servo);Bx(0.32,0.6,3.8,0x8a9096,-0.3,0,0,servo);
+ [-1.55,1.55].forEach(z=>Cy(0.22,0.36,0x5b6168,-0.3,0,z,'x',servo,12));Cy(0.5,0.25,0xd9dcde,0.78,0,0,'x',servo,18);Cy(0.22,0.55,0xf4f4f4,1.05,0,0,'x',servo,12);
+ Bx(0.5,0.35,0.9,0x2b2b2b,-0.2,-0.6,-1.35,servo);
+ const SP={table:[-5,1.6,4.2],far:[-6.6,H,0],near:[-2.75,H,0]};let sTo=SP.table.slice();servo.position.set(...SP.table);
+ const holder=grp('holder');Bx(1.6,5.2,1.6,YEL,0,0,0,holder);for(let y=-2;y<=2;y+=1.3)Cy(0.22,1.64,YH,0,y,0,'z',holder,10);
+ const lax=grp('laxle');const laxM=Cy(0.13,1,0x1f1f1f,0,H,0,'x',lax,10);
+ // Kidsuno mainboard (clear case, coloured ports 1-9, yellow screen frame)
+ function boardTex(){const c=document.createElement('canvas');c.width=640;c.height=460;const x=c.getContext('2d');x.fillStyle='#141618';x.fillRect(0,0,640,460);
+  const P2=[['#2a7de1','#e2382f','#f2c230','#2e9e4f'],['#2a7de1','#e2382f','#f2c230','#2e9e4f'],['#2a7de1','#e2382f','#2e9e4f','#2e9e4f'],['#2a7de1','#f2c230','#ffffff','#f2c230']];
+  const port=(cx,cy,n,cols)=>{const s=44;[[0,0],[1,0],[0,1],[1,1]].forEach(([i,k],j)=>{x.fillStyle=cols[j];x.fillRect(cx-s+i*s,cy-s+k*s,s-3,s-3)});x.fillStyle='#111';x.font='bold 46px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(n,cx,cy)};
+  [6,7,8,9].forEach((n,i)=>port(110+i*140,70,n,P2[i]));[4,3,2,1].forEach((n,i)=>port(110+i*140,390,n,[P2[i][2],P2[i][3],P2[i][1],P2[i][0]]));port(48,230,5,['#f08a24','#2e9e4f','#2a7de1','#f2c230']);
+  x.fillStyle='#f2c230';x.fillRect(120,150,190,160);x.fillStyle='#050505';x.fillRect(140,170,110,120);x.save();x.translate(282,230);x.rotate(Math.PI/2);x.fillStyle='#111';x.font='bold 26px sans-serif';x.textAlign='center';x.fillText('kidsuno',0,8);x.restore();
+  ['#f5d76e','#f5d76e','#f5d76e','#e53935'].forEach((cl,i)=>{x.fillStyle=cl;x.fillRect(430,160+i*34,26,22)});x.fillStyle='#c9ccd0';x.fillRect(560,300,60,40);x.fillStyle='#3a3d42';x.fillRect(360,190,50,50);
+  x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=3;for(let i=0;i<7;i++)for(let k=0;k<5;k++){x.beginPath();x.arc(46+i*91,46+k*92,20,0,7);x.stroke()}
+  const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t}
+ const board=grp('board');board.position.set(-8.6,0.5,4.6);
+ const side=M(0x1a1c1e),pcb=new THREE.Mesh(new THREE.BoxGeometry(6.4,0.5,4.6),[side,side,new THREE.MeshLambertMaterial({map:boardTex()}),side,side,side]);pcb.position.y=0.55;board.add(pcb);
+ Bx(6.8,1.3,5.0,0xdfeaf2,0,0.65,0,board,0.28);for(let i=0;i<7;i++)for(let k=0;k<5;k++)Cy(0.28,0.25,0xe8f0f6,-2.9+i*0.97,1.42,-2.0+k*1.0,'y',board,12,0.35);
+ const PORT=new THREE.Vector3(-8.6-3.3,1.0,4.6);
+ // servo cable: brown, red, orange
+ const cab=grp('cable');let cabM=[];
+ function cable(){cabM.forEach(m=>{cab.remove(m);m.geometry.dispose()});cabM=[];const s=servo.position;
+  [[0x7a4a2b,-0.12],[0xe03a3a,0],[0xf08a24,0.12]].forEach(([c,o])=>{const a=new THREE.Vector3(s.x-0.2+o,s.y-0.75,s.z-1.75),b=PORT.clone().add(new THREE.Vector3(0,0,o*1.5));
+   const cu=new THREE.CatmullRomCurve3([a,new THREE.Vector3(a.x-0.6,a.y-1.2,a.z-1.4),new THREE.Vector3((a.x+b.x)/2-1.5,1.1,(a.z+b.z)/2-2.5),new THREE.Vector3(b.x-1.2,1.0,b.z+o),b]);
+   const m=new THREE.Mesh(new THREE.TubeGeometry(cu,40,0.07,6,false),M(c));cab.add(m);cabM.push(m)})}
+ cable();
+ // angle protractor in the joint's plane
+ g=grp('arc');const am=new THREE.MeshBasicMaterial({color:0xa8233a,transparent:true,opacity:0.55,side:THREE.DoubleSide});const ring=new THREE.Mesh(new THREE.RingGeometry(7.0,7.1,64,1,0,Math.PI),am);ring.rotation.y=-Math.PI/2;ring.position.set(2.0,H,0);g.add(ring);
+ const wm=new THREE.MeshBasicMaterial({color:0xa8233a,transparent:true,opacity:0.14,side:THREE.DoubleSide,depthWrite:false});let wedge=new THREE.Mesh(new THREE.CircleGeometry(7.0,48,0,0.001),wm);wedge.rotation.y=-Math.PI/2;wedge.position.set(2.0,H,0);g.add(wedge);let wA=-1;
+ // camera orbit
+ const T=new THREE.Vector3(-2,4.2,0.8);const V={iso:[0.75,1.12,34],side:[Math.PI/2,1.45,38],front:[0,1.45,32],left:[-Math.PI/2,1.5,32],top:[0,0.06,34]};
+ let st={th:0.75,ph:1.12,r:34},goal=null,spin=false;
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||460,h=Math.round(w*360/460);R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false;mark()});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size==1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.05,Math.min(1.75,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size==2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(12,Math.min(60,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(12,Math.min(60,st.r*(1+e.deltaY*0.001)))},{passive:false});
+ function mark(k){document.querySelectorAll('#vbtns .btn').forEach(b=>b.classList.toggle('on',b.dataset.v==k))}
+ document.querySelectorAll('#vbtns .btn').forEach(b=>b.onclick=()=>{const k=b.dataset.v;sfx('click');if(k=='spin'){spin=!spin;goal=null;mark(spin?'spin':'');return}spin=false;goal=V[k];mark(k)});
+ function frame(a,dt){if(goal){let dth=goal[0]-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*0.12;st.ph+=(goal[1]-st.ph)*0.12;st.r+=(goal[2]-st.r)*0.12;if(Math.abs(dth)+Math.abs(goal[1]-st.ph)<0.002)goal=null}
+  if(spin)st.th+=dt*0.6;
+  const s=servo.position,d=[sTo[0]-s.x,sTo[1]-s.y,sTo[2]-s.z];if(Math.abs(d[0])+Math.abs(d[1])+Math.abs(d[2])>0.01){const k=Math.min(1,dt*3);s.x+=d[0]*k;s.y+=d[1]*k;s.z+=d[2]*k;cable()}
+  holder.position.set(s.x,0.5+2.6,0);
+  const x0=s.x+1.3,x1=-1.6,L=Math.max(0.01,x1-x0);laxM.scale.y=L;laxM.position.set((x0+x1)/2,H,0);lax.visible=!!(G.laxle.userData.on&&L>0.15);
+  pivot.rotation.x=-a*Math.PI/180;const ra=Math.round(a);if(ra!=wA){wA=ra;wedge.geometry.dispose();wedge.geometry=new THREE.CircleGeometry(7.0,48,0,Math.max(0.001,ra*Math.PI/180))}
+  place();R.render(sc,cam)}
+ return{show:n=>{if(G[n]){G[n].visible=true;G[n].userData.on=true}},servoTo:k=>{sTo=SP[k].slice()},frame,el:box};
+}catch(e){console.error('3D view off',e);return null}})();
+if(!J3){$('v3').innerHTML='<p class="msg bad" style="margin:10px">This browser cannot show the 3D model. Try Chrome or Edge, or update the browser.</p>';$('vbtns').style.visibility='hidden'}
+
+const order=[
+['beams','Yellow beams (×2)','Book step 1: stand two long yellow beams side by side.'],
+['conn','Red connector','Book step 1: join the two yellow beams with the red connector to make an H.'],
+['blue','Blue bent beam','Book step 2: hold the blue bent beam at the top of the H. This is the moving limb.'],
+['axle','Axle (hinge pin)','Book step 2: push the axle through the top holes and the blue beam. This is the hinge joint, like a knee.'],
+['frame','Yellow frame','Book step 3: attach the yellow frame to the side so the leg is supported.'],
+['foot','Green bricks (foot)','Book step 3: add the green bricks at the bottom as the foot.']];
+const extras={xdc:['DC motor','A DC motor spins freely like a fan. A joint needs a servo that stops at an exact angle.'],xwh:['Wheels','Wheels roll a robot along. A joint model does not need to drive anywhere.'],xus:['Ultrasonic sensor','The ultrasonic sensor measures distance. This model does not need it.'],xbz:['Passive buzzer','The buzzer makes sound. It does not help the joint move.'],xjs:['Joystick module','The joystick is not needed for this build. The servo is controlled by the code.'],xsv:['Grey 270° servo','The servo is right for the joint, but not yet. You add it in book step 5, after the leg is built.']};
+const COL={beams:'#f5c400',conn:'#d8322f',blue:'#2457c5',axle:'#8a949b',frame:'#f5c400',foot:'#2f7d3b'};
+const tray=[...order.map(o=>[o[0],o[1]]),...Object.entries(extras).map(([k,v])=>[k,v[0]])].sort((a,b)=>a[1].localeCompare(b[1]));
+// Sound (made in the browser, no files needed)
+let AC=null,sndOn=true,whine=null;
+try{sndOn=localStorage.getItem('jointSound')!=='off'}catch(e){}
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=='suspended')AC.resume();return AC}
+document.addEventListener('pointerdown',ac,{once:true});
+function tone(f,d,type,vol,at){const a=ac();if(!a||!sndOn)return;const t=a.currentTime+(at||0),o=a.createOscillator(),g=a.createGain();
+ o.type=type||'sine';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||0.18,t+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+ o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+0.05)}
+const SFX={
+ good:()=>{tone(660,.15,'triangle');tone(990,.22,'triangle',.16,.1)},
+ bad:()=>{tone(220,.18,'square',.07);tone(180,.25,'square',.07,.12)},
+ click:()=>tone(520,.06,'triangle',.12),
+ snap:()=>{tone(300,.05,'square',.08);tone(800,.08,'triangle',.12,.04)},
+ whir:()=>{for(let i=0;i<10;i++)tone(300+i*40,.09,'square',.05,i*.07)},
+ tick:()=>tone(1400,.03,'square',.05),
+ win:()=>[523,659,784,1047,784,1047].forEach((f,i)=>tone(f,i==5?.6:.18,'triangle',.18,i*.13))};
+function sfx(k){try{SFX[k]&&SFX[k]()}catch(e){}}
+function servoWhine(speed){const a=AC;if(!a)return;
+ if(!whine){const o=a.createOscillator(),f=a.createBiquadFilter(),g=a.createGain();o.type='square';f.type='bandpass';f.frequency.value=900;f.Q.value=2;g.gain.value=0;o.connect(f);f.connect(g).connect(a.destination);o.start();whine={o,g}}
+ const on=sndOn&&speed>2,t=a.currentTime;whine.g.gain.setTargetAtTime(on?0.03:0,t,0.04);whine.o.frequency.setTargetAtTime(260+Math.min(speed,400)*1.4,t,0.05)}
+function sndBtn(){$('snd').textContent=sndOn?'🔊 Sound on':'🔇 Sound off';$('snd').setAttribute('aria-pressed',sndOn)}
+$('snd').onclick=()=>{sndOn=!sndOn;try{localStorage.setItem('jointSound',sndOn?'on':'off')}catch(e){}sndBtn();if(sndOn)sfx('click')};sndBtn();
+function msg(id,t,c,quiet){const m=$(id);m.textContent=t;m.className='msg '+(c||'');if(quiet)return;if(c=='good')sfx((id=='m0'||id=='m1b')&&!/built|complete|now turns/i.test(t)?'snap':'good');else if(c=='bad')sfx('bad')}
+function nav(){
+ $('nav').innerHTML='';
+ S.forEach((s,i)=>{const b=document.createElement('button');b.textContent=(i+1)+'. '+s;b.disabled=(i>unlocked&&i<5)||(i>=6&&!finished);
+  b.className=(i==step?'on ':'')+(i<unlocked||(i==4&&finished)||(i==6&&solved.size==4)?'done':'');b.onclick=()=>go(i);$('nav').appendChild(b)});
+ document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on',i==step));
+ const nx=$('next'),goals=$('g1').checked&&$('g2').checked;nx.hidden=false;
+ if(step<4){nx.textContent='Next step';nx.disabled=step>=unlocked}
+ else if(step==4){nx.disabled=!finished&&!goals;nx.textContent=finished?'Extra challenges ➜':'Finish project 🎉'}
+ else if(step==5&&finished){nx.textContent='Extra challenges ➜';nx.disabled=false}
+ else if(step==6){nx.textContent='Other ways to build ➜';nx.disabled=false}
+ else nx.hidden=true;
+ $('fhint').hidden=finished||goals;$('back').disabled=step==0;
+ const showArc=connected;$('g_arc').style.display=showArc?'':'none';if(showArc&&J3)J3.show('arc');$('angLbl').style.display=showArc?'':'none';
+}
+let lastStep=0;function go(i){if(i!=step)sfx('click');step=i;if(i<5)lastStep=i;if(i==4&&connected){$('g2').checked=true}if(i!=4)sweep=false;nav();window.scrollTo({top:0,behavior:'smooth'})}
+function unlock(n){unlocked=Math.max(unlocked,n);nav()}
+$('next').onclick=()=>{if(step==4&&!finished){finished=true;sweep=false;sfx('win');$('fin').hidden=false;nav();$('fin').scrollIntoView({behavior:'smooth',block:'nearest'});return}go(step==6?7:step>=4?6:step+1)};
+$('back').onclick=()=>go(step==7?6:step==6?5:step==5?lastStep:step-1);
+// Step 1
+function drawTray(){
+ $('tray').innerHTML='';
+ tray.forEach(([id,l])=>{const b=document.createElement('button');b.innerHTML='<i class="bk" style="color:'+(COL[id]||'#9a8a8e')+'"></i>'+l;
+  b.className=order.slice(0,placed).some(o=>o[0]==id)?'used':'';
+  b.onclick=()=>pick(id,l);$('tray').appendChild(b)});
+}
+function pick(id,l){
+ if(placed>=order.length)return;
+ const o=order[placed];
+ if(id==o[0]){J3&&J3.show(o[0]);placed++;drawTray();
+  if(placed==order.length){msg('m0','Leg built! Your hinge joint is ready. Go to step 2 to wire and connect the servo (book steps 4–6).','good');unlock(1);J3&&(J3.show('board'),J3.show('servo'));nav()}
+  else msg('m0','Placed: '+l+'. Next: '+order[placed][2],'good')}
+ else if(extras[id])msg('m0',extras[id][1],'bad');
+ else msg('m0',l+' is right for the joint, but not yet. Next: '+o[2],'bad');
+}
+// Step 2
+const T=['(choose)','GND','V','D13','A0'];
+['w0','w1','w2'].forEach(id=>T.forEach(t=>$(id).add(new Option(t))));
+$('c1').onclick=()=>{
+ const v=[$('w0').value,$('w1').value,$('w2').value];
+ if(v[0]=='GND'&&v[1]=='V'&&v[2]=='D13'){if(!wired){wired=true;J3&&J3.show('cable');$('s5').hidden=false;drawTray2()}msg('m1','Servo wired: Brown→GND, Red→V, Orange→D13. Now book step 5.','good')}
+ else if(v.includes('(choose)'))msg('m1','Choose a terminal for every wire.','bad');
+ else msg('m1','Not quite. A servo needs ground, power, and a signal pin. Check the wiring table in the guide (Brown GND, Red V, Orange D13).','bad');
+};
+// Book steps 5-6
+const order2=[['gear','Gear','Slide the grey gear onto the hinge axle, next to the yellow beams.'],['holder','Yellow brick','Stand a tall yellow brick on the baseplate beside the leg to hold the servo.'],['servo','Grey 270° servo','Put the grey servo on the yellow brick, with its shaft pointing at the gear.'],['laxle','Long black axle','Push the long black axle from the servo shaft into the gear.']];
+const extras2={x360:['Orange 360° servo','The orange 360° servo keeps spinning round like a wheel motor. A joint needs the grey 270° servo, which stops at exact angles.'],xwh2:['Wheels','Wheels are not needed. The joint only needs to bend.'],xrope:['Rope','Rope is not needed for the book design. You can try it in Other designs.']};
+const tray2=[...order2.map(o=>[o[0],o[1]]),...Object.entries(extras2).map(([k,v])=>[k,v[0]])].sort((a,b)=>a[1].localeCompare(b[1]));
+function drawTray2(){$('tray2').innerHTML='';tray2.forEach(([id,l])=>{const b=document.createElement('button');b.innerHTML='<i class="bk" style="color:'+({gear:'#a9b0b5',holder:'#f5c400',servo:'#9aa0a6',laxle:'#1f1f1f',x360:'#f08a24'}[id]||'#9a8a8e')+'"></i>'+l;
+ b.className=order2.slice(0,placed2).some(o=>o[0]==id)?'used':'';b.onclick=()=>pick2(id,l);$('tray2').appendChild(b)});if(placed2<order2.length)msg('m1b','Next: '+order2[placed2][2],'',true)}
+function pick2(id,l){if(placed2>=order2.length)return;const o=order2[placed2];
+ if(id==o[0]){if(id=='servo')J3&&J3.servoTo('far');else J3&&J3.show(id);placed2++;drawTray2();
+  if(placed2==order2.length){msg('m1b','The servo now turns the gear and the joint. Last step: book step 6.','good');$('s6').hidden=false}else msg('m1b','Placed: '+l+'. Next: '+order2[placed2][2],'good')}
+ else if(extras2[id])msg('m1b',extras2[id][1],'bad');else msg('m1b',l+' is right, but not yet. Next: '+o[2],'bad')}
+$('slide').onclick=()=>{if(connected)return;J3&&J3.servoTo('near');connected=true;sfx('whir');setTimeout(()=>sfx('snap'),750);msg('m1c','Joint model complete! The servo is joined to the hinge. Next, tell it an angle.','good');unlock(2)};
+// Step 3 angles
+const AT=[[90,'Make the limb point straight up.'],[45,'Stop the limb halfway between flat and straight up.'],[180,'Open the joint all the way over to the other side.']];
+let atDone=new Set();
+function drawTasks(){$('atasks').innerHTML=AT.map((t,i)=>'<li class="'+(atDone.has(i)?'done':'')+'">'+t[1]+'</li>').join('')}
+drawTasks();
+$('aGo').onclick=()=>{const raw=$('aIn').value;if(raw===''){msg('m2','Type an angle first.','bad');return}const v=+raw;
+ if(v<0||v>180){msg('m2','A servo can only turn from 0° to 180°. Try a number in that range.','bad');return}
+ sweep=false;tgt=v;msg('m2','Servo moving to '+v+'°…','',true)};
+$('aIn').onkeydown=e=>{if(e.key=='Enter')$('aGo').click()};
+function checkTasks(){if(step!=2||Math.abs(ang-tgt)>0.3)return;
+ AT.forEach((t,i)=>{if(!atDone.has(i)&&t[0]==tgt){atDone.add(i);drawTasks();
+  if(atDone.size==AT.length){msg('m2','All three tasks done! The servo turns to exact angles and holds them.','good');unlock(3)}
+  else msg('m2','Correct: '+tgt+'°. '+(AT.length-atDone.size)+' task'+(AT.length-atDone.size>1?'s':'')+' left.','good')}})}
+// Step 4 program
+const B=[
+['inc','include Servo library','sns','#include <Servo.h>\nServo myservo;\nint pos = 0;'],
+['att13','when Arduino starts: attach servo to pin 13','hat','void setup() {\n  myservo.attach(13);\n}'],
+['att9','when Arduino starts: attach servo to pin 9','hat','void setup() {\n  myservo.attach(9);\n}'],
+['loop','forever','ctl','void loop() {'],
+['up','count pos from 0 up to 180','ctl','  for (pos = 0; pos <= 180; pos += 1) {'],
+['down','count pos from 180 down to 0','ctl','  for (pos = 180; pos >= 0; pos -= 1) {'],
+['go','servo go to pos, then wait 15 ms','mot','    myservo.write(pos);\n    delay(15);\n  }'],
+['dc','DC motor D13 full speed','oth','  analogWrite(13, 255);'],
+['buz','play buzzer','oth','  tone(8, 440);']];
+let prog=[];
+B.slice().sort((a,b)=>a[1].localeCompare(b[1])).forEach(b=>{const e=document.createElement('button');e.textContent=b[1];
+ e.onclick=()=>{prog.push(b);drawProg();sfx('click')};$('blocks').appendChild(e)});
+function drawProg(){
+ $('script').innerHTML=prog.map(b=>'<div class="blk '+b[2]+'">'+b[1]+'</div>').join('')||'<span class="small">Click blocks above to add them here.</span>';
+ $('code').textContent=prog.length?prog.map(b=>b[3]).join('\n')+(prog.some(b=>b[0]=='loop')?'\n}':''):'// your Arduino code appears here';
+}
+drawProg();
+$('undo').onclick=()=>{prog.pop();drawProg()};$('clr').onclick=()=>{prog=[];drawProg()};
+$('c3').onclick=()=>{
+ const ids=prog.map(b=>b[0]).join();
+ if(ids=='inc,att13,loop,up,go,down,go'){msg('m3','Program works! The joint opens from 0° to 180° and closes back to 0°, one degree every 15 ms.','good');unlock(4)}
+ else if(!prog.length)msg('m3','Add some blocks first.','bad');
+ else if(prog.some(b=>b[0]=='att9'))msg('m3','The book example attaches the servo to pin 9, but your orange wire is in D13. Use the pin 13 block.','bad');
+ else if(prog.some(b=>['dc','buz'].includes(b[0])))msg('m3','Remove blocks the joint does not need (DC motor, buzzer).','bad');
+ else if(prog[0][0]!='inc')msg('m3','Start with the Servo library, so the board knows how to talk to a servo.','bad');
+ else if(prog.filter(b=>b[0]=='go').length!=2)msg('m3','Each count block needs its own "servo go to pos" block right after it.','bad');
+ else msg('m3','Check the order: library, attach pin 13, forever, count up, go, count down, go.','bad');
+};
+// Copy buttons
+function copyText(t,btn){const done=()=>{const o=btn.textContent;btn.textContent='Copied ✓';sfx('good');setTimeout(()=>btn.textContent=o,1500)};
+ const fb=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();if(ok)done();else{btn.textContent='Select the code and copy it';}};
+ try{navigator.clipboard.writeText(t).then(done,fb)}catch(e){fb()}}
+$('cpy').onclick=()=>copyText($('code').textContent,$('cpy'));
+document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copyText($(b.dataset.copy).textContent,b));
+// Step 5 test
+function swInfo(){const d=+$('dly').value;$('dlyT').textContent=d+' ms';$('swInfo').textContent='One sweep from 0° to 180° takes 180 × '+d+' ms = '+(180*d)+' ms ('+(180*d/1000).toFixed(1)+' s).'}
+$('dly').oninput=swInfo;swInfo();
+$('swp').onclick=()=>{sweep=true;sPos=Math.round(ang);sDir=sPos>=180?-1:1;hit180=sPos>=180;sAcc=0;sfx('click')};
+$('swStop').onclick=()=>{sweep=false;tgt=Math.round(ang);sfx('click')};
+$('man').oninput=()=>{sweep=false;tgt=+$('man').value};
+function mcq(box,opts,ans,okT,badT,mid){opts.forEach(o=>{const b=document.createElement('button');b.className='btn';b.textContent=o;
+ b.onclick=()=>{document.querySelectorAll('#'+box+' .btn').forEach(x=>x.classList.remove('pick','miss'));
+  if(o==ans){b.classList.add('pick');msg(mid,okT,'good')}else{b.classList.add('miss');msg(mid,badT,'bad')}};$(box).appendChild(b)})}
+mcq('q1a',['π/2','π','3π/2','2π'],'3π/2','Correct: 270° × π ÷ 180 = 3π/2 radians (about 4.71).','Use radians = degrees × π ÷ 180. 360° is 2π, so 270° is three quarters of 2π.','mq1a');
+mcq('q2a',['−π/2','−π','−3π/2','−2π'],'−3π/2','Correct: turning back 270° is −3π/2 radians.','It is the same size as question 1, but in the opposite direction, so it has a minus sign.','mq2a');
+mcq('q3',['Uses more battery','Helps people move','Looks more colorful'],'Helps people move','Correct: joint models help people understand movement and recover after injury.','Think about the patient. What does a joint model help them do?','mq3');
+mcq('q4',['Physical therapist','Pilot','Chef'],'Physical therapist','Correct: a physical therapist helps people recover movement.','Which job helps people move again after an injury?','mq4');
+// number line
+(function(){const s=$('nl'),NS='http://www.w3.org/2000/svg';let h='<line x1="12" y1="26" x2="428" y2="26" stroke="var(--acc)" stroke-width="3"/><path d="M6 26 L16 20 L16 32 Z M434 26 L424 20 L424 32 Z" fill="var(--acc)"/>';
+ for(let v=-10;v<=10;v++){const x=20+(v+10)*20;h+='<line x1="'+x+'" y1="18" x2="'+x+'" y2="34" stroke="var(--acc)" stroke-width="2"/><text x="'+x+'" y="50" text-anchor="middle">'+v+'</text>'}
+ h+='<g id="nlm" display="none"><path d="M0 4 L-6 -8 L6 -8 Z" fill="var(--acc2)"/><circle r="5" cy="10" fill="var(--acc2)"/></g>';s.innerHTML=h;
+ s.addEventListener('click',e=>{const pt=s.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(s.getScreenCTM().inverse());
+  let v=Math.round(((p.x-20)/20-10)*10)/10;v=Math.max(-10,Math.min(10,v));const m=$('nlm');m.removeAttribute('display');m.setAttribute('transform','translate('+(20+(v+10)*20)+' 16)');
+  sfx('tick');if(Math.abs(v-4.71)<=0.25)msg('mq1b','Correct: you marked '+v.toFixed(1)+'. 3π/2 ≈ 3 × 3.14 ÷ 2 ≈ 4.71, between 4 and 5.','good');
+  else msg('mq1b','You marked '+v.toFixed(1)+'. Work out 3 × 3.14 ÷ 2 first, then find it on the line.','bad')})})();
+$('say').onclick=()=>{const a=$('f1').value.trim(),b=$('f2').value.trim(),c=$('f3').value.trim();
+ if(!a||!b||!c){msg('mSay','Fill in all three sentences first.','bad');return}
+ const t='I built a '+a+'. It helps '+b+'. One way I made my model effective was '+c+'.';msg('mSay',t,'good',true);
+ try{if(sndOn&&window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=.95;speechSynthesis.speak(u)}}catch(e){}};
+// Challenges: humanoid arm
+const ARM={S:{x:60,y:200},up:85,fo:80,ha:35,ua:100};
+const TG=[[133.3,42.4,'Touch the high shelf'],[156.9,114.4,'Press the button'],[120.6,190.8,'Pick up the cup on the table']];let tgI=0;
+function armPts(e,w){const r=Math.PI/180,E={x:ARM.S.x+ARM.up*Math.cos(ARM.ua*r),y:ARM.S.y-ARM.up*Math.sin(ARM.ua*r)},fa=e-80,W={x:E.x+ARM.fo*Math.cos(fa*r),y:E.y-ARM.fo*Math.sin(fa*r)},ha=fa+(w-90),Tp={x:W.x+ARM.ha*Math.cos(ha*r),y:W.y-ARM.ha*Math.sin(ha*r)};return{E,W,Tp,ha}}
+function drawArm(){const e=+$('eS').value,w=+$('wS').value;$('eT').textContent=e+'°';$('wT').textContent=w+'°';
+ const {E,W,Tp,ha}=armPts(e,w),S0=ARM.S,r=Math.PI/180;let h='';
+ h+='<rect x="88" y="200" width="160" height="8" rx="2" fill="#8a5a2b"/><rect x="96" y="208" width="8" height="20" fill="#8a5a2b"/><rect x="232" y="208" width="8" height="20" fill="#8a5a2b"/>';
+ h+='<rect x="110" y="34" width="60" height="6" rx="2" fill="#8a5a2b"/>';
+ h+='<rect x="30" y="206" width="60" height="16" rx="3" fill="#3f8f4e"/><rect x="'+(S0.x-8)+'" y="'+(S0.y-6)+'" width="16" height="12" fill="#2f7d3b"/>';
+ if(tgI<TG.length){const t=TG[tgI];h+='<circle cx="'+t[0]+'" cy="'+t[1]+'" r="11" fill="var(--acc2)" fill-opacity=".25" stroke="var(--acc2)" stroke-width="2" stroke-dasharray="3 3"/><text x="'+t[0]+'" y="'+(t[1]+4)+'" text-anchor="middle" font-size="11">★</text>'}
+ h+='<line x1="'+S0.x+'" y1="'+S0.y+'" x2="'+E.x+'" y2="'+E.y+'" stroke="#f2c230" stroke-width="12" stroke-linecap="round"/>';
+ h+='<line x1="'+E.x+'" y1="'+E.y+'" x2="'+W.x+'" y2="'+W.y+'" stroke="#2457c5" stroke-width="10" stroke-linecap="round"/>';
+ h+='<line x1="'+W.x+'" y1="'+W.y+'" x2="'+Tp.x+'" y2="'+Tp.y+'" stroke="#2f7d3b" stroke-width="8" stroke-linecap="round"/>';
+ const g1={x:Tp.x+9*Math.cos((ha+40)*r),y:Tp.y-9*Math.sin((ha+40)*r)},g2={x:Tp.x+9*Math.cos((ha-40)*r),y:Tp.y-9*Math.sin((ha-40)*r)};
+ h+='<polyline points="'+g1.x+','+g1.y+' '+Tp.x+','+Tp.y+' '+g2.x+','+g2.y+'" fill="none" stroke="#2f7d3b" stroke-width="4" stroke-linecap="round"/>';
+ h+='<rect x="'+(E.x-9)+'" y="'+(E.y-9)+'" width="18" height="18" rx="3" fill="#e24a2d"/><rect x="'+(W.x-7)+'" y="'+(W.y-7)+'" width="14" height="14" rx="3" fill="#e24a2d"/><circle cx="'+S0.x+'" cy="'+S0.y+'" r="6" fill="#2b3238"/>';
+ h+='<text x="'+(E.x-12)+'" y="'+(E.y-13)+'" font-size="10" fill="var(--ink)">elbow</text><text x="'+(W.x+9)+'" y="'+(W.y-9)+'" font-size="10" fill="var(--ink)">wrist</text>';
+ $('armSvg').innerHTML=h;
+ if(tgI<TG.length){const t=TG[tgI];if(Math.hypot(Tp.x-t[0],Tp.y-t[1])<11){tgI++;if(tgI==TG.length){msg('mArm','All three targets reached! Your humanoid arm uses two hinge joints, just like a real elbow and wrist. 🏆','good',true);sfx('win');drawArm()}else{msg('mArm','Target reached! Next target '+(tgI+1)+' of 3: '+TG[tgI][2]+'.','good');drawArm()}}
+  else if(!$('mArm').className.includes('good')||tgI==0)msg('mArm','Target '+(tgI+1)+' of 3: '+t[2]+'. Move the elbow and wrist servos.','',true)}}
+$('eS').oninput=drawArm;$('wS').oninput=drawArm;drawArm();
+// Quick questions
+const CH={1:['x1',v=>Math.abs(v-2700)<1,'Correct: 180 × 15 ms = 2700 ms, which is 2.7 seconds.','Multiply the number of degrees (180) by the wait for each degree (15 ms).'],
+2:['x2',v=>v=='π/2','Correct: 90° is a quarter of a circle, so 2π ÷ 4 = π/2.','90° is one quarter of 360°. What is one quarter of 2π?'],
+3:['x3',v=>v=='The servo does not move','Correct: the board sends the signal to pin 9, but nothing is plugged in there, so the servo does not move.','The signal goes to the pin in the code. Is the servo plugged into that pin?'],
+4:['x4',v=>v=='Shoulder','Correct: the shoulder is a ball-and-socket joint. It can turn in many directions, not just open and close.','A hinge only opens and closes like a door. Which joint can also swing in a circle?']};
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{const k=b.dataset.c,c=CH[k],v=$(c[0]).value;
+ if(v===''||v=='(choose)'){msg('r'+k,'Enter an answer first.','bad');return}
+ const ok=c[1](c[0]=='x1'?+v:v);if(ok){solved.add(k);msg('r'+k,c[2],'good')}else msg('r'+k,c[3],'bad');
+ msg('cscore','Solved: '+solved.size+' of 4'+(solved.size==4?'. Excellent work, engineer! 🏆':''),solved.size==4?'good':'',true);if(solved.size==4&&ok)setTimeout(()=>sfx('win'),400);nav()});
+// Other designs
+const NS='http://www.w3.org/2000/svg';let dPh=0;
+function sv(t,a,par){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(par)par.appendChild(e);return e}
+function exA(t){const s=$('exA');s.innerHTML='';const b=70*t;
+ sv('rect',{x:20,y:186,width:260,height:10,rx:2,fill:'#3f8f4e'},s);
+ sv('rect',{x:40,y:43,width:62,height:60,rx:4,fill:'#f2c230'},s);
+ const sx=60,sy=152;sv('rect',{x:sx-22,y:sy-12,width:44,height:24,rx:4,fill:'#e24a2d'},s);
+ const hr=t*120*Math.PI/180,hx=sx+14*Math.cos(Math.PI-hr),hy=sy-14*Math.sin(Math.PI-hr)*0.4;
+ sv('line',{x1:sx,y1:sy,x2:hx,y2:hy,stroke:'#fff','stroke-width':4,'stroke-linecap':'round'},s);
+ sv('path',{d:'M'+hx+' '+hy+' C 95 150 100 100 102 81',fill:'none',stroke:'#7a4a2b','stroke-width':2.5},s);
+ let g=sv('g',{transform:'rotate('+b+' 102 65)'},s);const L=[55,45,35];let x=102;
+ L.forEach((l,i)=>{sv('rect',{x:x,y:56,width:l,height:18,rx:7,fill:'#2457c5'},g);
+  sv('line',{x1:x,y1:78,x2:x+l-4,y2:78,stroke:'#7a4a2b','stroke-width':2.5},g);
+  sv('line',{x1:x+3,y1:53,x2:x+l-3,y2:53,stroke:'var(--acc2)','stroke-width':2,'stroke-dasharray':'4 3'},g);
+  sv('circle',{cx:x,cy:65,r:4,fill:'#2b3238'},g);x+=l;if(i<2)g=sv('g',{transform:'rotate('+b+' '+x+' 65)'},g)});
+ const lab=sv('text',{x:150,y:16,'text-anchor':'middle','font-size':11,fill:'var(--ink)'},s);lab.textContent='Each hinge: '+Math.round(b)+'°   rope = brown, rubber band = orange';}
+function exB(t){const s=$('exB');s.innerHTML='';const r=Math.PI/180;
+ sv('rect',{x:20,y:200,width:260,height:12,rx:2,fill:'#3f8f4e'},s);sv('rect',{x:90,y:150,width:20,height:50,fill:'#2f7d3b'},s);
+ const H0={x:100,y:52},E={x:100,y:150},hr=34,L=106,d=26;
+ sv('rect',{x:92,y:40,width:16,height:112,rx:3,fill:'#f2c230'},s);
+ sv('rect',{x:76,y:34,width:48,height:36,rx:5,fill:'#e24a2d'},s);
+ const al=(-90+90*t)*r,HT={x:H0.x+hr*Math.cos(al),y:H0.y+hr*Math.sin(al)};
+ let best=0,err=1e9;for(let p=-40;p<=160;p+=0.5){const A={x:E.x+d*Math.cos(p*r),y:E.y-d*Math.sin(p*r)},e=Math.abs(Math.hypot(A.x-HT.x,A.y-HT.y)-L);if(e<err){err=e;best=p}}
+ const A={x:E.x+d*Math.cos(best*r),y:E.y-d*Math.sin(best*r)},F={x:E.x+120*Math.cos(best*r),y:E.y-120*Math.sin(best*r)};
+ sv('line',{x1:E.x,y1:E.y,x2:F.x,y2:F.y,stroke:'#2457c5','stroke-width':14,'stroke-linecap':'round'},s);
+ sv('line',{x1:H0.x,y1:H0.y,x2:HT.x,y2:HT.y,stroke:'#fff','stroke-width':6,'stroke-linecap':'round'},s);
+ sv('line',{x1:HT.x,y1:HT.y,x2:A.x,y2:A.y,stroke:'#2b3238','stroke-width':5,'stroke-linecap':'round'},s);
+ [H0,HT,A,E].forEach(p=>sv('circle',{cx:p.x,cy:p.y,r:4,fill:'#c7ced3',stroke:'#2b3238','stroke-width':2},s));
+ const lab=sv('text',{x:290,y:24,'text-anchor':'end','font-size':11,fill:'var(--ink)'},s);lab.textContent='Elbow angle: '+Math.round(best)+'°';
+ const l2=sv('text',{x:116,y:46,'font-size':9,fill:'#fff'},s);l2.textContent='';
+ sv('text',{x:150,y:62,'font-size':10,fill:'var(--mute)'},s).textContent='rod (biceps)';}
+const JR={knee:135,elbow:145,wrist:140,finger:90},JN={knee:'knee',elbow:'elbow',wrist:'wrist',finger:'finger'};
+function dVals(){const j=$('dJoint').value,dr=$('dDrive').value,n=+$('dNum').value,ln=$('dLen').value;
+ const rng=dr=='direct'?180:dr=='gear'?90:dr=='rod'?120:70;const srv=dr=='tendon'?1:n;const str=dr=='gear'?2:dr=='rod'?1.5:dr=='tendon'?0.8:1;return{j,dr,n,ln,rng,srv,str}}
+function design(t){const {j,dr,n,ln,rng,srv,str}=dVals(),s=$('exC');s.innerHTML='';const r=Math.PI/180;
+ const use=Math.min(rng,JR[j]),bend=use*t;let seg=(ln=='s'?40:ln=='m'?55:70)*(n==1?1.5:n==2?1:0.72);
+ sv('rect',{x:10,y:150,width:280,height:10,rx:2,fill:'#3f8f4e'},s);sv('rect',{x:22,y:84,width:76,height:20,rx:4,fill:'#f2c230'},s);sv('rect',{x:22,y:104,width:20,height:46,fill:'#2f7d3b'},s);
+ let x=98,yy=94,a=0;const pts=[[x,yy]];
+ for(let i=0;i<n;i++){a-=bend*r;const nx=x+seg*Math.cos(a),ny=yy+seg*Math.sin(a);sv('line',{x1:x,y1:yy,x2:nx,y2:ny,stroke:i%2?'#f2c230':'#2457c5','stroke-width':12,'stroke-linecap':'round'},s);
+  if(dr!='tendon'){sv('rect',{x:x-8,y:yy-8,width:16,height:16,rx:3,fill:'#e24a2d'},s)}
+  if(dr=='gear'){sv('circle',{cx:x,cy:yy,r:13,fill:'none',stroke:'#5b656c','stroke-width':3,'stroke-dasharray':'3 3',transform:'rotate('+(bend*2)+' '+x+' '+yy+')'},s)}
+  sv('circle',{cx:x,cy:yy,r:4,fill:'#2b3238'},s);pts.push([nx,ny]);x=nx;yy=ny}
+ if(dr=='tendon'){sv('rect',{x:30,y:62,width:30,height:18,rx:3,fill:'#e24a2d'},s);sv('polyline',{points:'45,71 '+pts.map(p=>p[0]+','+(p[1]+7)).join(' '),fill:'none',stroke:'#7a4a2b','stroke-width':2},s)}
+ if(dr=='rod'){sv('rect',{x:30,y:62,width:30,height:18,rx:3,fill:'#e24a2d'},s);const p1=pts[1];sv('line',{x1:45,y1:71,x2:(pts[0][0]+p1[0])/2,y2:(pts[0][1]+p1[1])/2,stroke:'#2b3238','stroke-width':4},s)}
+ sv('text',{x:8,y:14,'font-size':10,fill:'var(--mute)'},s).textContent='Side view · '+JN[j]+' · bending '+Math.round(bend)+'°';
+ return{use}}
+function checks(){const {j,dr,n,ln,rng,srv,str}=dVals(),chk=[];const ok=(t,y)=>chk.push('<li class="'+(y?'y':'n')+'">'+(y?'✔ ':'✘ ')+t+'</li>');
+ $('dRng').textContent=rng+'°';$('dSrv').textContent=srv;$('dStr').textContent='×'+str;
+ ok(rng>=JR[j]?'Reaches the full bend of a real '+JN[j]+' ('+JR[j]+'°).':'Only bends '+rng+'°, but a real '+JN[j]+' bends '+JR[j]+'°. Choose a drive with more range.',rng>=JR[j]);
+ if(dr=='tendon')ok('One servo curls every hinge together, like the tendons in your hand.',1);
+ else ok(n>1?'Each hinge needs its own servo: '+n+' servos on '+n+' signal pins (for example D13, D12'+(n>2?', D11':'')+').':'One servo on D13 turns the hinge.',1);
+ if(dr=='tendon')ok('A rope can only pull. Add a rubber band on top to straighten the limb again.',0);
+ if(dr=='gear')ok('Gears double the strength but halve the range: the servo turns 180°, the joint turns 90°.',1);
+ if(dr=='rod')ok('Check the rod length carefully. Too long or too short and the arm will jam.',1);
+ if(ln=='l'&&(dr=='direct'||dr=='tendon'))ok('A long limb is heavy for this drive. Add gears, use a push rod, or make it shorter.',0);
+ if(j=='wrist'&&n>1)ok('A wrist usually has one main bend. Is '+n+' hinges right for a wrist?',0);
+ if(j=='finger'&&n==3)ok('Three hinges match the three bones of a real finger.',1);
+ ok('Program: use the Sweep code, but stop at '+Math.min(rng,JR[j])+'° so the model moves like a real '+JN[j]+'.',1);
+ $('dChk').innerHTML=chk.join('')}
+['dJoint','dDrive','dNum','dLen'].forEach(i=>$(i).onchange=()=>{checks();saveD()});
+const DF=['dName','dParts','dSteps','dWhy','dTest','dJoint','dDrive','dNum','dLen'];
+function saveD(){try{localStorage.setItem('jointDesign',JSON.stringify(Object.fromEntries(DF.map(i=>[i,$(i).value]))));$('dSaved').textContent='Draft saved in this browser'}catch(e){}}
+try{const d=JSON.parse(localStorage.getItem('jointDesign')||'null');if(d)DF.forEach(i=>{if(d[i]!=null)$(i).value=d[i]})}catch(e){}
+DF.slice(0,5).forEach(i=>$(i).oninput=saveD);
+const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+$('dMake').onclick=()=>{
+ const name=$('dName').value.trim();
+ if(!name||!$('dParts').value.trim()||!$('dWhy').value.trim()){$('dCard').innerHTML='<div class="msg bad">Fill in at least the name, the parts and why your design is better.</div>';sfx('bad');return}
+ sfx('good');const sel=id=>$(id).options[$(id).selectedIndex].text;
+ $('dCard').innerHTML='<div class="dcard"><h3>'+esc(name)+'</h3><p><b>Joint:</b> '+sel('dJoint')+' · <b>Drive:</b> '+sel('dDrive')+' · <b>Hinges:</b> '+sel('dNum')+' · <b>Limb:</b> '+sel('dLen')+'</p><p><b>Range per hinge:</b> '+$('dRng').textContent+' · <b>Servos:</b> '+$('dSrv').textContent+' · <b>Strength:</b> '+$('dStr').textContent+'</p><p><b>Parts:</b> '+esc($('dParts').value)+'</p><p><b>Build steps:</b> '+esc($('dSteps').value)+'</p><p><b>Why it is better:</b> '+esc($('dWhy').value)+'</p><p><b>How we will test it:</b> '+esc($('dTest').value)+'</p><p class="small">Take a screenshot of this card and share it with your teacher. Britus Education · © 2026 Fatma Alruffai</p></div>';
+ saveD()};
+checks();
+// 3D anatomical knee (like a therapist's knee model): tibia fixed on a stand, femur bends
+const KN=(function(){try{if(!window.THREE)throw new Error('no three');
+ const box=$('kv3'),cv=$('kcv');const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(34,4/3,0.1,100);const V3=THREE.Vector3;
+ sc.add(new THREE.HemisphereLight(0xffffff,0x8a8070,0.9));const d1=new THREE.DirectionalLight(0xffffff,0.65);d1.position.set(7,10,8);sc.add(d1);const d2=new THREE.DirectionalLight(0xffffff,0.3);d2.position.set(-6,4,-7);sc.add(d2);
+ const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle='#efe6d0';x.fillRect(0,0,128,128);
+ for(let i=0;i<600;i++){x.fillStyle='rgba(110,90,60,'+(Math.random()*0.35).toFixed(2)+')';x.fillRect(Math.random()*128,Math.random()*128,1+Math.random()*2,1+Math.random()*2)}
+ const tex=new THREE.CanvasTexture(c);tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+ const BONE=new THREE.MeshLambertMaterial({map:tex}),LIG=new THREE.MeshLambertMaterial({color:0xeab49a}),PIN=new THREE.MeshLambertMaterial({color:0xd8937e}),CART=new THREE.MeshLambertMaterial({color:0xf6f1e4}),BASE=new THREE.MeshLambertMaterial({color:0x7a9a3a});
+ const add=(geo,mat,par,px,py,pz)=>{const m=new THREE.Mesh(geo,mat);m.position.set(px||0,py||0,pz||0);par.add(m);return m};
+ add(new THREE.BoxGeometry(6.5,0.9,5.2),BASE,sc,0.4,0.45,0);
+ // tibia, plateau, tuberosity, fibula, menisci
+ add(new THREE.CylinderGeometry(1.0,0.55,6.4,24),BONE,sc,0,4.1,0);
+ const plat=add(new THREE.CylinderGeometry(1.5,1.05,0.9,28),BONE,sc,0,7.6,0);plat.scale.set(0.85,1,1.3);
+ add(new THREE.SphereGeometry(0.42,12,10),BONE,sc,0.85,6.9,0);
+ add(new THREE.CylinderGeometry(0.27,0.22,5.7,12),BONE,sc,-0.35,4.0,-1.25);add(new THREE.SphereGeometry(0.45,14,10),BONE,sc,-0.35,7.0,-1.25);
+ [-0.75,0.75].forEach(z=>{const m=add(new THREE.TorusGeometry(0.55,0.15,8,22),CART,sc,0,8.08,z);m.rotation.x=Math.PI/2});
+ // femur (bends at the knee)
+ const K=new V3(0,9.05,0),fem=new THREE.Group();fem.position.copy(K);sc.add(fem);
+ [-0.72,0.72].forEach(z=>add(new THREE.SphereGeometry(0.98,26,18),BONE,fem,-0.05,0,z));
+ add(new THREE.CylinderGeometry(0.62,1.2,2.3,24),BONE,fem,-0.1,1.4,0);add(new THREE.CylinderGeometry(0.58,0.62,6.6,20),BONE,fem,-0.2,5.8,0);
+ const pat=add(new THREE.SphereGeometry(0.62,18,14),BONE,sc);pat.scale.set(0.45,1.0,0.85);
+ // ligaments and tendons
+ const band=(r,flat)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,1,12),LIG);m.userData.flat=flat||1;sc.add(m);return m};
+ const pl=band(0.26,1.7),qt=band(0.32,1.8),mcl=band(0.2,2),lcl=band(0.17,1);const pins=[0,1,2,3].map(()=>add(new THREE.SphereGeometry(0.2,10,8),PIN,sc));
+ const UP=new V3(0,1,0);function link(m,a,b){const dv=b.clone().sub(a),L=dv.length();m.position.copy(a).add(b).multiplyScalar(0.5);m.quaternion.setFromUnitVectors(UP,dv.normalize());m.scale.set(1,L,m.userData.flat)}
+ const loc=v=>fem.localToWorld(v.clone());
+ function pose(a){const t=a*Math.PI/180;fem.rotation.z=-t;fem.updateMatrixWorld(true);
+  const h=-t*0.55,po=new V3(1.15,0.15,0).applyAxisAngle(new V3(0,0,1),h);pat.position.copy(K).add(po);pat.rotation.z=h;
+  const pTop=pat.position.clone().add(new V3(0,0.75,0).applyAxisAngle(new V3(0,0,1),h)),pBot=pat.position.clone().add(new V3(0,-0.75,0).applyAxisAngle(new V3(0,0,1),h));
+  link(qt,pTop,loc(new V3(0.45,5.6,0)));link(pl,pBot,new V3(0.95,6.9,0));
+  const m1=loc(new V3(-0.15,0.1,1.55)),m2=new V3(0.05,6.6,1.35),l1=loc(new V3(-0.15,0.1,-1.55)),l2=new V3(-0.35,7.0,-1.62);
+  link(mcl,m1,m2);link(lcl,l1,l2);[m1,m2,l1,l2].forEach((p,i)=>pins[i].position.copy(p))}
+ const T=new V3(1.6,7.6,0);let st={th:0.42,ph:1.28,r:27};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||400,h=Math.round(w*0.7);R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY})});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size==1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.1,Math.min(1.7,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size==2){const [a,b]=[...pts.values()],dd=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(9,Math.min(40,st.r*pd/dd));pd=dd}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(9,Math.min(40,st.r*(1+e.deltaY*0.001)))},{passive:false});
+ let lastA=-1;pose(0);
+ return{frame(a){if(a!=lastA){lastA=a;pose(a)}place();R.render(sc,cam)}};
+}catch(e){console.error('3D knee off',e);return null}})();
+function kneeMode(d3){if(!KN)d3=false;$('kv3').hidden=!d3;$('knee').style.display=d3?'none':'';$('kneeLeg').hidden=!d3;$('k3b').classList.toggle('on',d3);$('k2b').classList.toggle('on',!d3)}
+$('k3b').onclick=()=>{sfx('click');kneeMode(true)};$('k2b').onclick=()=>{sfx('click');kneeMode(false)};if(!KN)$('k3b').disabled=true;kneeMode(!!KN);
+
+// Human knee that copies the robot joint
+let kLast=-1;
+function knee(a){const r=Math.round(a);if(r==kLast)return;kLast=r;const k=Math.min(r,140),K={x:110,y:124};
+ $('kShin').setAttribute('transform','rotate('+k+' '+K.x+' '+K.y+')');$('kTibT').setAttribute('transform','rotate('+(-k)+' 86 182)');
+ $('kPat').setAttribute('transform','rotate('+(k/2)+' '+K.x+' '+K.y+')');
+ const R0=42,ex=K.x-R0*Math.sin(k*Math.PI/180),ey=K.y+R0*Math.cos(k*Math.PI/180);
+ $('kArc').setAttribute('d',k<1?'':'M'+K.x+' '+K.y+' L'+K.x+' '+(K.y+R0)+' A'+R0+' '+R0+' 0 0 1 '+ex.toFixed(1)+' '+ey.toFixed(1)+' Z');
+ const t=$('kneeT');if(r>135){t.textContent='⚠ '+r+'°: a real knee cannot bend this far!';t.className='warn'}else{t.textContent=r==0?'Straight leg: 0°':'Knee bent: '+r+'°';t.className=''}}
+// Main loop
+let last=0;
+function tick(t){
+ const dt=Math.min(.1,(t-last)/1000||0);last=t;
+ if(sweep){const d=+$('dly').value;sAcc+=dt*1000;while(sAcc>=d){sAcc-=d;sPos+=sDir;
+  if(sPos>=180){sPos=180;sDir=-1;hit180=true}
+  if(sPos<=0&&sDir<0){sPos=0;sDir=1;if(hit180){hit180=false;cycles++;$('sCyc').textContent=cycles;if(!$('g1').checked){$('g1').checked=true;nav();sfx('good')}}}}
+  tgt=sPos;$('man').value=sPos}
+ const maxStep=300*dt;ang+=Math.max(-maxStep,Math.min(maxStep,tgt-ang));
+ const speed=Math.abs(ang-lastAng)/(dt||1);lastAng=ang;
+ $('limb').setAttribute('transform','rotate('+(-ang)+' '+P.x+' '+P.y+')');
+ const R=120,ex=P.x+R*Math.cos(ang*Math.PI/180),ey=P.y-R*Math.sin(ang*Math.PI/180);
+ $('wedge').setAttribute('d','M'+P.x+' '+P.y+' L'+(P.x+R)+' '+P.y+' A'+R+' '+R+' 0 0 0 '+ex.toFixed(1)+' '+ey.toFixed(1)+' Z');
+ $('gearC').setAttribute('transform','rotate('+(-ang)+' '+P.x+' '+P.y+')');
+ const a=Math.round(ang),rad=(ang*Math.PI/180);$('angLbl').textContent=a+'° = '+(a%180==0?(a==0?'0':'π'):(+(a/180).toFixed(2))+'π')+' rad';
+ $('sDeg').textContent=a+'°';$('sRad').textContent=rad.toFixed(2);
+ checkTasks();
+ const kA=+$('kS').value;knee(kA);
+ if(step==0&&KN&&!$('kv3').hidden)KN.frame(Math.min(140,kA));
+ if(J3&&!$('v3').hidden){J3.frame(ang,dt);$('hud3').textContent=connected?$('angLbl').textContent:''}
+ if(AC)servoWhine(connected&&(step==2||step==4)?speed:0);
+ if(step==7){const sp=+$('dspd').value/100;dPh+=dt*sp*2.2;const tt=(1-Math.cos(dPh))/2;exA(tt);exB(tt);design(tt)}
+ requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+drawTray();msg('m0',order[0][2],'',true);nav();
+</script>
+<script>
+/* Visitor counter (GoatCounter, no cookies, no names). Counts each step once per visit. */
+(function(){var LAB='joints',NAME='Joints lab',Q=[];
+ function send(){if(!window.goatcounter||!window.goatcounter.count)return;while(Q.length){var e=Q.shift();window.goatcounter.count({path:LAB+'/'+e[0],title:e[1],event:true})}}
+ function ev(id,title){try{if(sessionStorage.getItem('gc-'+LAB+'-'+id))return;sessionStorage.setItem('gc-'+LAB+'-'+id,'1')}catch(x){}Q.push([id,NAME+': '+title]);send()}
+ function slug(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+ setInterval(send,2000);
+ try{var g=window.go;window.go=function(i){g(i);if(i>=1&&i<=4)ev('step-'+(i+1)+'-'+slug(S[i]),'reached step '+(i+1)+' '+S[i]);if(i==6)ev('challenges','opened challenges');if(i==7)ev('other-designs','opened other designs')};var f=document.getElementById('fin');if(f)new MutationObserver(function(){if(!f.hidden)ev('finished','finished the project')}).observe(f,{attributes:true,attributeFilter:['hidden']});}catch(x){}
+})();
+</script>
+<script data-goatcounter="https://fatmajoy.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+/* Britus Virtual STEM Lab: saves this student's progress for the portal and the teacher dashboard */
+(function(){var LAB='joints',K='britusLab:v1';
+ function stu(){try{return JSON.parse(localStorage.getItem('britusStudent')||'null')}catch(e){return null}}
+ function rec(step,done){var s=stu();if(!s)return;try{var p=JSON.parse(localStorage.getItem(K)||'{}');p[s.id]=p[s.id]||{labs:{}};var l=p[s.id].labs[LAB]||{};if(step&&!(l.done&&!done))l.step=step;if(done){l.done=true;l.step=step||'Finished'}l.updated=new Date().toISOString();p[s.id].labs[LAB]=l;localStorage.setItem(K,JSON.stringify(p))}catch(e){}}
+ function first(step){var s=stu();if(!s)return;try{var p=JSON.parse(localStorage.getItem(K)||'{}');if(!(p[s.id]&&p[s.id].labs[LAB]))rec(step,false)}catch(e){}}
+ try{var g=window.go;window.go=function(i){g(i);var n=S[i];if(n&&!/Guidance|Challenges|Other designs|Use the model/.test(n))rec('Step '+(i+1)+': '+n,false)};var f=document.getElementById('fin');if(f){if(!f.hidden)rec('Finished',true);new MutationObserver(function(){if(!f.hidden)rec('Finished',true)}).observe(f,{attributes:true,attributeFilter:['hidden']})}first('Step 1: '+S[0]);}catch(e){}
+ if(stu()){var a=document.createElement('a');a.href='../../';a.textContent='← My projects';a.setAttribute('aria-label','Back to my projects');a.style.cssText='position:fixed;left:12px;bottom:12px;z-index:9999;background:#0f2747;color:#fff;font:800 14px system-ui,sans-serif;padding:10px 16px;border-radius:999px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.3)';document.body.appendChild(a)}
+})();
+</script>
