@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAMFBMVEX///////39//7//v/+/v/+/v79/v7+/vz9/f3+/fv8/fz6/fz29/i9wsZrdX8NITcq5aEvAAAEFUlEQVR42rWVW2wUVRjHfzM7U1vL5cxKi1x3duvtpXFL8UVJWCFCogaXkqLxhZqYPvggPhhDQgwkBkKCl/hgIkSRaEwIG+LU6wPVtMRbhJUFAg9atiNFoi3tOaAI6Xbm+DDdWbb1AWM8T+ec/Ob/fec75z8f/O/DAHgqy/cewCNrAYoFwN6UDbbfskJZML733fbTt58WAIyfLLetcNBLboAFgEPAMsycNgQwIcs4Kil0oiozZ1iP9d4FuyhqrcfdRuxDfCnDZsAE2LcBPngczuzd5cPI2zvzFY7+IaEKXFqtAAiCZyXhGEXwaR5GV4ET6xTZT4HS2R1IT+HZxX61taZw+E9JCSgEaquST8gx8gVT7lYxwLUtBgBe+Je6po0BsF9lngpjAB+9EagMTGh1YhwK+fzLSscKDRpFEqAEhMcBD3wCqoUyIABAQ8KbCxBCLYcwpWVuFIBD0g8GgEowmdCVKqCPP3/ejZLJjV618wAf880o1RAGKb9yEMBMXbAyiwHoTdsACYBwXrDnx6amxhusLWdIHZDA+otj7R/GSXqAEoC+v+28bwL80DF0uVYoAC0ViDnO4v3TpRGL64HovL4zt2cpgD2xStizACctsLKlaCGMf1DARbQ+E50CMQt4ssFtcKZMF8DIZEnMBIwXjM9ZKhoArprMDtHepvqEs8YkDxtERZgzgbO0DmJ8sQzoNkWXiEsd6Qud3TxnBGPRejvr0XF9EKMOsHrD0omkgMzhqT0k3KfPUJ9D2P/VsaQDmJlk4y598Fh0vzWFAFR0dIyun1ducpihQDFYXR4GdHm4bNci12arTq177tKIYOKl1q6QCdUxAwCst64Pd+hzL8oQc/+3n6RmhLDQxaYt6EcNz6ew4A05S0GEcmCHCj4aKhS6K+8575/SM4D0fhr3cTGchAIL97aoeoWpfnM+hDKyA6MtD6hZl+WAjyIKbuR1WKeQyJ7KFBHcJl3ohkzktjqFcueULxOMTC9V7Avzs596fk0Xw87+5rHHxv2jPufODTW1Ln8njBXa0juBfq7sPj5xINqa/E3G3myysroapoWcmHZ3nXGUmHZP5cKSQQBK4VQMBHz98I0cAJW7XXqib5bfFwP6l0HnZAhgVZJLWqMy9FaM2FmTARwEyAOBeU8eWNnm3mScBNOEWAD4HuAa3GSc6lvzXAwhKgD+/Jue3OaFgzoH0C0ahWWsAez0FcuJjZNOOijANldsFHf2hVnIp8S2msId2wQ6BfmOh/pwPK51gyOMmrPufVNcVha200ka47vfXzvDZnG9L3JvtaEsasHe4xa11uO5TPeDR932qKFYQP51F3qGClhHMkDySPl8wJGMiP/VHlJKgJKjpZQS4ftKaCmDf99Y7VcAgu3R9NYa638ffwPd65NfREDefAAAAABJRU5ErkJggg==">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAMFBMVEX///////39//7//v/+/v/+/v79/v7+/vz9/f3+/fv8/fz6/fz29/i9wsZrdX8NITcq5aEvAAAEFUlEQVR42rWVW2wUVRjHfzM7U1vL5cxKi1x3duvtpXFL8UVJWCFCogaXkqLxhZqYPvggPhhDQgwkBkKCl/hgIkSRaEwIG+LU6wPVtMRbhJUFAg9atiNFoi3tOaAI6Xbm+DDdWbb1AWM8T+ec/Ob/fec75z8f/O/DAHgqy/cewCNrAYoFwN6UDbbfskJZML733fbTt58WAIyfLLetcNBLboAFgEPAMsycNgQwIcs4Kil0oiozZ1iP9d4FuyhqrcfdRuxDfCnDZsAE2LcBPngczuzd5cPI2zvzFY7+IaEKXFqtAAiCZyXhGEXwaR5GV4ET6xTZT4HS2R1IT+HZxX61taZw+E9JCSgEaquST8gx8gVT7lYxwLUtBgBe+Je6po0BsF9lngpjAB+9EagMTGh1YhwK+fzLSscKDRpFEqAEhMcBD3wCqoUyIABAQ8KbCxBCLYcwpWVuFIBD0g8GgEowmdCVKqCPP3/ejZLJjV618wAf880o1RAGKb9yEMBMXbAyiwHoTdsACYBwXrDnx6amxhusLWdIHZDA+otj7R/GSXqAEoC+v+28bwL80DF0uVYoAC0ViDnO4v3TpRGL64HovL4zt2cpgD2xStizACctsLKlaCGMf1DARbQ+E50CMQt4ssFtcKZMF8DIZEnMBIwXjM9ZKhoArprMDtHepvqEs8YkDxtERZgzgbO0DmJ8sQzoNkWXiEsd6Qud3TxnBGPRejvr0XF9EKMOsHrD0omkgMzhqT0k3KfPUJ9D2P/VsaQDmJlk4y598Fh0vzWFAFR0dIyun1ducpihQDFYXR4GdHm4bNci12arTq177tKIYOKl1q6QCdUxAwCst64Pd+hzL8oQc/+3n6RmhLDQxaYt6EcNz6ew4A05S0GEcmCHCj4aKhS6K+8575/SM4D0fhr3cTGchAIL97aoeoWpfnM+hDKyA6MtD6hZl+WAjyIKbuR1WKeQyJ7KFBHcJl3ohkzktjqFcueULxOMTC9V7Avzs596fk0Xw87+5rHHxv2jPufODTW1Ln8njBXa0juBfq7sPj5xINqa/E3G3myysroapoWcmHZ3nXGUmHZP5cKSQQBK4VQMBHz98I0cAJW7XXqib5bfFwP6l0HnZAhgVZJLWqMy9FaM2FmTARwEyAOBeU8eWNnm3mScBNOEWAD4HuAa3GSc6lvzXAwhKgD+/Jue3OaFgzoH0C0ahWWsAez0FcuJjZNOOijANldsFHf2hVnIp8S2msId2wQ6BfmOh/pwPK51gyOMmrPufVNcVha200ka47vfXzvDZnG9L3JvtaEsasHe4xa11uO5TPeDR932qKFYQP51F3qGClhHMkDySPl8wJGMiP/VHlJKgJKjpZQS4ftKaCmDf99Y7VcAgu3R9NYa638ffwPd65NfREDefAAAAABJRU5ErkJggg==">
+<title>Virtual STEM Lab: Plants and Pollinators</title>
+<style>
+/* Layout: 3D stage on the left, step panel on the right; flower pink + pollen yellow on warm white */
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fff6f8;--surf:#fff;--ink:#2b1a22;--mute:#6f5662;--line:#f2d3dc;--acc:#c2185b;--onacc:#fff;--acc2:#e09a00;--warn:#b3261e;--ok:#1f7a4d;--stage:#fdeef2;--tray:#fbeef2;--leaf:#5aa02c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1217;--surf:#281a21;--ink:#f6e9ee;--mute:#c4a7b4;--line:#4a3040;--acc:#ff6fa3;--onacc:#1d1217;--acc2:#ffc04d;--warn:#ff8f87;--ok:#4cc98a;--stage:#33212a;--tray:#24171d;--leaf:#8fd16a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1d1217;--surf:#281a21;--ink:#f6e9ee;--mute:#c4a7b4;--line:#4a3040;--acc:#ff6fa3;--onacc:#1d1217;--acc2:#ffc04d;--warn:#ff8f87;--ok:#4cc98a;--stage:#33212a;--tray:#24171d;--leaf:#8fd16a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+header{padding:16px 18px 8px;max-width:1120px;margin:auto}
+h1{font:700 1.55rem/1.2 Georgia,"Times New Roman",serif;margin:0 0 4px}
+header p{margin:0;color:var(--mute)}
+nav{display:flex;gap:6px;flex-wrap:wrap;max-width:1120px;margin:8px auto;padding:0 18px}
+nav button{flex:1 1 95px;padding:9px 6px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:10px;font:inherit;font-size:.86rem;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc);font-weight:700}
+nav button:disabled{opacity:.45;cursor:not-allowed}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:14px;max-width:1120px;margin:auto;padding:6px 18px 30px}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:14px}
+#stage{background:var(--stage);padding:8px;align-self:start}
+@media(min-width:821px){#stage{position:sticky;top:8px}}
+svg{width:100%;height:auto;display:block}
+h2{font:700 1.2rem/1.3 Georgia,serif;margin:0 0 6px}
+h3{font:700 1.04rem/1.3 Georgia,serif;margin:12px 0 4px}
+.panel{display:none}.panel.on{display:block}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray button,.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:10px;padding:7px 11px;font:inherit;font-size:.9rem;cursor:pointer}
+.tray button:hover,.btn:hover{border-color:var(--acc)}
+.tray button.used{opacity:.35;pointer-events:none;text-decoration:line-through}
+.btn.pri{background:var(--acc);color:var(--onacc);border-color:var(--acc);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.btn.pick{border-color:var(--ok);font-weight:700;color:var(--ok)}
+.btn.miss{border-color:var(--warn);color:var(--warn)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.msg{min-height:2.6em;padding:8px 10px;border-radius:10px;background:var(--tray);margin:6px 0;font-size:.95rem}
+.msg.bad{color:var(--warn)}.msg.good{color:var(--ok);font-weight:700}
+.row{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin:6px 0}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+select,input[type=number],input[type=text]{font:inherit;padding:6px;border-radius:8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);width:100%}
+textarea{width:100%;min-height:58px;font:inherit;padding:7px;border-radius:8px;border:2px solid var(--line);background:var(--surf);color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.small{font-size:.86rem;color:var(--mute)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center;font-variant-numeric:tabular-nums}
+.stats div{background:var(--tray);border-radius:10px;padding:6px}.stats b{display:block;font-size:1.15rem}
+.goal{display:block;margin:3px 0}
+.bk{display:inline-block;width:18px;height:11px;border-radius:2px;background:currentColor;position:relative;margin:0 7px 0 3px;vertical-align:-1px}
+.bk::before{content:"";position:absolute;top:-3px;left:2px;width:4px;height:3px;border-radius:1px 1px 0 0;background:currentColor;box-shadow:8px 0 0 currentColor}
+details{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:6px 0;background:var(--tray)}
+summary{cursor:pointer;font-weight:700}
+details ul,details ol{margin:6px 0 2px;padding-left:20px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:6px 0}th,td{border:1px solid var(--line);padding:5px 7px;text-align:left}
+.credit{margin:14px 0 0;padding-top:8px;border-top:1px solid var(--line);font-size:.8rem;color:var(--mute)}
+.finish{border:2px solid var(--acc);border-radius:12px;padding:12px 14px;margin:10px 0;background:var(--tray)}
+.finish h3{margin:0 0 4px;color:var(--ok)}
+.vbar{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:0 0 6px}
+.vbar .btn{padding:5px 9px;font-size:.82rem}
+.v3{position:relative;border-radius:10px;overflow:hidden;background:linear-gradient(#e9f6ff,var(--stage))}
+.v3 canvas{display:block;width:100%;touch-action:none;cursor:grab}.v3 canvas:active{cursor:grabbing}
+.hud{position:absolute;left:10px;top:8px;right:10px;font-weight:700;font-size:.95rem;pointer-events:none;color:#2b1a22;text-shadow:0 1px 0 #fff}
+.tip3{position:absolute;right:10px;bottom:8px;font-size:.75rem;color:#6f5662;pointer-events:none}
+.parts{display:flex;flex-wrap:wrap;gap:6px}
+.vocab{background:var(--tray);border-radius:10px;padding:8px 10px;min-height:3.2em;margin:6px 0}
+/* WeDo-style blocks */
+.wpal{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.wb{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-start;min-width:58px;height:66px;border-radius:8px;border:0;color:#fff;font:inherit;font-size:1.35rem;cursor:pointer;padding:6px 4px 2px;position:relative;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.wb small{font-size:.62rem;line-height:1.1;margin-top:3px;font-weight:700}
+.wb.y{background:#f2c200;color:#2b2b2b}.wb.g{background:#2e9e3f}.wb.r{background:#d8322f}.wb.b{background:#2a7de1}.wb.p{background:#7e57c2}
+.wstr{display:flex;flex-wrap:wrap;gap:3px;align-items:flex-start;min-height:104px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:6px 0}
+.wslot{display:flex;flex-direction:column;align-items:center;gap:3px}
+.wslot select{width:118px}.wslot input,.wslot select{min-width:62px;padding:2px 4px;font-size:.85rem;text-align:center;border-width:2px}
+.wslot .wb{cursor:default}
+.legend{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:.88rem;align-items:center}
+.legend .wb{min-width:40px;height:40px;font-size:1rem;padding:4px;cursor:default}
+.sort{display:grid;gap:6px;margin:6px 0}
+.sort div{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--tray);border-radius:10px;padding:6px 8px}
+.sort span{flex:1 1 180px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--surf)}
+.ex h3{margin:0 0 2px}
+.ex .tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--acc);margin-bottom:4px}
+.ex svg,#garden{background:linear-gradient(#e9f6ff,#f4fbe9);border-radius:10px;margin:6px 0}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.92rem}@media(max-width:520px){.pc{grid-template-columns:1fr}}
+.pc div{background:var(--tray);border-radius:10px;padding:6px 9px}.pc b:first-child{display:block}
+.opt{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}
+.opt label{display:flex;flex-direction:column;gap:3px;font-size:.9rem;font-weight:700}
+.chk{list-style:none;padding:0;margin:6px 0}.chk li{padding:2px 0}.chk .y{color:var(--ok)}.chk .n{color:var(--warn)}
+label.q{display:block;font-weight:700;font-size:.92rem;margin-top:8px}
+.dcard{border:2px solid var(--acc);border-radius:12px;padding:12px;margin-top:10px;background:var(--tray)}
+.dcard h3{margin:0 0 6px}.dcard p{margin:4px 0;white-space:pre-wrap}
+#pad{display:block;width:100%;height:auto;background:#fffdf7;border:2px dashed var(--line);border-radius:10px;touch-action:none;cursor:crosshair;margin:6px 0}
+.sw{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}
+.sw.on{outline:3px solid var(--acc2);outline-offset:1px}
+footer{max-width:1120px;margin:0 auto;padding:4px 18px 26px;text-align:center;font-size:.85rem;color:var(--mute)}
+</style>
+<header>
+<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap"><h1>Virtual STEM Lab: Plants and Pollinators</h1><button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button></div>
+<p>Grade 5 · Project 3: Plants and Pollinators. Learn the flower, build a robot bee with LEGO® WeDo 2.0, program it, and test it like a scientist.</p>
+<p class="small">Created by Fatma Alruffai</p>
+</header>
+<nav id="nav"></nav>
+<main>
+<div class="card" id="stage">
+<div id="realBox">
+<div class="vbar"><b style="font-size:.9rem">Real flower:</b><button class="btn" id="beeGo">🐝 Watch a bee visit</button><button class="btn" data-fv="iso">3D</button><button class="btn" data-fv="top">Top</button><button class="btn" data-fv="side">Side</button></div>
+<div class="v3"><canvas id="fcv" aria-label="3D flower with its parts. Drag to turn it."></canvas><div class="hud" id="fhud"></div><div class="tip3">Drag to turn · scroll or pinch to zoom</div></div>
+</div>
+<div id="modelBox" hidden>
+<div class="vbar"><b style="font-size:.9rem">View:</b><span id="vbtns" style="display:flex;gap:5px;flex-wrap:wrap"><button class="btn" data-v="iso">3D</button><button class="btn" data-v="front">Front</button><button class="btn" data-v="side">Side</button><button class="btn" data-v="top">Top</button><button class="btn" data-v="spin">⟳ Spin</button></span></div>
+<div class="v3"><canvas id="mcv" aria-label="3D LEGO WeDo 2.0 flower and bee model. Drag to turn it."></canvas><div class="hud" id="mhud"></div><div class="tip3">Drag to turn · scroll or pinch to zoom</div></div>
+</div>
+<p class="small" id="stageCap" style="margin:6px 4px 0"></p>
+</div>
+
+<div>
+<!-- 0 Plan -->
+<section class="card panel" id="p0">
+<h2>1. Plan: meet the flower</h2>
+<p><b>Raj's problem:</b> Raj got a new camera and took photos in his mother's flower garden. He saw bees collecting nectar from the flowers and wanted to understand <b>pollination</b>. He plans to build a robot model to show it. Can you help him?</p>
+<p><b>Your challenge:</b> model the relationship between a pollinator and a flower during the reproduction phase.</p>
+<h3>Learn the parts of a flower</h3>
+<p class="small">Tap a word to light up that part on the 3D flower.</p>
+<div class="parts" id="partBtns"></div>
+<div class="vocab" id="vocab">Tap a word above.</div>
+<details><summary>Discussion questions (tap to check your ideas)</summary><ol>
+<li>What are the parts of a flower? <i class="small">Petals, stamen (filament + anther), pistil (stigma, style, ovary), sepals and nectar.</i></li>
+<li>How do animals help plants reproduce? <i class="small">They carry pollen from one flower to another while they feed on nectar.</i></li>
+<li>What are the names of these processes? <i class="small">Pollination, biotic pollination (by animals), cross-pollination (between two plants) and seed dispersal.</i></li>
+<li>What are three stages in a flowering plant's life? <i class="small">Seed → seedling → mature plant with flowers.</i></li>
+<li>What is the role of a flower? <i class="small">To make seeds so new plants can grow.</i></li>
+<li>Do all flowers need a pollinator? <i class="small">No. Some use wind or water, and some can pollinate themselves.</i></li></ol></details>
+<h3>Plan</h3>
+<label class="q" for="plan1">What model are you building? Describe it here.</label>
+<textarea id="plan1" placeholder="We are building a flower and a bee that flies to it to collect pollen…"></textarea>
+<h3>Brainstorm</h3>
+<p class="small">How will you show the connection between the plant and the animal pollinator? Draw your idea.</p>
+<div class="choices" id="pens"></div>
+<canvas id="pad" width="640" height="360" aria-label="Drawing pad"></canvas>
+<label class="q" for="plan2">Explain your drawing</label>
+<textarea id="plan2" placeholder="The bee lands on the flower for nectar. Pollen sticks to it…"></textarea>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- 1 Build -->
+<section class="card panel" id="p1">
+<h2>2. Create: build the flower and bee</h2>
+<p>Follow the WeDo 2.0 model: <b>Guided Projects → Science → 5. Plants and Pollinators</b>. Choose the part for each step. Some parts in the tray are not needed.</p>
+<div class="msg" id="m1"></div>
+<div class="tray" id="tray"></div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- 2 Connect -->
+<section class="card panel" id="p2">
+<h2>3. Connect the Smarthub</h2>
+<h3>⚠ Battery check</h3>
+<p>Before you begin, make sure the Smarthub has fresh batteries. Which batteries does the WeDo 2.0 Smarthub use?</p>
+<div class="choices" id="bat"></div><div class="msg" id="mBat"></div>
+<div id="cPorts" hidden>
+<h3>Plug in the motor and the sensor</h3>
+<p>The Smarthub has two ports, <b>A</b> and <b>B</b>. Plug each cable into a port.</p>
+<div class="row"><span>Medium motor</span><select id="pMotor"><option>(choose)</option><option>Port A</option><option>Port B</option></select></div>
+<div class="row"><span>Motion sensor</span><select id="pSensor"><option>(choose)</option><option>Port A</option><option>Port B</option></select></div>
+<button class="btn pri" id="plug">Plug in cables</button><div class="msg" id="mPlug"></div>
+</div>
+<div id="cBt" hidden>
+<h3>Connect with Bluetooth</h3>
+<p>Press the green button on the Smarthub. When the light blinks, choose your Smarthub in the WeDo 2.0 software.</p>
+<div class="choices"><button class="btn" id="hubBtn">🟢 Press the green button</button></div>
+<div id="hubList" hidden class="choices"><button class="btn" id="hubPick">📶 Smarthub_1 · Connect</button></div>
+<div class="msg" id="mBt"></div>
+</div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- 3 Program -->
+<section class="card panel" id="p3">
+<h2>4. Program the model</h2>
+<p>Program your bee to <b>stop at the flower to get some pollen</b>. Click blocks to add them to the string, in order. Change the numbers in the white boxes.</p>
+<div class="wpal" id="wpal"></div>
+<div class="wstr" id="wstr"><span class="small">Your program string appears here.</span></div>
+<button class="btn" id="wUndo">Undo last</button> <button class="btn" id="wClr">Clear</button> <button class="btn pri" id="wChk">Check program</button>
+<div class="msg" id="m3"></div>
+<details><summary>What does each block do?</summary><div class="legend" id="legend"></div></details>
+<p class="small">Stuck? Open <b>Guidance → The book's program</b> to see the finished string.</p>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- 4 Test -->
+<section class="card panel" id="p4">
+<h2>5. Evaluate: test your model</h2>
+<p>Click <b>▶ Start</b> to run your program. The motion sensor should detect the bee when it is at the flower. Try different settings to see how it performs.</p>
+<div class="choices"><button class="btn pri" id="run">▶ Start</button><button class="btn" id="stopB">■ Stop</button></div>
+<label for="pow"><b>Motor power:</b> <span id="powT">4</span></label><input type="range" id="pow" min="1" max="10" value="4">
+<div class="choices"><span class="small" style="align-self:center">Direction:</span><button class="btn on" id="dirA">↻ This way</button><button class="btn" id="dirB">↺ That way</button></div>
+<div class="stats"><div><span class="small">Bee speed</span><b id="sSpd">0°/s</b></div><div><span class="small">Pollen collected</span><b id="sPol">0</b></div><div><span class="small">Visits</span><b id="sVis">0</b></div></div>
+<div class="msg" id="m4"></div>
+<div><b>Measure your success</b>
+<label class="goal"><input type="checkbox" id="g1" disabled> Build a model of the flower</label>
+<label class="goal"><input type="checkbox" id="g2" disabled> Attach the model to the Smarthub</label>
+<label class="goal"><input type="checkbox" id="g3" disabled> The bee stops at the flower and collects pollen</label></div>
+<h3>Student's record sheet</h3>
+<p><b>1.</b> Were you able to build it on your own or did you use the instructions for the design model?</p><div class="choices" id="r1"></div>
+<p><b>2.</b> Were you able to program the model on your own or did you use the instructions?</p><div class="choices" id="r2"></div>
+<p><b>3.</b> Does your model work?</p><div class="choices" id="r3"></div><div class="msg" id="mr3"></div>
+<p><b>4.</b> A pollen count shows how much pollen is in the air over 24 hours, in PPM. Raj's pollen count was <b>87.058 PPM</b> yesterday and <b>87.071 PPM</b> today. Which day had the higher pollen count?</p>
+<div class="choices" id="r4"></div><div class="msg" id="mr4"></div>
+<p><b>5.</b> Which other animals do you think can pollinate flowers? Pick all that are right.</p>
+<div class="choices" id="r5"></div><button class="btn pri" id="r5c">Check</button><div class="msg" id="mr5"></div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- 5 Reflect -->
+<section class="card panel" id="p5">
+<h2>6. Improve, reflect and share</h2>
+<h3>Improve</h3>
+<p>How well is your model working? Which parts could be better?</p>
+<div class="choices" id="imp"></div>
+<textarea id="impT" placeholder="We will make the bee slower so it stops right at the flower…"></textarea>
+<h3>Reflection: Life on Land 🌳</h3>
+<p>How can you protect, restore and promote sustainable use of land ecosystems? Sort each action: does it <b>help</b> or <b>harm</b> pollinators?</p>
+<div class="sort" id="sort"></div><div class="msg" id="mSort"></div>
+<h3>Communication</h3>
+<p>Present your work to the class and collect their feedback.</p>
+<label class="q" for="fbP">👍 Positive feedback</label><textarea id="fbP"></textarea>
+<label class="q" for="fbN">👎 Negative feedback</label><textarea id="fbN"></textarea>
+<label class="q" for="fbS">💡 Suggested solutions</label><textarea id="fbS"></textarea>
+<div class="choices"><button class="btn" id="fbCard">Make my feedback card</button></div><div id="fbOut"></div>
+<h3>Share: show what you learned</h3>
+<p><b>The life of a flowering plant.</b> Tap the stages in the right order.</p>
+<div class="choices" id="lc"></div><div class="msg" id="mLc"></div>
+<p><b>Your final product should include:</b></p>
+<label class="goal"><input type="checkbox" id="sh1"> A picture of every stage of the pollination process with our model</label>
+<label class="goal"><input type="checkbox" id="sh2"> We compared our pictures with real-life pictures</label>
+<label class="goal"><input type="checkbox" id="sh3"> A video of us describing how animals help plants reproduce</label>
+<p><b>Plan your presentation</b></p>
+<div class="opt"><label>Where is your flower?<select id="prW"><option>in a school garden</option><option>in a meadow</option><option>in a rainforest</option><option>in a desert</option><option>in a park</option></select></label>
+<label>Which season is it?<select id="prS"><option>spring</option><option>summer</option><option>autumn</option><option>winter</option></select></label></div>
+<label class="q" for="prWhy">Why and how does the pollinator play an active role?</label><textarea id="prWhy" placeholder="The bee visits the flower to drink nectar. While it feeds, pollen sticks to its body and it carries it to the next flower…"></textarea>
+<div class="choices"><button class="btn" id="prMake">Make my presentation script</button><button class="btn" id="prSay">🗣 Read it aloud</button></div><div id="prOut"></div>
+<p class="small" id="fhint">Press <b>Finish project</b> when your team has shared its work.</p>
+<div class="finish" id="fin" hidden>
+<h3>🎉 Project complete!</h3>
+<p>You learned the parts of a flower, built a robot bee and flower, connected the Smarthub, programmed the bee to stop for pollen, and tested it.</p>
+<p>Ready for more? Press <b>Extra challenges</b>.</p>
+</div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- 6 Guidance -->
+<section class="card panel" id="p6">
+<h2>Guidance: everything you need</h2>
+<p class="small">Open any section when you are stuck. You can come back here at any time.</p>
+<details open><summary>The challenge and requirements</summary><p><b>Challenge:</b> model the relationship between a pollinator and a flower during the reproduction phase.</p><p><b>Requirements:</b> WeDo 2.0 kit and a pencil.</p><p><b>Design requirements:</b></p><ol><li>Build a model of the flower.</li><li>Attach the model to the Smarthub.</li></ol></details>
+<details><summary>Introduction: what is pollination?</summary><p>One interesting step in plant reproduction is moving <b>pollen</b> to the <b>stigma</b> of a flower. This is called <b>pollination</b>. It happens with the help of wind, water and animals (pollinators). Flowers attract animals with their colour, size, smell and nectar.</p></details>
+<details><summary>Vocabulary</summary><table><tr><th>Word</th><th>Meaning</th></tr><tr><td>Pollen</td><td>A very fine powder made by trees, flowers, grasses and weeds to fertilize other plants of the same kind.</td></tr><tr><td>Anther</td><td>The part of a flower that produces pollen.</td></tr><tr><td>Stigma</td><td>The part of a flower that receives pollen.</td></tr><tr><td>Pollinator</td><td>An animal that moves pollen from the male anther of a flower to the female stigma of a flower.</td></tr><tr><td>Stamen / style</td><td>The stamen is the male part (filament + anther). The style holds up the stigma.</td></tr><tr><td>Cross-pollination</td><td>Pollen moves from one plant to a different plant of the same kind.</td></tr><tr><td>Seed dispersal</td><td>The ways seeds travel away from the parent plant.</td></tr><tr><td>Nectar</td><td>A sweet liquid with sugars, vitamins, salts and oils. It is high-energy food for pollinators.</td></tr></table></details>
+<details><summary>Team roles</summary><ul><li><b>Team Captain:</b> keeps the team working together.</li><li><b>Head Architect:</b> leads the building.</li><li><b>Material Manager:</b> finds and looks after the parts.</li><li><b>Project Tester:</b> runs the tests and records results.</li></ul></details>
+<details><summary>Build tips</summary><ol><li>Open WeDo 2.0 → Guided Projects → Science → <b>5. Plants and Pollinators</b> and follow the steps.</li><li>Build a strong base first so the model does not tip over.</li><li>Put the motion sensor in the top of the flower so it sees the bee on top of the flower.</li><li>Use a transparent brick to show the pollen.</li><li>The bee must pass just above the flower without touching it.</li></ol></details>
+<details><summary>The book's program</summary><p>Start → Motor power <b>4</b> → Motor this way → Wait for <b>motion sensor</b> → Motor off → Play sound <b>2</b></p><div class="wstr" id="bookStr" style="min-height:0"></div></details>
+<details><summary>How the program works</summary><ol><li><b>Start</b> runs the program.</li><li><b>Motor power 4</b> sets the speed (1 is slow, 10 is fast).</li><li><b>Motor this way</b> turns the bee around.</li><li><b>Wait for motion sensor</b> waits until the sensor sees the bee near the flower.</li><li><b>Motor off</b> stops the bee at the flower.</li><li><b>Play sound 2</b> plays a sound to show the bee is collecting pollen.</li></ol></details>
+<details><summary>STEM careers</summary><p><b>Botanical Scientist</b>, <b>Plant Biologist</b> and <b>Ethnobotanist</b> (who studies how people use plants) all study plants and pollination.</p></details>
+<details><summary>Maths: comparing decimals</summary><ol><li>Line up the decimal points.</li><li>Compare digit by digit from the left: ones, tenths, hundredths, thousandths.</li><li>87.071 and 87.058: the tenths are both 0, but the hundredths are 7 and 5, so <b>87.071 is greater</b>.</li></ol></details>
+<details><summary>Troubleshooting</summary><ul><li>Smarthub will not connect: check the batteries, then press the green button again.</li><li>Bee does not stop: check that the Wait For block uses the <b>motion sensor</b>, and the sensor faces the bee.</li><li>Bee stops past the flower: the motor is too fast. Use a lower power.</li><li>Nothing moves: check the motor cable is plugged into the Smarthub.</li></ul></details>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- 7 Challenges -->
+<section class="card panel" id="p7">
+<h2>8. Extra challenges</h2>
+<h3>Game: pollinate the garden</h3>
+<p>Tap a flower to fly the bee there. Collect pollen, then take it to a <b>different flower of the same kind</b>. Pollinate all three kinds!</p>
+<svg id="garden" viewBox="0 0 320 190" role="img" aria-label="Garden game with six flowers in three colours and a bee"></svg>
+<div class="msg" id="mG"></div><button class="btn" id="gReset">↺ Play again</button>
+<h3>Quick questions</h3>
+<div class="msg" id="cscore">Solved: 0 of 4</div>
+<div id="qq"></div>
+<details><summary>Team build challenges</summary><ol>
+<li><b>Two flowers:</b> add a second flower. Make the bee stop at both (use Wait For, Motor off, Play sound, then Motor on for 1 second).</li>
+<li><b>Light it up:</b> use the light block to turn the Smarthub light yellow when the bee gets pollen.</li>
+<li><b>Busy bee:</b> put your program inside a Repeat block so the bee keeps visiting.</li>
+<li><b>Speed test:</b> try motor power 2, 4, 6, 8 and 10. Record in a table which powers stop the bee at the flower.</li>
+<li><b>Night shift:</b> turn your bee into a moth and choose a different sound.</li></ol></details>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<!-- 8 Use the model -->
+<section class="card panel" id="p8">
+<h2>9. Use the model: new flowers and pollinators</h2>
+<p>Now that you have built the bee, think about how you could build a <b>new flower</b> and a <b>pollinator</b> that would be attracted to it. Plan your design, then test it. There are no building instructions for this part: it is your own idea!</p>
+<label for="dspd"><b>Speed for all models</b></label><input type="range" id="dspd" min="0" max="100" value="45">
+<div class="ex"><span class="tag">Example 1 · New flower + new pollinator</span><h3>Hummingbird and a red tube flower</h3>
+<p>Seen from above. The hummingbird is attached to the axle, like the bee. The flower is red and shaped like a long tube, which hummingbirds love. The motion sensor stays inside the flower, and a transparent brick is the pollen.</p>
+<svg id="exA" viewBox="0 0 300 200" role="img" aria-label="Top view: a hummingbird on the axle arm circles to a red tube flower"></svg>
+<p class="small"><b>Program that acts differently:</b> Start → Motor power <b>7</b> → Motor <b>that way</b> → Wait for motion sensor → Motor off → <b>Light red</b> → Play sound <b>5</b></p></div>
+<div class="ex"><span class="tag">Example 2 · New scenario</span><h3>Cross-pollination with a second flower</h3>
+<p>The bee collects pollen at flower A, then carries it to flower B of the same kind. Now flower B can make seeds.</p>
+<svg id="exB" viewBox="0 0 300 200" role="img" aria-label="Top view: a bee carries pollen from flower A to flower B"></svg>
+<p class="small"><b>Tip:</b> the Smarthub has only two ports (motor + motion sensor). To reach flower B, use <b>Motor on for 2 seconds</b> (time) after the first stop, or connect a second Smarthub.</p></div>
+<div class="ex"><h3>Compare the models</h3><div style="overflow-x:auto"><table><tr><th></th><th>Book: bee</th><th>Hummingbird</th><th>Cross-pollination</th></tr><tr><td>Flower</td><td>Open, colourful</td><td>Red tube</td><td>Two of the same kind</td></tr><tr><td>Attached to the axle?</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>How the program differs</td><td>Power 4, sound 2</td><td>Faster, other way, red light</td><td>Stops twice</td></tr><tr><td>What it shows</td><td>Pollen collection</td><td>Flower shape matches pollinator</td><td>Pollen moves between plants</td></tr></table></div></div>
+<div class="ex" id="dz"><span class="tag">Your turn</span><h3>Design your new flower and pollinator</h3>
+<div class="opt">
+<label>Flower shape<select id="dShape"><option value="open">Open and flat</option><option value="tube">Tubular (long tube)</option><option value="big">Big bowl</option></select></label>
+<label>Flower colour<select id="dCol"><option value="yellow">Yellow</option><option value="purple">Purple</option><option value="red">Red</option><option value="pink">Pink</option><option value="white">White</option></select></label>
+<label>Pollinator<select id="dPol"><option value="bee">Bee</option><option value="butterfly">Butterfly</option><option value="hummingbird">Hummingbird</option><option value="bat">Bat</option><option value="beetle">Beetle</option></select></label>
+<label>Scenario<select id="dScene"><option value="one">One flower</option><option value="cross">Cross-pollination (second flower)</option></select></label>
+<label>How the program acts differently<select id="dDiff"><option value="speed">Different speed</option><option value="dir">Other direction</option><option value="light">Light colour</option><option value="sound">Different sound</option></select></label>
+</div>
+<p><b>Lesson rules: tick each one when your design does it.</b></p>
+<label class="goal"><input type="checkbox" id="rule1"> The motion sensor stays in the new flower.</label>
+<label class="goal"><input type="checkbox" id="rule2"> A transparent brick shows the pollen.</label>
+<label class="goal"><input type="checkbox" id="rule3"> The new pollinator is attached to the axle.</label>
+<label class="goal"><input type="checkbox" id="rule4"> The program acts differently from the bee's program.</label>
+<svg id="exC" viewBox="0 0 300 190" role="img" aria-label="Preview of your new flower and pollinator"></svg>
+<b>Scientist's check</b><ul class="chk" id="dChk"></ul>
+<label class="q" for="dName">1. Name your model</label><textarea id="dName" placeholder="e.g. The Night Bat Garden"></textarea>
+<label class="q" for="dParts">2. WeDo parts you will use</label><textarea id="dParts"></textarea>
+<label class="q" for="dProg">3. Your program string (which blocks?)</label><textarea id="dProg"></textarea>
+<label class="q" for="dWhy">4. Why is your pollinator attracted to your flower?</label><textarea id="dWhy"></textarea>
+<p class="small"><b>Work with another team:</b> can your pollinator pollinate their flower? Can theirs pollinate yours?</p>
+<div class="row" style="grid-template-columns:auto auto;justify-content:start;margin-top:10px"><button class="btn pri" id="dMake">Make my design card</button><span class="small" id="dSaved"></span></div>
+<div id="dCard"></div></div>
+<div class="ex"><span class="tag">Optional · For advanced engineers</span><h3>After pollination: seed dispersal</h3>
+<p>After the flower is pollinated, seeds or fruit appear on the plant. How do the seeds travel to a new place to grow? Pick a type, watch it, then build and program a model of it.</p>
+<div class="choices" id="dsBtns"></div>
+<svg id="exD" viewBox="0 0 300 190" role="img" aria-label="Animation of the chosen seed dispersal type"></svg>
+<div class="vocab" id="dsInfo"></div></div>
+<p class="credit">Britus Education · © 2026 Fatma Alruffai</p>
+</section>
+<div class="row" style="margin-top:10px"><button class="btn" id="back">Back</button><button class="btn pri" id="next">Next step</button></div>
+</div>
+</main>
+<footer><div style="font:800 clamp(24px,4vw,32px)/1.15 var(--fD,system-ui,sans-serif);letter-spacing:.3px;color:var(--ink,inherit)">Britus Education</div><div style="font-size:12px;opacity:.8;margin-top:4px;font-weight:600">Virtual STEM Lab: Plants and Pollinators · © 2026 Fatma Alruffai</div></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const S=['Plan','Build','Connect','Program','Test','Reflect & share','Guidance','Challenges','Use the model'];
+const GUIDE=6;
+let step=0,unlocked=1,finished=false,placed=0,battery=false,plugged=false,connected=false,progOK=false,worked=false;
+let solvedQ=new Set(),lastStep=0;
+// ---------- Sound (made in the browser) ----------
+let AC=null,sndOn=true,buzzN=null,humN=null;
+try{sndOn=localStorage.getItem('polSound')!=='off'}catch(e){}
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=='suspended')AC.resume();return AC}
+document.addEventListener('pointerdown',ac,{once:true});
+function tone(f,d,type,vol,at){const a=ac();if(!a||!sndOn)return;const t=a.currentTime+(at||0),o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||0.16,t+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+0.05)}
+const SFX={good:()=>{tone(660,.15,'triangle');tone(990,.22,'triangle',.15,.1)},bad:()=>{tone(220,.18,'square',.06);tone(180,.25,'square',.06,.12)},click:()=>tone(520,.06,'triangle',.11),
+ snap:()=>{tone(300,.05,'square',.07);tone(820,.08,'triangle',.11,.04)},win:()=>[523,659,784,1047,784,1047].forEach((f,i)=>tone(f,i==5?.6:.18,'triangle',.16,i*.13)),
+ sound2:()=>{[784,988,1175].forEach((f,i)=>tone(f,.14,'triangle',.14,i*.1))},blink:()=>tone(1200,.05,'sine',.08),pop:()=>tone(900,.06,'sine',.1)};
+function sfx(k){try{SFX[k]&&SFX[k]()}catch(e){}}
+function loopSnd(on,kind,level){const a=AC;if(!a)return;let n=kind=='buzz'?buzzN:humN;
+ if(!n){const o=a.createOscillator(),lfo=a.createOscillator(),lg=a.createGain(),f=a.createBiquadFilter(),g=a.createGain();o.type='sawtooth';f.type='lowpass';f.frequency.value=kind=='buzz'?1400:600;g.gain.value=0;
+  lfo.frequency.value=kind=='buzz'?28:8;lg.gain.value=kind=='buzz'?25:4;lfo.connect(lg).connect(o.frequency);o.frequency.value=kind=='buzz'?190:70;o.connect(f).connect(g).connect(a.destination);o.start();lfo.start();n={o,g};if(kind=='buzz')buzzN=n;else humN=n}
+ n.g.gain.setTargetAtTime(on&&sndOn?(kind=='buzz'?0.035:0.03+level*0.004):0,a.currentTime,0.06);if(kind=='hum')n.o.frequency.setTargetAtTime(55+level*9,a.currentTime,0.1)}
+function sndBtn(){$('snd').textContent=sndOn?'🔊 Sound on':'🔇 Sound off';$('snd').setAttribute('aria-pressed',sndOn)}
+$('snd').onclick=()=>{sndOn=!sndOn;try{localStorage.setItem('polSound',sndOn?'on':'off')}catch(e){}sndBtn();if(sndOn)sfx('click')};sndBtn();
+function msg(id,t,c,quiet){const m=$(id);m.textContent=t;m.className='msg '+(c||'');if(quiet)return;if(c=='good')sfx(id=='m1'&&!/built|complete/i.test(t)?'snap':'good');else if(c=='bad')sfx('bad')}
+// ---------- Shared 3D helpers ----------
+function orbit(cv,st,T,cam,lim,onUser){const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});onUser&&onUser()});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size==1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.05,Math.min(1.7,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size==2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(lim[0],Math.min(lim[1],st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(lim[0],Math.min(lim[1],st.r*(1+e.deltaY*0.001)))},{passive:false});
+ return()=>{cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}}
+function goalStep(st,goal){if(!goal)return null;let d=goal[0]-st.th;d=Math.atan2(Math.sin(d),Math.cos(d));st.th+=d*0.12;st.ph+=(goal[1]-st.ph)*0.12;st.r+=(goal[2]-st.r)*0.12;return Math.abs(d)+Math.abs(goal[1]-st.ph)<0.002?null:goal}
+function sizer(box,cv,R,cam,ratio){const f=()=>{const w=box.clientWidth||460,h=Math.round(w*ratio);R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()};f();if(window.ResizeObserver)new ResizeObserver(f).observe(box)}
+function makeBee(THREE,scale){const g=new THREE.Group(),L=c=>new THREE.MeshLambertMaterial({color:c});
+ const ab=new THREE.Mesh(new THREE.SphereGeometry(0.5,18,14),L(0xf5c400));ab.scale.set(1.35,0.9,0.9);ab.position.x=-0.55;g.add(ab);
+ [-0.35,-0.7].forEach(x=>{const r=new THREE.Mesh(new THREE.CylinderGeometry(0.47,0.47,0.13,18),L(0x222222));r.rotation.z=Math.PI/2;r.position.x=x-0.05;r.scale.set(1,1,0.95);g.add(r)});
+ const th=new THREE.Mesh(new THREE.SphereGeometry(0.38,16,12),L(0x3a2a1a));th.position.x=0.2;g.add(th);
+ const hd=new THREE.Mesh(new THREE.SphereGeometry(0.3,16,12),L(0x222222));hd.position.set(0.62,0.05,0);g.add(hd);
+ [-0.14,0.14].forEach(z=>{const a=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.55,6),L(0x222222));a.position.set(0.8,0.38,z);a.rotation.z=-0.6;g.add(a)});
+ const wm=new THREE.MeshPhongMaterial({color:0xdff3ff,transparent:true,opacity:0.55,side:THREE.DoubleSide,depthWrite:false});const wings=[];
+ [-1,1].forEach(s=>{const w=new THREE.Mesh(new THREE.CircleGeometry(0.55,20),wm);w.scale.set(1,0.55,1);w.rotation.x=Math.PI/2;w.position.set(0.05,0.38,s*0.42);g.add(w);wings.push(w)});
+ const pol=new THREE.Group();g.add(pol);const pm=L(0xffc61a);for(let i=0;i<14;i++){const p=new THREE.Mesh(new THREE.SphereGeometry(0.06,6,5),pm);const a=Math.random()*6.28,b=Math.random()*3.14;p.position.set(-0.3+0.5*Math.cos(a)*Math.sin(b)*1.2,-0.25+0.3*Math.cos(b)*0.4,0.42*Math.sin(a)*Math.sin(b));p.visible=false;pol.add(p)}
+ g.scale.setScalar(scale||1);g.userData={wings,pol};return g}
+function beeFlap(b,t,on){b.userData.wings.forEach((w,i)=>{w.rotation.x=Math.PI/2+(on?Math.sin(t*60)*0.6:0.15)*(i?1:-1)})}
+function beePollen(b,n){b.userData.pol.children.forEach((p,i)=>p.visible=i<n)}
+// ---------- Real flower (Plan step) ----------
+const PARTS=[['petal','Petal','Coloured petals attract pollinators with their colour, size and smell.'],['stamen','Stamen','The stamen is the male part of the flower: a thin stalk (filament) with the anther on top.'],['anther','Anther','The anther is the part of a flower that produces pollen.'],['pollen','Pollen','Pollen is a very fine powder made by flowers to fertilize other plants of the same kind.'],['style','Style','The style is the long tube that holds up the stigma and leads down to the ovary, where seeds grow.'],['stigma','Stigma','The stigma is the part of a flower that receives pollen. It is sticky so pollen stays on it.'],['nectar','Nectar','Nectar is a sweet liquid at the bottom of the flower. It gives pollinators high-energy food.'],['pollinator','Pollinator','A pollinator is an animal that moves pollen from the male anther to the female stigma of a flower. Press "Watch a bee visit".']];
+const RF=(function(){try{if(!window.THREE)throw new Error('three.js did not load');
+ const box=$('fcv').parentNode,cv=$('fcv'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,1.3,0.1,200);sc.add(new THREE.HemisphereLight(0xffffff,0x8a9a70,0.9));const dl=new THREE.DirectionalLight(0xffffff,0.6);dl.position.set(6,14,9);sc.add(dl);
+ const parts={};const M=(c,k)=>{const m=new THREE.MeshLambertMaterial({color:c});(parts[k]=parts[k]||[]).push(m);return m};
+ const add=(geo,mat,par,x,y,z)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x||0,y||0,z||0);par.add(m);return m};
+ const ground=add(new THREE.CylinderGeometry(9,9,0.4,40),new THREE.MeshLambertMaterial({color:0x7cb342}),sc,2,-0.2,0);
+ function flower(x,z,s,main){const f=new THREE.Group();f.position.set(x,0,z);f.scale.setScalar(s);sc.add(f);
+  const green=main?M(0x4f9a2a,'stem'):new THREE.MeshLambertMaterial({color:0x4f9a2a});
+  add(new THREE.CylinderGeometry(0.16,0.2,8,12),green,f,0,4,0);
+  [[1,3,0.5],[-1,4.6,-0.4]].forEach(([s2,y,r])=>{const l=add(new THREE.SphereGeometry(1,16,10),green,f,s2*1.0,y,0);l.scale.set(1.3,0.12,0.45);l.rotation.z=s2*0.5;l.rotation.y=r});
+  add(new THREE.SphereGeometry(0.55,16,12),green,f,0,8.05,0);
+  const pm=main?M(0xe5578f,'petal'):new THREE.MeshLambertMaterial({color:0xe5578f});
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2,p=add(new THREE.SphereGeometry(1,18,10),pm,f,1.55*Math.cos(a),8.25,1.55*Math.sin(a));p.scale.set(1.45,0.1,0.42);p.rotation.y=-a;p.rotation.z=-0.22*Math.cos(0);p.rotateZ(-0.18)}
+  const ov=add(new THREE.SphereGeometry(0.42,16,12),main?M(0x8bc34a,'ovary'):new THREE.MeshLambertMaterial({color:0x8bc34a}),f,0,8.45,0);
+  const sty=add(new THREE.CylinderGeometry(0.08,0.11,1.7,10),main?M(0xc5e17a,'style'):new THREE.MeshLambertMaterial({color:0xc5e17a}),f,0,9.4,0);
+  const stg=add(new THREE.SphereGeometry(0.26,16,12),main?M(0x9ccc3c,'stigma'):new THREE.MeshLambertMaterial({color:0x9ccc3c}),f,0,10.3,0);stg.scale.set(1.2,0.7,1.2);
+  const anM=main?M(0xf2a400,'anther'):new THREE.MeshLambertMaterial({color:0xf2a400});const filM=main?M(0xf3e7b3,'stamen'):new THREE.MeshLambertMaterial({color:0xf3e7b3});
+  const polM=main?M(0xffd21f,'pollen'):new THREE.MeshLambertMaterial({color:0xffd21f});const anthers=[];
+  for(let i=0;i<6;i++){const a=i/6*Math.PI*2+0.3,x2=0.55*Math.cos(a),z2=0.55*Math.sin(a);const fl=add(new THREE.CylinderGeometry(0.03,0.03,1.3,6),filM,f,x2*1.2,9.0,z2*1.2);fl.rotation.z=-0.35*Math.cos(a);fl.rotation.x=0.35*Math.sin(a);
+   const an=add(new THREE.SphereGeometry(0.17,10,8),anM,f,x2*1.75,9.6,z2*1.75);an.scale.set(1,0.6,1.6);an.rotation.y=-a;anthers.push(an);
+   for(let k=0;k<4;k++)add(new THREE.SphereGeometry(0.045,6,5),polM,f,x2*1.75+(Math.random()-.5)*0.3,9.72+Math.random()*0.08,z2*1.75+(Math.random()-.5)*0.3)}
+  const neM=main?new THREE.MeshPhongMaterial({color:0xffb300,transparent:true,opacity:0.8,shininess:100}):new THREE.MeshPhongMaterial({color:0xffb300,transparent:true,opacity:0.8});if(main)(parts.nectar=parts.nectar||[]).push(neM);
+  for(let i=0;i<5;i++){const a=i/5*Math.PI*2;add(new THREE.SphereGeometry(0.09,8,6),neM,f,0.62*Math.cos(a),8.5,0.62*Math.sin(a))}
+  const stgPol=new THREE.Group();f.add(stgPol);for(let i=0;i<10;i++){const p=add(new THREE.SphereGeometry(0.05,6,5),new THREE.MeshLambertMaterial({color:0xffd21f}),stgPol,(Math.random()-.5)*0.4,10.45,(Math.random()-.5)*0.4);p.visible=false}
+  return{f,stgPol}}
+ const F1=flower(0,0,1,true),F2=flower(6.5,-2.5,0.8,false);
+ const bee=makeBee(THREE,1.1);sc.add(bee);bee.position.set(-9,12,6);
+ const T=new THREE.Vector3(1.5,7.5,0),st={th:0.35,ph:1.15,r:24},V={iso:[0.35,1.15,24],top:[0,0.06,22],side:[Math.PI/2,1.45,24]};let goal=null;
+ const place=orbit(cv,st,T,cam,[8,50],()=>{goal=null});sizer(box,cv,R,cam,0.72);
+ document.querySelectorAll('[data-fv]').forEach(b=>b.onclick=()=>{sfx('click');goal=V[b.dataset.fv]});
+ let hi=null,hiT=0;function highlight(k){hi=k=='stamen'?['stamen','anther']:[k];Object.entries(parts).forEach(([key,arr])=>arr.forEach(m=>{if(m.emissive)m.emissive.setHex(0)}))}
+ // bee visit timeline
+ const W=(x,y,z)=>new THREE.Vector3(x,y,z);const P1=W(0,10.9,0.3),P2=W(6.5,8.75,-2.25);
+ const path=[[0,W(-9,12,6)],[0.22,W(-1.5,12,1.5)],[0.3,P1],[0.48,P1],[0.6,W(3.5,12.5,0)],[0.7,P2],[0.86,P2],[1,W(14,13,-6)]];
+ const CAP=[[0,'1. The bee flies to the flower, attracted by its colour and smell.'],[0.3,'2. It drinks nectar. Pollen from the anthers sticks to its hairy body.'],[0.5,'3. The bee flies to another flower of the same kind.'],[0.7,'4. Pollen rubs onto the sticky stigma: this is pollination!'],[0.88,'5. Now the flower can make seeds. 🌱']];
+ let vt=-1;
+ function pos(t){for(let i=1;i<path.length;i++){if(t<=path[i][0]){const [t0,a]=path[i-1],[t1,b]=path[i],k=(t-t0)/(t1-t0||1),e=k*k*(3-2*k);return a.clone().lerp(b,e)}}return path[path.length-1][1].clone()}
+ function visit(){vt=0;beePollen(bee,0);F2.stgPol.children.forEach(p=>p.visible=false);sfx('click')}
+ let clock=0;
+ function frame(dt){clock+=dt;goal=goalStep(st,goal);let flying=false;
+  if(vt>=0){vt+=dt/11;const t=Math.min(1,vt),p=pos(t),q=pos(Math.min(1,t+0.01));bee.position.copy(p);if(q.distanceTo(p)>0.001){const d=q.clone().sub(p);bee.rotation.y=Math.atan2(-d.z,d.x)}
+   flying=!(t>0.3&&t<0.48)&&!(t>0.7&&t<0.86)&&t<1;beeFlap(bee,clock,flying||true);
+   if(t>0.36)beePollen(bee,t>0.75?Math.max(0,14-Math.floor((t-0.75)*120)):Math.min(14,Math.floor((t-0.36)*140)));
+   if(t>0.76)F2.stgPol.children.forEach((p,i)=>p.visible=i<Math.min(10,Math.floor((t-0.76)*110)));
+   let c='';CAP.forEach(([k,s])=>{if(t>=k)c=s});$('fhud').textContent=c;if(t>=1){vt=-1}}
+  else{beeFlap(bee,clock,true);bee.position.y=12+Math.sin(clock*2)*0.3}
+  loopSnd(step==0&&vt>=0&&flying,'buzz');
+  if(hi){hiT+=dt;const v=0.25+0.25*Math.sin(hiT*6);hi.forEach(k=>(parts[k]||[]).forEach(m=>m.emissive&&m.emissive.setRGB(v,v*0.8,0)))}
+  place();R.render(sc,cam)}
+ $('beeGo').onclick=visit;
+ return{frame,highlight,visit}}catch(e){console.error('3D flower off',e);return null}})();
+// part buttons
+PARTS.forEach(([k,n,d])=>{const b=document.createElement('button');b.className='btn';b.textContent=n;b.onclick=()=>{document.querySelectorAll('#partBtns .btn').forEach(x=>x.classList.toggle('on',x==b));$('vocab').innerHTML='<b>'+n+':</b> '+d;sfx('pop');if(k=='pollinator'){RF&&RF.visit()}else RF&&RF.highlight(k=='pollen'?'pollen':k)};$('partBtns').appendChild(b)});
+// drawing pad
+(function(){const c=$('pad'),x=c.getContext('2d');let col='#c2185b',w=5,dn=false,lp=null;x.lineCap='round';x.lineJoin='round';
+ [['#c2185b','Pink'],['#f2b600','Yellow'],['#2e9e3f','Green'],['#2a7de1','Blue'],['#3b2a1a','Brown'],['#222','Black'],['#fffdf7','Eraser']].forEach(([c2,n],i)=>{const b=document.createElement('button');b.className='sw'+(i==0?' on':'');b.style.background=c2;b.title=n;b.setAttribute('aria-label',n);b.onclick=()=>{col=c2;w=c2=='#fffdf7'?22:5;document.querySelectorAll('#pens .sw').forEach(s=>s.classList.toggle('on',s==b))};$('pens').appendChild(b)});
+ const cl=document.createElement('button');cl.className='btn';cl.textContent='Clear';cl.onclick=()=>{x.clearRect(0,0,c.width,c.height)};$('pens').appendChild(cl);
+ const P=e=>{const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height}};
+ c.addEventListener('pointerdown',e=>{dn=true;c.setPointerCapture(e.pointerId);lp=P(e);x.beginPath();x.fillStyle=col;x.arc(lp.x,lp.y,w/2,0,7);x.fill()});
+ c.addEventListener('pointermove',e=>{if(!dn)return;const p=P(e);x.strokeStyle=col;x.lineWidth=w;x.beginPath();x.moveTo(lp.x,lp.y);x.lineTo(p.x,p.y);x.stroke();lp=p});
+ const up=()=>{dn=false};c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up)})();
+// ---------- WeDo model (Build → Test) ----------
+const MD=(function(){try{if(!window.THREE)throw new Error('three.js did not load');
+ const box=$('mcv').parentNode,cv=$('mcv'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(38,1.3,0.1,200);sc.add(new THREE.HemisphereLight(0xffffff,0x8f8a86,0.85));const dl=new THREE.DirectionalLight(0xffffff,0.7);dl.position.set(10,16,12);sc.add(dl);const d2=new THREE.DirectionalLight(0xffffff,0.3);d2.position.set(-10,8,-8);sc.add(d2);
+ const mats={};const L=(c,o)=>{const k=c+'|'+(o||1);return mats[k]||(mats[k]=o?new THREE.MeshPhongMaterial({color:c,transparent:true,opacity:o,depthWrite:false}):new THREE.MeshLambertMaterial({color:c}))};
+ const Bx=(w,h,d,c,x,y,z,p,o)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),L(c,o));m.position.set(x,y,z);p.add(m);return m};
+ const Cy=(r,h,c,x,y,z,ax,p,seg,o)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg||16),L(c,o));m.position.set(x,y,z);if(ax=='z')m.rotation.x=Math.PI/2;if(ax=='x')m.rotation.z=Math.PI/2;p.add(m);return m};
+ const studs=(p,x0,z0,nx,nz,y,c)=>{for(let i=0;i<nx;i++)for(let k=0;k<nz;k++)Cy(0.3,0.22,c,x0+i*0.8,y,z0+k*0.8,'y',p,10)};
+ const G={};const grp=(n,p)=>{const g=new THREE.Group();g.visible=false;(p||sc).add(g);G[n]=g;return g};
+ // table
+ const table=new THREE.Mesh(new THREE.BoxGeometry(30,0.6,20),new THREE.MeshLambertMaterial({color:0xe9dcc8}));table.position.y=-0.3;sc.add(table);
+ let g=grp('plate');Bx(14,0.4,8,0x5aa02c,0,0.2,0,g);studs(g,-6.6,-3.6,18,10,0.5,0x6bb83a);
+ g=grp('hub');Bx(4.2,1.4,3,0xf3f3f3,-1.2,1.1,2.2,g);Bx(4.2,0.5,3,0x9aa0a6,-1.2,0.65,2.2,g);Cy(0.55,0.25,0x2e9e3f,-1.2,1.92,2.2,'y',g,20);
+ const hubLight=new THREE.Mesh(new THREE.TorusGeometry(0.62,0.08,8,24),new THREE.MeshBasicMaterial({color:0x777777}));hubLight.rotation.x=Math.PI/2;hubLight.position.set(-1.2,1.86,2.2);g.add(hubLight);
+ Bx(0.9,0.6,0.15,0x333333,-2.3,1.0,3.72,g);Bx(0.9,0.6,0.15,0x333333,-0.1,1.0,3.72,g);
+ const lab=(t,x,y,z,p)=>{const c=document.createElement('canvas');c.width=64;c.height=64;const q=c.getContext('2d');q.fillStyle='#fff';q.font='bold 44px sans-serif';q.textAlign='center';q.textBaseline='middle';q.fillText(t,32,34);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));s.position.set(x,y,z);s.scale.set(0.55,0.55,1);p.add(s)};
+ lab('A',-2.3,1.5,3.8,g);lab('B',-0.1,1.5,3.8,g);
+ const M0={x:5.2,z:-1},A0={x:3.4,z:-1},F0={x:-1.6,z:-1};
+ g=grp('motor');Bx(1.8,3.0,1.8,0x9aa0a6,M0.x,1.9,M0.z,g);Bx(1.8,0.6,1.8,0xf3f3f3,M0.x,3.7,M0.z,g);Bx(0.9,4.2,0.9,0x9ccc3c,A0.x,2.5,A0.z,g);Bx(1.2,0.4,2.6,0x9ccc3c,(M0.x+A0.x)/2,4.1,A0.z,g);
+ const gearMk=(x,p)=>{const gg=new THREE.Group();gg.position.set(x,4.6,M0.z);p.add(gg);Cy(0.85,0.3,0x9aa0a6,0,0,0,'y',gg,24);for(let i=0;i<16;i++){const a=i/16*Math.PI*2,t=Bx(0.22,0.3,0.22,0x8a9096,0.95*Math.cos(a),0,0.95*Math.sin(a),gg);t.rotation.y=-a}Cy(0.2,0.6,0x444444,0,0,0,'y',gg,8);return gg};
+ const gM=gearMk(M0.x,g),gA=gearMk(A0.x,g);
+ const arm=new THREE.Group();arm.position.set(A0.x,4.8,A0.z);sc.add(arm);
+ const tube=grp('arm',arm);Cy(0.18,7.7,0x9aa0a6,0,3.85,0,'y',tube,8);Bx(0.7,0.8,0.7,0x9ccc3c,0,7.7,0,tube);const hb=Bx(5.2,0.6,0.7,0x9ccc3c,-2.4,7.7,0,tube);for(let i=0;i<6;i++)Cy(0.17,0.72,0x5f8a1f,-0.2-i*0.8,7.7,0,'z',tube,8);
+ const beeG=grp('bee',arm);const bee=new THREE.Group();bee.position.set(-5,6.75,0);bee.scale.setScalar(1.3);beeG.add(bee);
+ Bx(0.5,0.5,0.5,0x555555,0,0.55,0,bee);Bx(1.0,0.9,1.5,0x8fd3f0,0,0,0.1,bee);Bx(1.02,0.35,0.6,0x222222,0,-0.1,0.95,bee);Bx(1.04,0.15,0.6,0xf5c400,0,0.12,0.95,bee);
+ Bx(1.05,1.0,0.95,0xf6f6f6,0,0.05,-0.95,bee);[-1,1].forEach(sd=>{Cy(0.34,0.08,0xffffff,sd*0.56,0.15,-1.0,'x',bee,16);Cy(0.16,0.1,0x111111,sd*0.6,0.15,-1.05,'x',bee,12);const an=Cy(0.04,0.8,0x111111,sd*0.25,0.85,-1.2,'y',bee,6);an.rotation.x=-0.4});
+ const wings=[];[-1,1].forEach(sd=>{const w=Bx(0.9,0.06,0.7,0xdff3ff,sd*0.85,0.45,0.15,bee,0.6);wings.push(w)});
+ const carry=Bx(0.45,0.45,0.45,0xffe24a,0,-0.7,-0.2,bee,0.8);carry.visible=false;
+ bee.userData={wings,pol:{children:[carry]}};
+ g=grp('stem');Bx(2.4,1.2,2.4,0xf3f3f3,F0.x,1.0,F0.z,g);Cy(0.22,4.6,0x9aa0a6,F0.x,3.8,F0.z,'y',g,12);
+ [1,-1].forEach(s2=>{const l=Bx(4.2,0.5,0.3,0x9ccc3c,F0.x+s2*1.7,3.0,F0.z,g);l.rotation.z=-s2*0.75});Cy(0.35,0.3,0xd8322f,F0.x+2,0.55,F0.z+2.4,'y',g,10);Cy(0.25,0.6,0x7fd36b,F0.x+2,0.95,F0.z+2.4,'y',g,8,0.8);
+ g=grp('head');Bx(3,3,0.6,0x9ccc3c,F0.x,7.2,F0.z,g);for(let i=0;i<4;i++)for(let k=0;k<4;k++)Cy(0.26,0.2,0x8bc34a,F0.x-1.2+i*0.8,6.0+k*0.8,F0.z+0.38,'z',g,10);Bx(3.2,0.9,0.7,0xf28c28,F0.x,9.1,F0.z,g);for(let i=0;i<4;i++)Cy(0.2,0.75,0xb85a10,F0.x-1.2+i*0.8,9.1,F0.z,'z',g,8);Bx(0.7,0.8,0.7,0x4fc3d9,F0.x-1.6,8.2,F0.z,g);Bx(0.7,0.8,0.7,0x4fc3d9,F0.x+1.6,8.2,F0.z,g);
+ [-1.25,1.25].forEach(x=>{Cy(0.28,0.8,0xffe24a,F0.x+x,9.95,F0.z,'y',g,12,0.75);Cy(0.2,0.1,0xfff3a0,F0.x+x,10.4,F0.z,'y',g,12,0.85)});
+ const polG=new THREE.Group();g.add(polG);const pM=L(0xffc61a);for(let i=0;i<16;i++){const p=new THREE.Mesh(new THREE.SphereGeometry(0.07,6,5),pM);p.position.set(F0.x+(i<8?-1.25:1.25)+(Math.random()-.5)*0.4,10.45+Math.random()*0.12,F0.z+(Math.random()-.5)*0.5);polG.add(p)}
+ g=grp('sensor');Bx(1.2,0.6,1.4,0xf3f3f3,F0.x,9.85,F0.z,g);Bx(0.9,0.12,1.0,0x333333,F0.x,10.17,F0.z,g);[-0.25,0.25].forEach(z=>Cy(0.16,0.06,0x6fd0ff,F0.x,10.24,F0.z+z,'y',g,12));
+ const beam=new THREE.Mesh(new THREE.ConeGeometry(1.0,2.2,20,1,true),new THREE.MeshBasicMaterial({color:0x6fd0ff,transparent:true,opacity:0.16,side:THREE.DoubleSide,depthWrite:false}));beam.rotation.x=Math.PI;beam.position.set(F0.x,11.3,F0.z);beam.visible=false;sc.add(beam);
+  // cables
+ const cab=grp('cables');const tubeTo=(a,b,c)=>{const cu2=new THREE.CatmullRomCurve3([a,new THREE.Vector3(a.x,0.6,a.z+1.2),new THREE.Vector3((a.x+b.x)/2,0.6,(a.z+b.z)/2+1),new THREE.Vector3(b.x,0.6,b.z+0.3),b]);cab.add(new THREE.Mesh(new THREE.TubeGeometry(cu2,40,0.1,6,false),L(c)))};
+ let portsDone=false;function cables(mp){if(portsDone)return;portsDone=true;const pa=new THREE.Vector3(-2.3,1.0,3.8),pb=new THREE.Vector3(-0.1,1.0,3.8);tubeTo(mp=='A'?pa:pb,new THREE.Vector3(M0.x,1.0,M0.z+1.1),0x3a3a3a);tubeTo(mp=='A'?pb:pa,new THREE.Vector3(F0.x+0.6,9.6,F0.z),0x3a3a3a)}
+ // camera
+ const T=new THREE.Vector3(1,6.2,0),st={th:0.55,ph:1.1,r:34},V={iso:[0.55,1.1,33],front:[0,1.38,33],side:[Math.PI/2,1.38,33],top:[0,0.06,33]};let goal=null,spin=false;
+ const place=orbit(cv,st,T,cam,[12,60],()=>{goal=null;spin=false;mark()});sizer(box,cv,R,cam,0.78);
+ function mark(k){document.querySelectorAll('#vbtns .btn').forEach(b=>b.classList.toggle('on',b.dataset.v==k))}
+ document.querySelectorAll('#vbtns .btn').forEach(b=>b.onclick=()=>{const k=b.dataset.v;sfx('click');if(k=='spin'){spin=!spin;goal=null;mark(spin?'spin':'');return}spin=false;goal=V[k];mark(k)});
+ // robot state
+ let ang=180,run=false,power=4,dir=1,coast=0,stopAt=null,clock=0,blink=0,lightMode='off',pollen=0,polOnFlower=16;
+ const flowerAng=180;// arm angle (deg) where bee is in front of the sensor
+ function angDiff(a,b){let d=((a-b)%360+540)%360-180;return d}
+ function setLight(m){lightMode=m}
+ function start(p,d){power=p;dir=d;run=true;coast=0;stopAt=null;ang=(flowerAng+(dir>0?40:-40)+360)%360;bee.userData.pol.children[0].visible=false;pollen=0}
+ function stop(){run=false;coast=0}
+ let onStop=null,onDetect=null,sawLeave=false;
+ function frame(dt){clock+=dt;goal=goalStep(st,goal);if(spin)st.th+=dt*0.5;
+  const spd=power*30;let detect=false;
+  if(run){ang=(ang+dir*spd*dt+360)%360;const d=Math.abs(angDiff(ang,flowerAng));if(d>25)sawLeave=true;if(d<6&&sawLeave){detect=true;run=false;coast=power*2.2;sawLeave=false;onDetect&&onDetect()}}
+  else if(coast>0){const s=Math.min(coast,spd*dt*0.6+0.4);ang=(ang+dir*s+360)%360;coast-=s;if(coast<=0){const off=Math.abs(angDiff(ang,flowerAng));onStop&&onStop(off)}}
+  arm.rotation.y=(ang-flowerAng)*Math.PI/180;gA.rotation.y=arm.rotation.y;gM.rotation.y=-arm.rotation.y;
+  const moving=run||coast>0;bee.userData.wings.forEach((w,i)=>w.rotation.z=(i?1:-1)*(0.2+Math.sin(clock*40)*0.25));loopSnd(moving&&step==4,'hum',power);
+  beam.visible=G.sensor.visible&&connected&&(step==4);beam.material.color.setHex(Math.abs(angDiff(ang,flowerAng))<8?0x4cc98a:0x6fd0ff);beam.material.opacity=Math.abs(angDiff(ang,flowerAng))<8?0.32:0.14;
+  if(lightMode=='blink'){blink+=dt;hubLight.material.color.setHex(Math.floor(blink*4)%2?0xffffff:0x777777)}else hubLight.material.color.setHex(lightMode=='blue'?0x2a7de1:lightMode=='yellow'?0xffd21f:0x777777);
+  polG.children.forEach((p,i)=>p.visible=i<polOnFlower);
+  place();R.render(sc,cam);return{ang,moving}}
+ function transfer(){pollen++;bee.userData.pol.children[0].visible=true;polOnFlower=Math.max(4,polOnFlower-3)}
+ return{show:n=>{if(G[n])G[n].visible=true},frame,start,stop,cables,setLight,transfer,set onStop(f){onStop=f},set onDetect(f){onDetect=f}}}catch(e){console.error('3D model off',e);return null}})();
+if(!RF||!MD){document.querySelectorAll('.v3').forEach(v=>v.innerHTML='<p class="msg bad" style="margin:10px">This browser cannot show the 3D model. Try Chrome or Edge, or update the browser.</p>')}
+// ---------- Navigation ----------
+function nav(){
+ $('nav').innerHTML='';
+ S.forEach((s,i)=>{const b=document.createElement('button');b.textContent=(i+1)+'. '+s;b.disabled=i!=GUIDE&&(i>unlocked||(i>=7&&!finished));
+  b.className=(i==step?'on ':'')+((i<unlocked&&i<6)||(i==5&&finished)?'done':'');b.onclick=()=>go(i);$('nav').appendChild(b)});
+ document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('on',i==step));
+ $('realBox').hidden=step!=0;$('modelBox').hidden=step==0;
+ $('stageCap').innerHTML=step==0?'A real flower and a honey bee. Tap the part names to learn them, and press <b>Watch a bee visit</b>.':'Your LEGO® WeDo 2.0 model: the motor turns the gears and the bee&rsquo;s axle. The motion sensor in the flower sees the bee on top of it.';
+ const nx=$('next');nx.hidden=false;
+ if(step<5){nx.textContent='Next step';nx.disabled=step>=unlocked}
+ else if(step==5){nx.disabled=false;nx.textContent=finished?'Extra challenges ➜':'Finish project 🎉'}
+ else if(step==GUIDE){nx.textContent=finished?'Extra challenges ➜':'Back to my step';nx.disabled=false}
+ else if(step==7){nx.textContent='Use the model ➜';nx.disabled=false}
+ else nx.hidden=true;
+ $('back').disabled=step==0;$('fhint').hidden=finished;
+}
+function go(i){if(i!=step)sfx('click');step=i;if(i!=GUIDE)lastStep=i;if(i!=4&&MD)MD.stop();nav();window.scrollTo({top:0,behavior:'smooth'})}
+function unlock(n){unlocked=Math.max(unlocked,n);nav()}
+$('next').onclick=()=>{if(step==5&&!finished){finished=true;sfx('win');$('fin').hidden=false;nav();$('fin').scrollIntoView({behavior:'smooth',block:'nearest'});return}
+ if(step==GUIDE){go(finished?7:lastStep);return}go(step==5?7:step+1)};
+$('back').onclick=()=>go(step==GUIDE?lastStep:step==7?5:step-1);
+// ---------- Build ----------
+const order=[['plate','Green baseplate','Start with the green baseplate.'],['hub','Smarthub','Put the Smarthub on the baseplate. It is the brain of the model.'],['motor','Motor and gears','Stand the medium motor on the right with its two grey gears. The gears turn the bee\'s axle.'],['arm','Axle and lime arm','Push the long axle up from the gears and fix the lime arm on top. It carries the bee.'],['bee','Bee','Put the bee on the end of the arm.'],['stem','Flower stem and leaves','Build the flower stem and the two long leaves on the left.'],['head','Flower head and pollen','Add the flower head with petals. The transparent yellow bricks are the pollen.'],['sensor','Motion sensor','Fix the motion sensor in the top of the flower, facing up, so it sees the bee on top of the flower.']];
+const extras={xtilt:['Tilt sensor','The tilt sensor feels when the model tips. To see the bee arrive, use the motion sensor.'],xwh:['Wheels','Wheels are for moving cars. The flower stays still.'],xbelt:['Rubber belt','No belt is needed: the gears turn the bee\'s axle.'],xtube:['Black flexible tube','This model uses a lime arm on an axle, not a flexible tube.']};
+const COL={plate:'#5aa02c',hub:'#cfcfcf',motor:'#9aa0a6',arm:'#9ccc3c',bee:'#f5c400',stem:'#9ccc3c',head:'#f28c28',sensor:'#6fd0ff'};
+const tray=[...order.map(o=>[o[0],o[1]]),...Object.entries(extras).map(([k,v])=>[k,v[0]])].sort((a,b)=>a[1].localeCompare(b[1]));
+function drawTray(){$('tray').innerHTML='';tray.forEach(([id,l])=>{const b=document.createElement('button');b.innerHTML='<i class="bk" style="color:'+(COL[id]||'#9a8a8e')+'"></i>'+l;b.className=order.slice(0,placed).some(o=>o[0]==id)?'used':'';b.onclick=()=>pick(id,l);$('tray').appendChild(b)})}
+function pick(id,l){if(placed>=order.length)return;const o=order[placed];
+ if(id==o[0]){MD&&MD.show(id);placed++;drawTray();
+  if(placed==order.length){msg('m1','Model built! Your flower and bee are ready. Next, connect the Smarthub.','good');$('g1').checked=true;unlock(2)}
+  else msg('m1','Placed: '+l+'. Next: '+order[placed][2],'good')}
+ else if(extras[id])msg('m1',extras[id][1],'bad');else msg('m1',l+' is right, but not yet. Next: '+o[2],'bad')}
+// ---------- Connect ----------
+function mcq(box,opts,ans,okT,badT,mid,after){opts.forEach(o=>{const b=document.createElement('button');b.className='btn';b.textContent=o;
+ b.onclick=()=>{document.querySelectorAll('#'+box+' .btn').forEach(x=>x.classList.remove('pick','miss'));
+  if(ans==null){b.classList.add('pick');sfx('pop');after&&after(o);return}
+  if(o==ans){b.classList.add('pick');msg(mid,okT,'good');after&&after(o)}else{b.classList.add('miss');msg(mid,badT,'bad')}};$(box).appendChild(b)})}
+mcq('bat',['2 AA batteries','1 big 9V battery','No batteries needed'],'2 AA batteries','Correct: the Smarthub uses 2 AA batteries (or the rechargeable battery). Fresh batteries keep the motor strong.','Look inside the Smarthub: it holds two small AA batteries.','mBat',()=>{battery=true;$('cPorts').hidden=false});
+$('plug').onclick=()=>{const m=$('pMotor').value,s=$('pSensor').value;
+ if(m=='(choose)'||s=='(choose)')return msg('mPlug','Choose a port for both cables.','bad');
+ if(m==s)return msg('mPlug','Each port takes only one cable. Plug the motor and the sensor into different ports.','bad');
+ plugged=true;MD&&MD.cables(m.slice(-1));MD&&MD.show('cables');msg('mPlug','Plugged in! Motor → '+m+', motion sensor → '+s+'. The WeDo software finds them in any port.','good');$('cBt').hidden=false};
+$('hubBtn').onclick=()=>{if(!plugged)return;MD&&MD.setLight('blink');sfx('blink');$('hubList').hidden=false;msg('mBt','The light is blinking. Now choose your Smarthub in the list.','',true)};
+$('hubPick').onclick=()=>{connected=true;MD&&MD.setLight('blue');$('g2').checked=true;msg('mBt','Connected! The Smarthub light is now blue. Next, write the program.','good');unlock(3)};
+// ---------- Program ----------
+const BL={start:['y','▶','Start'],power:['g','⚡','Motor power',{type:'num',def:4,min:1,max:10}],thisway:['g','↻','Motor this way'],thatway:['g','↺','Motor that way'],wait:['y','⌛','Wait for',{type:'sel',opts:['motion sensor','tilt sensor','1 second'],def:'motion sensor'}],off:['g','✖','Motor off'],sound:['r','♫','Play sound',{type:'num',def:2,min:1,max:20}],light:['b','💡','Light',{type:'sel',opts:['yellow','blue','red','green'],def:'yellow'}],repeat:['y','🔁','Repeat']};
+const DESC={start:'Starts the program.',power:'Sets how fast the motor turns (1 slow, 10 fast).',thisway:'Turns the motor one way.',thatway:'Turns the motor the other way.',wait:'Waits until something happens, like the motion sensor seeing an object.',off:'Stops the motor.',sound:'Plays a sound from the list.',light:'Changes the colour of the Smarthub light.',repeat:'Repeats blocks again and again.'};
+let prog=[];
+function blk(k,small){const [c,ic,n]=BL[k];return '<span class="wb '+c+'" title="'+n+'">'+ic+(small?'':'<small>'+n+'</small>')+'</span>'}
+Object.keys(BL).forEach(k=>{const b=document.createElement('button');b.className='wb '+BL[k][0];b.innerHTML=BL[k][1]+'<small>'+BL[k][2]+'</small>';b.onclick=()=>{const inp=BL[k][3];prog.push({k,v:inp?inp.def:null});sfx('click');drawProg()};$('wpal').appendChild(b);
+ $('legend').insertAdjacentHTML('beforeend',blk(k,true)+'<span><b>'+BL[k][2]+':</b> '+DESC[k]+'</span>')});
+function drawProg(){const w=$('wstr');if(!prog.length){w.innerHTML='<span class="small">Your program string appears here.</span>';return}w.innerHTML='';
+ prog.forEach((p,i)=>{const d=document.createElement('div');d.className='wslot';d.innerHTML=blk(p.k);const inp=BL[p.k][3];
+  if(inp){let el;if(inp.type=='num'){el=document.createElement('input');el.type='number';el.min=inp.min;el.max=inp.max;el.value=p.v}else{el=document.createElement('select');inp.opts.forEach(o=>el.add(new Option(o)));el.value=p.v}
+   el.setAttribute('aria-label',BL[p.k][2]+' value');el.oninput=el.onchange=()=>{p.v=inp.type=='num'?+el.value:el.value;syncTest()};d.appendChild(el)}
+  w.appendChild(d)})}
+drawProg();
+$('wUndo').onclick=()=>{prog.pop();drawProg()};$('wClr').onclick=()=>{prog=[];drawProg()};
+const BOOK=['start','power','thisway','wait','off','sound'];
+$('wChk').onclick=()=>{const ks=prog.map(p=>p.k),g=k=>prog.find(p=>p.k==k);
+ if(!prog.length)return msg('m3','Add some blocks first.','bad');
+ if(ks[0]!='start')return msg('m3','Every WeDo program begins with the yellow Start block.','bad');
+ if(ks.includes('light')||ks.includes('repeat'))return msg('m3','This program does not need the light or repeat blocks. Try them later in the challenges!','bad');
+ if(!ks.includes('wait'))return msg('m3','Without a Wait For block, the motor stops straight away. Wait for the motion sensor first.','bad');
+ if(g('wait').v!='motion sensor')return msg('m3','The Wait For block must use the motion sensor, so the bee stops when the sensor sees it.','bad');
+ const ks2=ks.map(k=>k=='thatway'?'thisway':k);
+ if(ks2.join()!=BOOK.join())return msg('m3','Check the order: Start, Motor power, Motor this way, Wait for motion sensor, Motor off, Play sound.','bad');
+ const p=g('power').v;if(!(p>=1&&p<=10))return msg('m3','Motor power must be a number from 1 to 10.','bad');
+ progOK=true;syncTest();msg('m3','Program works! The bee turns at power '+p+', waits for the motion sensor, stops at the flower and plays sound '+g('sound').v+'.'+(p!=4?' (The book uses power 4.)':''),'good');unlock(4)};
+$('bookStr').innerHTML=BOOK.map(k=>'<div class="wslot">'+blk(k)+(k=='power'?'<b>4</b>':k=='sound'?'<b>2</b>':k=='wait'?'<b class="small">motion</b>':'')+'</div>').join('');
+// ---------- Test ----------
+let dirSel=1;
+function syncTest(){const pw=prog.find(p=>p.k=='power');if(pw){$('pow').value=pw.v;$('powT').textContent=pw.v}const th=prog.find(p=>p.k=='thisway'||p.k=='thatway');if(th)setDir(th.k=='thatway'?-1:1,true)}
+function setDir(d,quiet){dirSel=d;$('dirA').classList.toggle('on',d==1);$('dirB').classList.toggle('on',d==-1);const th=prog.find(p=>p.k=='thisway'||p.k=='thatway');if(th&&!quiet){th.k=d==1?'thisway':'thatway';drawProg()}}
+$('dirA').onclick=()=>{setDir(1);sfx('click')};$('dirB').onclick=()=>{setDir(-1);sfx('click')};
+$('pow').oninput=()=>{const v=+$('pow').value;$('powT').textContent=v;const pw=prog.find(p=>p.k=='power');if(pw){pw.v=v;drawProg()}};
+let visits=0,polTotal=0;
+$('run').onclick=()=>{if(!MD)return;MD.start(+$('pow').value,dirSel);sfx('click');msg('m4','Running… the bee is flying round. Waiting for the motion sensor.','',true)};
+$('stopB').onclick=()=>{MD&&MD.stop();msg('m4','Stopped.','',true)};
+if(MD){MD.onDetect=()=>{msg('m4','The motion sensor sees the bee! Motor off…','',true)};
+ MD.onStop=off=>{visits++;$('sVis').textContent=visits;const snd=(prog.find(p=>p.k=='sound')||{v:2}).v;
+  if(off<=10){MD.transfer();polTotal+=5;$('sPol').textContent=polTotal;sfx('sound2');msg('m4','The bee stopped at the flower and collected pollen! Sound '+snd+' played. Press Start to fly again, or try another power.','good',true);
+   if(!worked){worked=true;$('g3').checked=true;unlock(5)}}
+  else{sfx('bad');msg('m4','Too fast! The motor was switched off, but the bee kept going and stopped past the flower ('+Math.round(off)+'° away). Try a lower motor power.','bad',true)}}}
+mcq('r1',['Own','Example'],null);mcq('r2',['Own','Example'],null);
+mcq('r3',['Yes','No'],null,'','','mr3',o=>{msg('mr3',o=='Yes'?'Great! Write one thing that made it work in the Improve section.':'Check: is the sensor facing the bee? Is the Wait For block using the motion sensor? Is the power too high?',o=='Yes'?'good':'',true)});
+mcq('r4',['Today 87.071 PPM','Yesterday 87.058 PPM'],'Today 87.071 PPM','Correct! Line up the decimals: 87.071 and 87.058. The ones and tenths are the same, but in the hundredths place 7 is more than 5.','Line up the decimal points and compare place by place. Look at the hundredths: 7 or 5?','mr4');
+const R5=[['🦋 Butterflies',1],['🐦 Hummingbirds',1],['🦇 Bats',1],['🐞 Beetles',1],['🌙 Moths',1],['🐟 Fish',0],['🍃 Wind',2]];const r5s=new Set();
+R5.forEach(([n],i)=>{const b=document.createElement('button');b.className='btn';b.textContent=n;b.onclick=()=>{r5s.has(i)?r5s.delete(i):r5s.add(i);b.classList.toggle('on',r5s.has(i));sfx('pop')};$('r5').appendChild(b)});
+$('r5c').onclick=()=>{const right=R5.map((r,i)=>r[1]==1?i:-1).filter(i=>i>=0),miss=right.filter(i=>!r5s.has(i)),wrong=[...r5s].filter(i=>R5[i][1]!=1);
+ if(!r5s.size)return msg('mr5','Pick at least one animal.','bad');
+ if(wrong.some(i=>R5[i][1]==2))return msg('mr5','Wind does carry pollen, but it is not an animal! Wind is a pollinating agent, not a pollinator.','bad');
+ if(wrong.length)return msg('mr5','Fish live in water, so they cannot visit flowers on land. Try again.','bad');
+ if(miss.length)return msg('mr5','All correct so far! There are '+miss.length+' more animal'+(miss.length>1?'s':'')+' that pollinate flowers. Can you find '+(miss.length>1?'them':'it')+'?','',false);
+ msg('mr5','Excellent! Butterflies, hummingbirds, bats, beetles and moths all carry pollen between flowers.','good')};
+// ---------- Reflect ----------
+['Make the bee stop exactly at the flower','Make the model stronger','Add a second flower','Make the bee slower','Add more pollen'].forEach(t=>{const b=document.createElement('button');b.className='btn';b.textContent=t;b.onclick=()=>{const ta=$('impT');ta.value=(ta.value?ta.value+'\n':'')+'• '+t;sfx('pop')};$('imp').appendChild(b)});
+const SORT=[['Plant native flowers in the school garden','help'],['Build a bee hotel for wild bees','help'],['Spray chemicals on every flower','harm'],['Leave some dandelions and wildflowers for bees','help'],['Cut down meadows and hedges','harm'],['Put out a shallow dish of water with stones','help']];let sortOK=0;
+SORT.forEach(([t,a],i)=>{const d=document.createElement('div');d.innerHTML='<span>'+t+'</span>';['help','harm'].forEach(c=>{const b=document.createElement('button');b.className='btn';b.textContent=c=='help'?'👍 Helps':'👎 Harms';
+ b.onclick=()=>{d.querySelectorAll('.btn').forEach(x=>x.classList.remove('pick','miss'));if(c==a){b.classList.add('pick');if(!d.dataset.ok){d.dataset.ok=1;sortOK++}msg('mSort',sortOK==SORT.length?'All sorted! Every person can help protect pollinators and life on land. 🌳':'Correct! '+(SORT.length-sortOK)+' left.','good')}else{b.classList.add('miss');msg('mSort',a=='help'?'This actually helps pollinators. Think again!':'This harms pollinators and their homes. Think again!','bad')}};d.appendChild(b)});$('sort').appendChild(d)});
+const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+$('fbCard').onclick=()=>{const p=$('fbP').value.trim(),n=$('fbN').value.trim(),s=$('fbS').value.trim();if(!p&&!n&&!s){$('fbOut').innerHTML='<div class="msg bad">Write some feedback first.</div>';sfx('bad');return}sfx('good');
+ $('fbOut').innerHTML='<div class="dcard"><h3>Our feedback</h3><p><b>👍 Positive:</b> '+esc(p||'–')+'</p><p><b>👎 Negative:</b> '+esc(n||'–')+'</p><p><b>💡 Solutions:</b> '+esc(s||'–')+'</p><p class="small">Britus Education · © 2026 Fatma Alruffai</p></div>'};
+// share phase
+const LC=['Seed','Seedling','Mature plant with flowers','Pollination','Fruit with new seeds'];let lcN=0;
+LC.slice().sort(()=>Math.random()-0.5).forEach(n=>{const b=document.createElement('button');b.className='btn';b.textContent=n;b.onclick=()=>{if(b.classList.contains('pick'))return;
+ if(n==LC[lcN]){b.classList.add('pick');b.textContent=(lcN+1)+'. '+n;lcN++;if(lcN==LC.length){msg('mLc','Perfect! Seed → seedling → mature plant with flowers → pollination → fruit with new seeds, and the cycle starts again. 🔄','good')}else{sfx('pop');msg('mLc','Yes! What comes next?','',true)}}
+ else{b.classList.add('miss');setTimeout(()=>b.classList.remove('miss'),600);msg('mLc','Not yet. Think: what happens after "'+(lcN?LC[lcN-1]:'the start')+'"?','bad')}};$('lc').appendChild(b)});
+let prText='';
+$('prMake').onclick=()=>{const w=$('prW').value,se=$('prS').value,why=$('prWhy').value.trim();if(!why){$('prOut').innerHTML='<div class="msg bad">Write why the pollinator plays an active role first.</div>';sfx('bad');return}
+ prText='Our flower grows '+w+' in '+se+'. '+(se=='winter'?'In winter few flowers bloom and most pollinators rest, so we show the first warm days. ':'')+'The flower makes nectar and pollen. '+why+' After pollination, the flower makes seeds, and new plants can grow. Our model shows this with a robot bee, a flower, a motor and a motion sensor.';
+ sfx('good');$('prOut').innerHTML='<div class="dcard"><h3>Our presentation</h3><p>'+esc(prText)+'</p><p class="small">Britus Education · © 2026 Fatma Alruffai</p></div>'};
+$('prSay').onclick=()=>{if(!prText){$('prMake').click();if(!prText)return}try{if(sndOn&&window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(prText);u.rate=.95;speechSynthesis.speak(u)}}catch(e){}};
+// ---------- Challenges: garden game ----------
+const NS='http://www.w3.org/2000/svg';function sv(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+const GC={pink:'#e5578f',yellow:'#f2b600',purple:'#8e5bd6'};
+const GF=[[40,120,'pink'],[100,70,'yellow'],[160,125,'purple'],[215,65,'pink'],[265,120,'yellow'],[300,55,'purple']].map(([x,y,c],i)=>({x,y,c,i,done:false}));
+let gBee={x:20,y:30,tx:20,ty:30,carry:null,from:-1},gDone=new Set();
+function drawGarden(){const s=$('garden');s.innerHTML='';sv('rect',{x:0,y:160,width:320,height:30,fill:'#7cb342'},s);
+ GF.forEach(f=>{sv('line',{x1:f.x,y1:f.y,x2:f.x,y2:162,stroke:'#4f9a2a','stroke-width':3},s);const g=sv('g',{style:'cursor:pointer',tabindex:0,role:'button','aria-label':f.c+' flower'+(f.done?', pollinated':'')},s);
+  for(let k=0;k<6;k++){const a=k/6*Math.PI*2;sv('ellipse',{cx:f.x+11*Math.cos(a),cy:f.y+11*Math.sin(a),rx:9,ry:6,transform:'rotate('+(a*57.3)+' '+(f.x+11*Math.cos(a))+' '+(f.y+11*Math.sin(a))+')',fill:GC[f.c]},g)}
+  sv('circle',{cx:f.x,cy:f.y,r:7,fill:f.done?'#4caf50':'#ffd21f',stroke:'#b8860b'},g);if(f.done)sv('text',{x:f.x,y:f.y+4,'text-anchor':'middle','font-size':10,fill:'#fff'},g).textContent='✓';
+  g.onclick=()=>gFly(f);g.onkeydown=e=>{if(e.key=='Enter'||e.key==' ')gFly(f)}});
+ const b=sv('g',{id:'gbee',transform:'translate('+gBee.x+' '+gBee.y+')'},s);sv('ellipse',{cx:0,cy:0,rx:9,ry:6,fill:'#f5c400',stroke:'#222','stroke-width':1.5},b);sv('line',{x1:-2,y1:-6,x2:-2,y2:6,stroke:'#222','stroke-width':2},b);sv('line',{x1:3,y1:-6,x2:3,y2:6,stroke:'#222','stroke-width':2},b);
+ sv('ellipse',{cx:-1,cy:-8,rx:6,ry:4,fill:'#dff3ff',opacity:.8},b);sv('circle',{cx:9,cy:-1,r:3,fill:'#222'},b);if(gBee.carry)sv('circle',{cx:0,cy:8,r:4,fill:GC[gBee.carry],stroke:'#ffd21f','stroke-width':2},b)}
+let gAnim=null;
+function gFly(f){if(gAnim)return;sfx('click');gBee.tx=f.x;gBee.ty=f.y-14;const sx=gBee.x,sy=gBee.y;let t=0;loopSnd(true,'buzz');
+ gAnim=setInterval(()=>{t+=0.05;const e=t*t*(3-2*t);gBee.x=sx+(gBee.tx-sx)*e;gBee.y=sy+(gBee.ty-sy)*e-Math.sin(t*Math.PI)*18;$('gbee')&&$('gbee').setAttribute('transform','translate('+gBee.x+' '+gBee.y+')');
+  if(t>=1){clearInterval(gAnim);gAnim=null;loopSnd(false,'buzz');arrive(f)}},30)}
+function arrive(f){if(!gBee.carry){gBee.carry=f.c;gBee.from=f.i;sfx('pop');msg('mG','The bee collected '+f.c+' pollen. Take it to another '+f.c+' flower!','',true)}
+ else if(f.i==gBee.from){msg('mG','That is the same flower. Pollen must go to a different flower of the same kind.','bad')}
+ else if(f.c!=gBee.carry){msg('mG','Oops! '+gBee.carry+' pollen cannot fertilize a '+f.c+' flower. Pollen only works on the same kind of plant.','bad')}
+ else{f.done=true;gDone.add(f.c);gBee.carry=null;gBee.from=-1;if(gDone.size==3){msg('mG','You pollinated all three kinds of flowers! Now they can make seeds. 🌱🏆','good',true);sfx('win')}else msg('mG','Pollination! The '+f.c+' flower can now make seeds. '+(3-gDone.size)+' kind'+(3-gDone.size>1?'s':'')+' left.','good')}
+ drawGarden()}
+$('gReset').onclick=()=>{GF.forEach(f=>f.done=false);gDone.clear();gBee={x:20,y:30,tx:20,ty:30,carry:null,from:-1};drawGarden();msg('mG','Tap a flower to start.','',true)};
+drawGarden();msg('mG','Tap a flower to start.','',true);
+// quick questions
+const QQ=[['Which number is greater?',['0.457','0.475'],'0.475','Correct: the tenths are both 4, but in the hundredths place 7 is more than 5.','Line up the decimals and compare the hundredths place.'],
+['Monday\'s pollen count was 45.39 PPM. Tuesday\'s was 45.309 PPM. Which day was higher?',['Monday 45.39','Tuesday 45.309'],'Monday 45.39','Correct: 45.39 is the same as 45.390, and 390 thousandths is more than 309 thousandths.','Write 45.39 as 45.390, then compare it with 45.309.'],
+['How do you say 87.071 in words?',['eighty-seven and seventy-one hundredths','eighty-seven and seventy-one thousandths'],'eighty-seven and seventy-one thousandths','Correct: the last digit is in the thousandths place.','Count the digits after the decimal point: three digits means thousandths.'],
+['Which part of the flower receives the pollen?',['Anther','Stigma','Petal'],'Stigma','Correct: the sticky stigma receives the pollen. The anther makes it.','The anther makes pollen. Which part catches it?']];
+QQ.forEach(([q,opts,a,ok,bad],i)=>{const d=document.createElement('details');d.open=true;d.innerHTML='<summary>Challenge '+(i+1)+'</summary><p>'+q+'</p><div class="choices" id="qq'+i+'"></div><div class="msg" id="mq'+i+'"></div>';$('qq').appendChild(d);
+ mcq('qq'+i,opts,a,ok,bad,'mq'+i,()=>{solvedQ.add(i);msg('cscore','Solved: '+solvedQ.size+' of 4'+(solvedQ.size==4?'. Excellent work, scientist! 🏆':''),solvedQ.size==4?'good':'',true);if(solvedQ.size==4)setTimeout(()=>sfx('win'),300)})});
+// ---------- Use the model ----------
+let dPh=0;
+const CC={yellow:'#f2b600',purple:'#8e5bd6',red:'#e53935',pink:'#e5578f',white:'#f4f4f4'};
+function flowerSvg(p,x,y,c,r,shape){if(shape=='tube'){sv('path',{d:'M'+(x-r*0.45)+' '+(y+r)+' L'+(x-r*0.7)+' '+(y-r)+' Q'+x+' '+(y-r*1.5)+' '+(x+r*0.7)+' '+(y-r)+' L'+(x+r*0.45)+' '+(y+r)+'Z',fill:c,stroke:'#7a1f1f'},p);sv('ellipse',{cx:x,cy:y-r*1.05,rx:r*0.55,ry:r*0.28,fill:'#5a1010'},p);return}
+ const n=shape=='big'?8:6,rr=shape=='big'?r*1.4:r;for(let k=0;k<n;k++){const a=k/n*Math.PI*2;sv('ellipse',{cx:x+rr*Math.cos(a),cy:y+rr*Math.sin(a),rx:rr*0.85,ry:rr*0.55,transform:'rotate('+(a*57.3)+' '+(x+rr*Math.cos(a))+' '+(y+rr*Math.sin(a))+')',fill:c,stroke:'rgba(0,0,0,.15)'},p)}sv('circle',{cx:x,cy:y,r:rr*0.55,fill:'#ffd21f',stroke:'#b8860b'},p)}
+function pollinator(p,kind,x,y,rot,t,carry){const g=sv('g',{transform:'translate('+x+' '+y+') rotate('+rot+')'},p);const f=Math.abs(Math.sin(t*90))*0.7+0.3;
+ if(kind=='bee'){sv('ellipse',{rx:11,ry:7,fill:'#f5c400',stroke:'#222'},g);[-3,3].forEach(d=>sv('line',{x1:d,y1:-7,x2:d,y2:7,stroke:'#222','stroke-width':2},g));[-1,1].forEach(d=>sv('ellipse',{cx:0,cy:d*9*f,rx:7,ry:5*f,fill:'#dff3ff',opacity:.85},g))}
+ else if(kind=='butterfly'){[-1,1].forEach(d=>{sv('ellipse',{cx:-2,cy:d*10*f,rx:9,ry:10*f,fill:'#ff8a3d',stroke:'#5a2a00'},g)});sv('ellipse',{rx:10,ry:2.5,fill:'#3b2a1a'},g)}
+ else if(kind=='hummingbird'){sv('ellipse',{rx:12,ry:6,fill:'#2e9e6f'},g);sv('circle',{cx:9,cy:0,r:5,fill:'#c62828'},g);sv('line',{x1:13,y1:0,x2:25,y2:0,stroke:'#222','stroke-width':2},g);[-1,1].forEach(d=>sv('ellipse',{cx:-2,cy:d*9*f,rx:8,ry:3,fill:'#9be7c4'},g))}
+ else if(kind=='bat'){[-1,1].forEach(d=>sv('path',{d:'M0 0 Q-10 '+d*10+' -2 '+d*22*f+' Q2 '+d*16+' 6 '+d*12+' Q2 '+d*6+' 4 0Z',fill:'#5d4037'},g));sv('circle',{r:4.5,fill:'#3e2723'},g)}
+ else{sv('ellipse',{rx:10,ry:8,fill:'#2e7d32',stroke:'#111'},g);sv('line',{x1:-10,y1:0,x2:6,y2:0,stroke:'#111'},g);sv('circle',{cx:10,cy:0,r:4,fill:'#111'},g)}
+ if(carry)sv('rect',{x:-4,y:-4,width:8,height:8,rx:1.5,fill:'#ffe24a',stroke:'#b8860b',opacity:.9},g)}
+function axleArm(p,cx,cy,x,y){sv('line',{x1:cx,y1:cy,x2:x,y2:y,stroke:'#9ccc3c','stroke-width':6,'stroke-linecap':'round'},p);sv('circle',{cx:cx,cy:cy,r:9,fill:'#9aa0a6',stroke:'#555'},p);sv('circle',{cx:cx,cy:cy,r:3,fill:'#333'},p)}
+// timeline: move between stop angles with dwell
+function tour(t,stops){const n=stops.length,seg=1/n,i=Math.floor(t/seg)%n,k=(t-i*seg)/seg;const a0=stops[i],a1=stops[(i+1)%n]+(i==n-1?360:0)*(stops[(i+1)%n]<=a0?1:0);let A1=a1;if(A1<=a0)A1+=360;
+ if(k<0.4)return{a:a0,at:i,dw:true};const e=(k-0.4)/0.6,s=e*e*(3-2*e);return{a:a0+(A1-a0)*s,at:-1,dw:false}}
+function exA(t){const s=$('exA');s.innerHTML='';sv('rect',{x:0,y:0,width:300,height:200,fill:'#7cb342',opacity:.25},s);const cx=150,cy=100,R=70;
+ sv('circle',{cx:cx,cy:cy,r:R,fill:'none',stroke:'#6f5662','stroke-dasharray':'4 5'},s);flowerSvg(s,cx-R,cy,'#e53935',14,'tube');sv('rect',{x:cx-R-5,y:cy-5,width:10,height:10,fill:'#ffe24a',opacity:.8},s);
+ const T=tour(t,[180,0]);const a=T.a*Math.PI/180,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);axleArm(s,cx,cy,x,y);pollinator(s,'hummingbird',x,y,T.a+90,t,T.at==0||(T.at<0&&T.a>180&&T.a<360));
+ sv('text',{x:150,y:18,'text-anchor':'middle','font-size':12,fill:'#2b1a22','font-weight':700},s).textContent=T.at==0?'Sensor sees the hummingbird · red light · sound 5':'Flying round the axle…'}
+function exB(t){const s=$('exB');s.innerHTML='';sv('rect',{x:0,y:0,width:300,height:200,fill:'#7cb342',opacity:.25},s);const cx=150,cy=100,R=72;
+ sv('circle',{cx:cx,cy:cy,r:R,fill:'none',stroke:'#6f5662','stroke-dasharray':'4 5'},s);
+ const T=tour(t,[180,0]);const seeded=T.at==1||(T.at<0&&T.a>360-1)||(t%1)>0.75;flowerSvg(s,cx-R,cy,'#8e5bd6',12,'open');flowerSvg(s,cx+R,cy,'#8e5bd6',12,'open');
+ sv('text',{x:cx-R,y:cy+34,'text-anchor':'middle','font-size':11,fill:'#2b1a22'},s).textContent='Flower A';sv('text',{x:cx+R,y:cy+34,'text-anchor':'middle','font-size':11,fill:'#2b1a22'},s).textContent=T.at==1?'Flower B: seeds! 🌱':'Flower B';
+ const carry=(T.at==0)||(T.at<0&&T.a<360&&T.a>180)||(T.at<0&&T.a>=180&&T.a<360);const a=T.a*Math.PI/180,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);axleArm(s,cx,cy,x,y);
+ const hasPol=T.at==0||(T.at<0&&T.a>180&&T.a<360);pollinator(s,'bee',x,y,T.a+90,t,hasPol);
+ if(T.at==1){for(let k=0;k<5;k++)sv('circle',{cx:cx+R-6+k*3,cy:cy+18,r:2.2,fill:'#6d4c41'},s)}
+ sv('text',{x:150,y:18,'text-anchor':'middle','font-size':12,fill:'#2b1a22','font-weight':700},s).textContent=T.at==0?'At flower A: pollen sticks to the bee':T.at==1?'At flower B: pollen reaches the stigma':'Carrying pollen…'}
+const LIKE={bee:{c:['yellow','purple'],s:['open','big']},butterfly:{c:['pink','purple','red'],s:['open','tube']},hummingbird:{c:['red','pink'],s:['tube']},bat:{c:['white'],s:['big']},beetle:{c:['white','yellow'],s:['big','open']}};
+function dV(){return{sh:$('dShape').value,c:$('dCol').value,p:$('dPol').value,sc:$('dScene').value,df:$('dDiff').value}}
+function design(t){const {sh,c,p,sc}=dV(),s=$('exC');s.innerHTML='';const night=p=='bat';sv('rect',{x:0,y:0,width:300,height:190,fill:night?'#1d2340':'#7cb342',opacity:night?1:.25,rx:10},s);
+ const cx=150,cy=98,R=68;sv('circle',{cx:cx,cy:cy,r:R,fill:'none',stroke:night?'#9aa':'#6f5662','stroke-dasharray':'4 5'},s);flowerSvg(s,cx-R,cy,CC[c],13,sh);if(sc=='cross')flowerSvg(s,cx+R,cy,CC[c],13,sh);
+ if($('rule1').checked)sv('rect',{x:cx-R-6,y:cy+16,width:12,height:7,rx:2,fill:'#f3f3f3',stroke:'#333'},s);
+ const T=tour(t,sc=='cross'?[180,0]:[180]);const a=T.a*Math.PI/180,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);if($('rule3').checked)axleArm(s,cx,cy,x,y);
+ pollinator(s,p,x,y,T.a+90,t,$('rule2').checked&&(T.at==0||(T.at<0&&T.a>180)));
+ sv('text',{x:8,y:16,'font-size':11,fill:night?'#fff':'#2b1a22'},s).textContent=(night?'Night · ':'')+p+' + '+c+' '+(sh=='tube'?'tube':sh=='big'?'big':'open')+' flower'}
+function dChecks(){const {sh,c,p,sc,df}=dV(),chk=[];const ok=(t,y)=>chk.push('<li class="'+(y?'y':'n')+'">'+(y?'✔ ':'✘ ')+t+'</li>');const L=LIKE[p];
+ ok(L.c.includes(c)?'Good colour: '+p+'s are attracted to '+c+' flowers.':p+'s are not usually attracted to '+c+' flowers. Try '+L.c.join(' or ')+'.',L.c.includes(c));
+ ok(L.s.includes(sh)?'Good shape for a '+p+'.':'This shape is hard for a '+p+'. Try '+L.s.map(x=>x=='tube'?'a tubular':x=='big'?'a big':'an open').join(' or ')+' flower.',L.s.includes(sh));
+ if(p=='bee'&&c=='red')ok('Bees cannot see red well. They see yellow, blue and purple best.',0);
+ if(p=='bat')ok('Bats fly at night, so they visit big, pale flowers with a strong smell.',1);
+ [['rule1','Keep the motion sensor in the new flower.'],['rule2','Use the transparent brick to show the pollen.'],['rule3','Attach the new pollinator to the axle.'],['rule4','Program the new pollinator to act differently from the bee.']].forEach(([id,t])=>{if(!$(id).checked)ok('Lesson rule: '+t,0)});
+ if(sc=='cross')ok('Cross-pollination: both flowers must be the same kind. The Smarthub has two ports, so reach flower B with "Motor on for 2 seconds" or a second Smarthub.',1);
+ const D={speed:['Motor power 7','faster'],dir:['Motor that way','the other way'],light:['Light '+c,'with a '+c+' light'],sound:['Play sound 5','with a new sound']}[df];
+ const prog='Start → '+(df=='speed'?'Motor power 7':'Motor power 4')+' → '+(df=='dir'?'Motor that way':'Motor this way')+' → Wait for motion sensor → Motor off → '+(df=='light'?'Light '+c+' → ':'')+'Play sound '+(df=='sound'?5:2)+(sc=='cross'?' → Motor on for 2 seconds → Motor off → Play sound 3':'');
+ ok('Program idea ('+D[1]+'): '+prog,1);$('dChk').innerHTML=chk.join('')}
+['dShape','dCol','dPol','dScene','dDiff','rule1','rule2','rule3','rule4'].forEach(i=>$(i).onchange=()=>{dChecks();saveD();sfx('pop')});
+const DF=['dName','dParts','dProg','dWhy','dShape','dCol','dPol','dScene','dDiff'];
+function saveD(){try{localStorage.setItem('polDesign',JSON.stringify(Object.fromEntries(DF.map(i=>[i,$(i).value]))));$('dSaved').textContent='Draft saved in this browser'}catch(e){}}
+try{const d=JSON.parse(localStorage.getItem('polDesign')||'null');if(d)DF.forEach(i=>{if(d[i]!=null)$(i).value=d[i]})}catch(e){}
+DF.slice(0,4).forEach(i=>$(i).oninput=saveD);
+$('dMake').onclick=()=>{const name=$('dName').value.trim();if(!name||!$('dParts').value.trim()){$('dCard').innerHTML='<div class="msg bad">Fill in at least the name and the parts.</div>';sfx('bad');return}
+ sfx('good');const sel=id=>$(id).options[$(id).selectedIndex].text,rules=['rule1','rule2','rule3','rule4'].filter(i=>$(i).checked).length;
+ $('dCard').innerHTML='<div class="dcard"><h3>'+esc(name)+'</h3><p><b>Flower:</b> '+sel('dShape')+', '+sel('dCol')+' · <b>Pollinator:</b> '+sel('dPol')+' · <b>Scenario:</b> '+sel('dScene')+' · <b>Program change:</b> '+sel('dDiff')+'</p><p><b>Lesson rules met:</b> '+rules+' of 4</p><p><b>Parts:</b> '+esc($('dParts').value)+'</p><p><b>Program:</b> '+esc($('dProg').value)+'</p><p><b>Why it is attracted:</b> '+esc($('dWhy').value)+'</p><p class="small">Take a screenshot of this card and share it with your teacher. Britus Education · © 2026 Fatma Alruffai</p></div>';saveD()};
+dChecks();
+// seed dispersal
+const DS=[['fruit','🍒 Eaten in fruit','Seeds hide inside tasty fruit. An animal eats the fruit and drops the seeds far away.','Build a red "fruit" brick on the flower. Program the motor to bring a bird to the fruit; when the motion sensor sees it, play a sound and the fruit brick is "eaten".'],
+['hooks','🐕 Carried by animals','Some seeds have tiny hooks that stick to fur or feathers, like burrs on a dog.','Put a seed brick with a hook (a clip) on the plant. The pollinator arm brushes past and carries the seed away.'],
+['wind','🌬️ Blown by wind','Light seeds with fluffy parachutes or wings, like dandelions and maple seeds, are blown away.','Use the motor to spin a fan. Light paper "seeds" blow off the plant when the motion sensor sees your hand.'],
+['water','🌊 Carried by water','Seeds like coconuts float, so rivers and the sea carry them to new places.','Build a plant beside a "river". Tilt the model (tilt sensor) to roll the seed brick into the water.'],
+['pop','💥 Self-propelled','Some pods dry out and burst, flinging their seeds away, like peas and touch-me-nots.','Use the motor to turn a cam that flips a lever, like a catapult, throwing a seed brick.']];let dsK='wind';
+DS.forEach(([k,n])=>{const b=document.createElement('button');b.className='btn'+(k==dsK?' on':'');b.textContent=n;b.onclick=()=>{dsK=k;document.querySelectorAll('#dsBtns .btn').forEach(x=>x.classList.toggle('on',x==b));dsInfoUpd();sfx('pop')};$('dsBtns').appendChild(b)});
+function dsInfoUpd(){const d=DS.find(x=>x[0]==dsK);$('dsInfo').innerHTML='<b>'+d[1]+':</b> '+d[2]+'<br><b>Model it with WeDo:</b> '+d[3]}dsInfoUpd();
+function exD(t){const s=$('exD');s.innerHTML='';const water=dsK=='water';sv('rect',{x:0,y:0,width:300,height:190,fill:'#e9f6ff'},s);sv('rect',{x:0,y:160,width:water?130:300,height:30,fill:'#7cb342'},s);if(water)sv('rect',{x:130,y:165,width:170,height:25,fill:'#4fa3e0'},s);
+ sv('line',{x1:60,y1:160,x2:60,y2:80,stroke:'#4f9a2a','stroke-width':5},s);[[45,120],[75,105]].forEach(([x,y])=>sv('ellipse',{cx:x,cy:y,rx:14,ry:6,fill:'#5aa02c'},s));
+ const k=t%1;
+ if(dsK=='fruit'){sv('circle',{cx:64,cy:80,r:9,fill:k<0.35?'#d32f2f':'none'},s);const bx=k<0.35?260-k/0.35*190:70+(k-0.35)/0.65*200,by=k<0.35?40+k*100:75-(k-0.35)*40;sv('ellipse',{cx:bx,cy:by,rx:12,ry:7,fill:'#1e88e5'},s);sv('circle',{cx:bx+(k<0.35?-10:10),cy:by-4,r:5,fill:'#1565c0'},s);if(k>0.75){sv('circle',{cx:230,cy:158,r:3,fill:'#6d4c41'},s);sv('path',{d:'M230 158 q-4 -12 0 -16 q4 4 0 16',fill:'#7cb342'},s)}}
+ else if(dsK=='hooks'){sv('circle',{cx:64,cy:82,r:6,fill:k<0.4?'#8d6e63':'none',stroke:k<0.4?'#5d4037':'none','stroke-dasharray':'2 1'},s);const dx=-40+k*360;sv('ellipse',{cx:dx,cy:140,rx:26,ry:13,fill:'#a1887f'},s);sv('circle',{cx:dx+24,cy:128,r:9,fill:'#a1887f'},s);if(k>=0.4)sv('circle',{cx:dx-4,cy:128,r:5,fill:'#8d6e63',stroke:'#5d4037','stroke-dasharray':'2 1'},s)}
+ else if(dsK=='wind'){sv('circle',{cx:60,cy:76,r:12,fill:'none',stroke:'#ddd','stroke-width':6,'stroke-dasharray':'2 2'},s);for(let i=0;i<7;i++){const kk=(k+i/7)%1,x=70+kk*220,y=76-Math.sin(kk*6+i)*14-kk*30;sv('line',{x1:x,y1:y,x2:x,y2:y+8,stroke:'#795548'},s);sv('circle',{cx:x,cy:y,r:4,fill:'none',stroke:'#bbb'},s)}}
+ else if(water){const x=70+k*210,y=k<0.25?82+k*300:170+Math.sin(k*30)*2;sv('ellipse',{cx:x,cy:Math.min(y,168),rx:9,ry:8,fill:'#8d6e63'},s);sv('circle',{cx:60,cy:82,r:9,fill:k<0.02?'#8d6e63':'none'},s)}
+ else{const open=k>0.3;sv('path',{d:open?'M60 80 q-12 -10 -14 -24 M60 80 q12 -10 14 -24':'M60 80 q-6 -14 0 -26 q6 12 0 26',stroke:'#558b2f','stroke-width':4,fill:'none'},s);if(open)for(let i=0;i<4;i++){const kk=Math.min(1,(k-0.3)/0.6),x=60+(i-1.5)*kk*90,y=60-Math.sin(kk*Math.PI)*50+kk*98;sv('circle',{cx:x,cy:y,r:3.5,fill:'#6d4c41'},s)}}
+ sv('text',{x:150,y:18,'text-anchor':'middle','font-size':12,fill:'#2b1a22','font-weight':700},s).textContent=DS.find(x=>x[0]==dsK)[1]}
+// ---------- Main loop ----------
+let last=0;
+function tick(t){const dt=Math.min(.1,(t-last)/1000||0);last=t;
+ if(step==0){RF&&RF.frame(dt)}else{loopSnd(false,'buzz');if(MD){const r=MD.frame(dt);$('mhud').textContent=step==4?(r.moving?'Motor on · power '+$('pow').value:'Motor off'):''}}
+ if(step==8){dPh+=dt*(+$('dspd').value/100)*0.12;const tt=(dPh%1);exA(tt);exB(tt);design(tt);exD((dPh*1.5)%1)}
+ requestAnimationFrame(tick)}
+requestAnimationFrame(tick);
+drawTray();msg('m1',order[0][2],'',true);nav();
+</script>
+<script>
+/* Visitor counter (GoatCounter, no cookies, no names). Counts each step once per visit. */
+(function(){var LAB='pollinators',Q=[];
+ function send(){if(!window.goatcounter||!window.goatcounter.count)return;while(Q.length){var e=Q.shift();window.goatcounter.count({path:LAB+'/'+e[0],title:e[1],event:true})}}
+ function ev(id,title){try{if(sessionStorage.getItem('gc-'+id))return;sessionStorage.setItem('gc-'+id,'1')}catch(x){}Q.push([id,'Pollinators lab: '+title]);send()}
+ setInterval(send,2000);
+ var g=window.go;window.go=function(i){g(i);if(i>=1&&i<=5)ev('step-'+(i+1)+'-'+S[i].toLowerCase().replace(/[^a-z]+/g,'-'),'reached step '+(i+1)+' '+S[i]);if(i==7)ev('challenges','opened challenges');if(i==8)ev('design','opened use the model')};
+ var f=document.getElementById('fin');if(f)new MutationObserver(function(){if(!f.hidden)ev('finished','finished the project')}).observe(f,{attributes:true,attributeFilter:['hidden']});
+})();
+</script>
+<script data-goatcounter="https://fatmajoy.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+/* Britus Virtual STEM Lab: saves this student's progress for the portal and the teacher dashboard */
+(function(){var LAB='pollinators',K='britusLab:v1';
+ function stu(){try{return JSON.parse(localStorage.getItem('britusStudent')||'null')}catch(e){return null}}
+ function rec(step,done){var s=stu();if(!s)return;try{var p=JSON.parse(localStorage.getItem(K)||'{}');p[s.id]=p[s.id]||{labs:{}};var l=p[s.id].labs[LAB]||{};if(step&&!(l.done&&!done))l.step=step;if(done){l.done=true;l.step=step||'Finished'}l.updated=new Date().toISOString();p[s.id].labs[LAB]=l;localStorage.setItem(K,JSON.stringify(p))}catch(e){}}
+ function first(step){var s=stu();if(!s)return;try{var p=JSON.parse(localStorage.getItem(K)||'{}');if(!(p[s.id]&&p[s.id].labs[LAB]))rec(step,false)}catch(e){}}
+ try{var g=window.go;window.go=function(i){g(i);var n=S[i];if(n&&!/Guidance|Challenges|Other designs|Use the model/.test(n))rec('Step '+(i+1)+': '+n,false)};var f=document.getElementById('fin');if(f){if(!f.hidden)rec('Finished',true);new MutationObserver(function(){if(!f.hidden)rec('Finished',true)}).observe(f,{attributes:true,attributeFilter:['hidden']})}first('Step 1: '+S[0]);}catch(e){}
+ if(stu()){var a=document.createElement('a');a.href='../../';a.textContent='← My projects';a.setAttribute('aria-label','Back to my projects');a.style.cssText='position:fixed;left:12px;bottom:12px;z-index:9999;background:#0f2747;color:#fff;font:800 14px system-ui,sans-serif;padding:10px 16px;border-radius:999px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.3)';document.body.appendChild(a)}
+})();
+</script>
