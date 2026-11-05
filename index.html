@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAMFBMVEX///////39//7//v/+/v/+/v79/v7+/vz9/f3+/fv8/fz6/fz29/i9wsZrdX8NITcq5aEvAAAEFUlEQVR42rWVW2wUVRjHfzM7U1vL5cxKi1x3duvtpXFL8UVJWCFCogaXkqLxhZqYPvggPhhDQgwkBkKCl/hgIkSRaEwIG+LU6wPVtMRbhJUFAg9atiNFoi3tOaAI6Xbm+DDdWbb1AWM8T+ec/Ob/fec75z8f/O/DAHgqy/cewCNrAYoFwN6UDbbfskJZML733fbTt58WAIyfLLetcNBLboAFgEPAMsycNgQwIcs4Kil0oiozZ1iP9d4FuyhqrcfdRuxDfCnDZsAE2LcBPngczuzd5cPI2zvzFY7+IaEKXFqtAAiCZyXhGEXwaR5GV4ET6xTZT4HS2R1IT+HZxX61taZw+E9JCSgEaquST8gx8gVT7lYxwLUtBgBe+Je6po0BsF9lngpjAB+9EagMTGh1YhwK+fzLSscKDRpFEqAEhMcBD3wCqoUyIABAQ8KbCxBCLYcwpWVuFIBD0g8GgEowmdCVKqCPP3/ejZLJjV618wAf880o1RAGKb9yEMBMXbAyiwHoTdsACYBwXrDnx6amxhusLWdIHZDA+otj7R/GSXqAEoC+v+28bwL80DF0uVYoAC0ViDnO4v3TpRGL64HovL4zt2cpgD2xStizACctsLKlaCGMf1DARbQ+E50CMQt4ssFtcKZMF8DIZEnMBIwXjM9ZKhoArprMDtHepvqEs8YkDxtERZgzgbO0DmJ8sQzoNkWXiEsd6Qud3TxnBGPRejvr0XF9EKMOsHrD0omkgMzhqT0k3KfPUJ9D2P/VsaQDmJlk4y598Fh0vzWFAFR0dIyun1ducpihQDFYXR4GdHm4bNci12arTq177tKIYOKl1q6QCdUxAwCst64Pd+hzL8oQc/+3n6RmhLDQxaYt6EcNz6ew4A05S0GEcmCHCj4aKhS6K+8575/SM4D0fhr3cTGchAIL97aoeoWpfnM+hDKyA6MtD6hZl+WAjyIKbuR1WKeQyJ7KFBHcJl3ohkzktjqFcueULxOMTC9V7Avzs596fk0Xw87+5rHHxv2jPufODTW1Ln8njBXa0juBfq7sPj5xINqa/E3G3myysroapoWcmHZ3nXGUmHZP5cKSQQBK4VQMBHz98I0cAJW7XXqib5bfFwP6l0HnZAhgVZJLWqMy9FaM2FmTARwEyAOBeU8eWNnm3mScBNOEWAD4HuAa3GSc6lvzXAwhKgD+/Jue3OaFgzoH0C0ahWWsAez0FcuJjZNOOijANldsFHf2hVnIp8S2msId2wQ6BfmOh/pwPK51gyOMmrPufVNcVha200ka47vfXzvDZnG9L3JvtaEsasHe4xa11uO5TPeDR932qKFYQP51F3qGClhHMkDySPl8wJGMiP/VHlJKgJKjpZQS4ftKaCmDf99Y7VcAgu3R9NYa638ffwPd65NfREDefAAAAABJRU5ErkJggg==">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAMFBMVEX///////39//7//v/+/v/+/v79/v7+/vz9/f3+/fv8/fz6/fz29/i9wsZrdX8NITcq5aEvAAAEFUlEQVR42rWVW2wUVRjHfzM7U1vL5cxKi1x3duvtpXFL8UVJWCFCogaXkqLxhZqYPvggPhhDQgwkBkKCl/hgIkSRaEwIG+LU6wPVtMRbhJUFAg9atiNFoi3tOaAI6Xbm+DDdWbb1AWM8T+ec/Ob/fec75z8f/O/DAHgqy/cewCNrAYoFwN6UDbbfskJZML733fbTt58WAIyfLLetcNBLboAFgEPAMsycNgQwIcs4Kil0oiozZ1iP9d4FuyhqrcfdRuxDfCnDZsAE2LcBPngczuzd5cPI2zvzFY7+IaEKXFqtAAiCZyXhGEXwaR5GV4ET6xTZT4HS2R1IT+HZxX61taZw+E9JCSgEaquST8gx8gVT7lYxwLUtBgBe+Je6po0BsF9lngpjAB+9EagMTGh1YhwK+fzLSscKDRpFEqAEhMcBD3wCqoUyIABAQ8KbCxBCLYcwpWVuFIBD0g8GgEowmdCVKqCPP3/ejZLJjV618wAf880o1RAGKb9yEMBMXbAyiwHoTdsACYBwXrDnx6amxhusLWdIHZDA+otj7R/GSXqAEoC+v+28bwL80DF0uVYoAC0ViDnO4v3TpRGL64HovL4zt2cpgD2xStizACctsLKlaCGMf1DARbQ+E50CMQt4ssFtcKZMF8DIZEnMBIwXjM9ZKhoArprMDtHepvqEs8YkDxtERZgzgbO0DmJ8sQzoNkWXiEsd6Qud3TxnBGPRejvr0XF9EKMOsHrD0omkgMzhqT0k3KfPUJ9D2P/VsaQDmJlk4y598Fh0vzWFAFR0dIyun1ducpihQDFYXR4GdHm4bNci12arTq177tKIYOKl1q6QCdUxAwCst64Pd+hzL8oQc/+3n6RmhLDQxaYt6EcNz6ew4A05S0GEcmCHCj4aKhS6K+8575/SM4D0fhr3cTGchAIL97aoeoWpfnM+hDKyA6MtD6hZl+WAjyIKbuR1WKeQyJ7KFBHcJl3ohkzktjqFcueULxOMTC9V7Avzs596fk0Xw87+5rHHxv2jPufODTW1Ln8njBXa0juBfq7sPj5xINqa/E3G3myysroapoWcmHZ3nXGUmHZP5cKSQQBK4VQMBHz98I0cAJW7XXqib5bfFwP6l0HnZAhgVZJLWqMy9FaM2FmTARwEyAOBeU8eWNnm3mScBNOEWAD4HuAa3GSc6lvzXAwhKgD+/Jue3OaFgzoH0C0ahWWsAez0FcuJjZNOOijANldsFHf2hVnIp8S2msId2wQ6BfmOh/pwPK51gyOMmrPufVNcVha200ka47vfXzvDZnG9L3JvtaEsasHe4xa11uO5TPeDR932qKFYQP51F3qGClhHMkDySPl8wJGMiP/VHlJKgJKjpZQS4ftKaCmDf99Y7VcAgu3R9NYa638ffwPd65NfREDefAAAAABJRU5ErkJggg==">
+<title>Britus Education Virtual STEM Lab</title>
+<meta name="description" content="Britus Education Virtual STEM Lab: interactive build, wire, code and test projects for KG to Grade 12.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Portal: gray and dark blue, flat professional layout (sign-in, grade project cards, teacher dashboard) */
+:root{--bg:#eef0f3;--card:#fff;--ink:#1e2530;--muted:#5d6675;--line:#d5d9e0;--head:#2b3038;--head2:#363c46;--blue:#14365e;--blue2:#1d4a80;--soft:#f5f6f8;--ok:#1e7d4f;--okbg:#e2f2ea;--lock:#8b929e;--field:#fff;--warn:#a1361b;
+ --f:'Inter','Segoe UI',system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--card:#1f242b;--ink:#e8ebf0;--muted:#a3abb8;--line:#333a44;--soft:#262c34;--okbg:#173a29;--field:#181c22;--blue:#3a6fb0;--blue2:#4b82c6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15181d;--card:#1f242b;--ink:#e8ebf0;--muted:#a3abb8;--line:#333a44;--soft:#262c34;--okbg:#173a29;--field:#181c22;--blue:#3a6fb0;--blue2:#4b82c6;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.55 var(--f)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+.bar{background:var(--head);color:#fff;border-bottom:3px solid var(--blue2)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:10px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo .brand{display:block;height:46px;width:auto}.logo .sep{width:1px;height:34px;background:#ffffff40;margin:0 4px}.logo .mk{width:38px;height:38px;border-radius:6px;background:#fff;display:grid;place-items:center;flex:none}
+.logo b{font-weight:700;font-size:18px;display:block;letter-spacing:.2px}.logo small{font-size:11.5px;opacity:.7;letter-spacing:1.4px;text-transform:uppercase;display:block}
+.who{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{background:transparent;border:1px solid #ffffff40;color:#fff;border-radius:4px;padding:6px 12px;font:600 14px var(--f);cursor:pointer;min-height:36px}
+.pill:hover{background:#ffffff14}
+span.pill{cursor:default}
+.sub{background:var(--head2);color:#d9dde3;font-size:13.5px}
+.sub .wrap{padding-block:7px;display:flex;gap:18px;flex-wrap:wrap}
+main{padding-block:26px 10px;min-height:60vh}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:26px}
+h1,h2,h3{line-height:1.2;margin:0 0 8px;font-weight:700;letter-spacing:-.2px}
+h1{font-size:clamp(24px,3.4vw,32px)}h2{font-size:22px}h3{font-size:17px}
+.muted{color:var(--muted)}
+.btn{text-decoration:none;display:inline-block;font:600 15px var(--f);border:1px solid var(--blue);border-radius:4px;padding:10px 20px;background:var(--blue);color:#fff;cursor:pointer;min-height:42px}
+.btn:hover{background:var(--blue2);border-color:var(--blue2)}.btn.ghost{background:transparent;color:var(--blue);border-color:var(--line)}.btn.ghost:hover{background:var(--soft)}
+button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--blue2);outline-offset:2px}
+label{font-weight:600;display:block;margin:14px 0 5px;font-size:14px}
+input,select{font:500 15.5px var(--f);width:100%;border:1px solid var(--line);border-radius:4px;padding:10px 11px;background:var(--field);color:var(--ink)}
+.signin{display:grid;grid-template-columns:1fr 1.15fr;gap:0;padding:0;overflow:hidden}
+.signin .form{padding:30px}
+.signin .pic{background:#dfe3e8 center/cover no-repeat;min-height:320px}
+@media (max-width:820px){.signin{grid-template-columns:1fr}.signin .pic{min-height:200px}}
+.err{color:var(--warn);font-weight:600;min-height:22px;margin-top:8px;font-size:14px}
+.head-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
+.gradebar{display:flex;gap:0;flex-wrap:wrap;margin:16px 0 0;border:1px solid var(--line);border-radius:4px;overflow:hidden;width:max-content;max-width:100%}
+.gchip{background:var(--card);color:var(--muted);padding:6px 11px;font:600 13px var(--f);border-right:1px solid var(--line)}
+.gchip:last-child{border-right:0}.gchip.on{background:var(--blue);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
+@media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}@media (max-width:620px){.grid{grid-template-columns:1fr}}
+.proj{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s,border-color .2s}
+.proj:not(.locked):hover{border-color:var(--blue2);box-shadow:0 6px 18px #14365e1f}
+.proj .ttl{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.proj .ttl h3{margin:0}
+.proj .art{position:relative;aspect-ratio:16/10;background:#fff;border-bottom:1px solid var(--line)}
+.proj .art img{width:100%;height:100%;object-fit:cover;display:block}
+.proj.locked .art img{filter:grayscale(1) brightness(.85);opacity:.55}
+
+.badge{font:600 12px var(--f);border-radius:3px;padding:2px 8px;background:var(--soft);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.badge.done{background:var(--okbg);color:var(--ok);border-color:transparent}.badge.lock{color:var(--lock)}.badge.prog{background:#e6edf7;color:var(--blue);border-color:transparent}
+.proj .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.tag{font:600 11.5px var(--f);letter-spacing:1px;text-transform:uppercase;color:var(--blue2)}
+.proj p{margin:0;color:var(--muted);font-size:14.5px}
+.proj .step{font-size:13.5px;font-weight:600}
+.proj .btn{margin-top:auto;align-self:flex-start}
+.lockmsg{font-size:13.5px;font-weight:600;color:var(--lock);margin-top:auto}
+.soon{border:1px dashed var(--line);border-radius:6px;padding:46px 20px;text-align:center;color:var(--muted);margin-top:20px;background:var(--card)}
+.dash-filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:820px){.dash-filters{grid-template-columns:1fr 1fr}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+@media (max-width:820px){.stats{grid-template-columns:1fr 1fr}}
+.stat{border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:4px;padding:12px 14px;background:var(--card)}.stat b{display:block;font-size:26px;font-weight:700}.stat span{font-size:13px;color:var(--muted);font-weight:600}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px}
+table{border-collapse:collapse;width:100%;min-width:720px;background:var(--card)}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}
+th{background:var(--soft);font-weight:600;color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.6px}
+.chip{display:inline-block;border-radius:3px;padding:2px 8px;font-size:12.5px;font-weight:600;margin:2px 4px 2px 0;white-space:nowrap}
+.c-done{background:var(--okbg);color:var(--ok)}.c-prog{background:#e6edf7;color:var(--blue)}.c-none{background:var(--soft);color:var(--muted)}
+.note{background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:11px 14px;font-size:14px;margin-top:14px}
+.kitban{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:6px;padding:14px 18px;margin-top:20px}.kitban img{width:130px;height:auto;flex:none}.kitban b{font-size:16px;display:block}.kitban span{color:var(--muted);font-size:14px}@media (max-width:620px){.kitban{flex-direction:column;text-align:center}}
+footer{text-align:center;padding-block:28px 34px;border-top:1px solid var(--line);margin-top:30px}
+footer .b{font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:.2px}footer .s{font-size:12px;color:var(--muted);margin-top:2px}
+@media (prefers-reduced-motion:reduce){.proj{transition:none}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="wrap">
+ <div class="logo"><img src="img/logo.webp" alt="Britus Education" width="129" height="46" class="brand">
+  <span class="sep" aria-hidden="true"></span><b>Virtual STEM Lab</b></div>
+ <div class="who"><span id="whoName" class="pill" hidden></span><button class="pill" id="btnSwitch" hidden>Change student</button><button class="pill" id="btnTeacher">Teacher</button></div>
+</div></div>
+<div class="sub"><div class="wrap"><span>Build</span><span>Wire</span><span>Code</span><span>Test</span><span style="margin-left:auto">KG – Grade 12</span></div></div>
+
+<main class="wrap">
+<!-- Student sign-in -->
+<section id="vSignin" hidden>
+ <div class="card signin">
+  <div class="form">
+   <h1>Virtual STEM Lab</h1>
+   <p class="muted">Build it, wire it, code it and test it, right in your browser. Tell us who you are to start your projects.</p>
+   <form id="fSignin" novalidate>
+    <label for="inName">Your full name</label><input id="inName" autocomplete="name" placeholder="e.g. Sara Ahmed">
+    <label for="inSchool">Your school</label><select id="inSchool"></select>
+    <label for="inGrade">Your grade</label><select id="inGrade"></select>
+    <div class="err" id="signErr" role="alert"></div>
+    <button class="btn" type="submit">Continue</button>
+   </form>
+  </div>
+  <div class="pic" role="img" aria-label="Student robotics models built with the smart kit" id="heroPic"></div>
+ </div>
+</section>
+
+<!-- Student projects -->
+<section id="vProjects" hidden>
+ <div class="head-row"><div><h1 id="hello"></h1><div class="muted" id="helloSub"></div></div></div>
+ <div class="gradebar" id="gradeBar" aria-label="Grades"></div>
+ <div id="projArea"></div>
+</section>
+
+<!-- Teacher login -->
+<section id="vTeacherLogin" hidden>
+ <div class="card" style="max-width:480px;margin:0 auto">
+  <h2>Teacher area</h2>
+  <p class="muted">Each school has its own password. You will see only your school's students.</p>
+  <form id="fTeacher" novalidate><label for="inTSchool">School</label><select id="inTSchool"></select><label for="inPass">Password</label><input id="inPass" type="password" autocomplete="current-password">
+   <div class="err" id="passErr" role="alert"></div>
+   <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" type="submit">Open dashboard</button><button class="btn ghost" type="button" data-back>Back</button></div></form>
+ </div>
+</section>
+
+<!-- Teacher dashboard -->
+<section id="vDash" hidden>
+ <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h1 style="margin:0">Teacher dashboard</h1><div class="muted" id="dashSchool"></div></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="btnCsv">Download Excel list</button><button class="btn ghost" id="btnDashOut">Log out</button></div></div>
+ <div class="card" style="margin-top:16px">
+  <div class="dash-filters">
+   <div><label for="fSchool">School</label><select id="fSchool"></select></div>
+   <div><label for="fGrade">Grade</label><select id="fGrade"></select></div>
+   <div><label for="fStatus">Status</label><select id="fStatus"><option value="">All students</option><option value="done">Finished all projects</option><option value="prog">In progress</option><option value="none">Not started</option></select></div>
+   <div><label for="fSearch">Search name</label><input id="fSearch" placeholder="Type a name"></div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Student</th><th>School</th><th>Grade</th><th>Projects</th><th>Last active</th></tr></thead><tbody id="tBody"></tbody></table></div>
+  <div class="note" id="dataNote"></div>
+ </div>
+</section>
+</main>
+<footer><div class="b">Britus Education</div><div class="s">© 2026 Fatma Alruffai</div></footer>
+
+<script>
+/* =====================================================================
+   SETTINGS: edit these to configure the platform
+   ===================================================================== */
+const SETTINGS={
+ // Each school has its own teacher password and sees ONLY its own students.
+ // Change the names and passwords here. (Front-end check only; IT replaces this with a real login.)
+ schools:[
+  {name:'School 1',password:'school1-2026'},
+  {name:'School 2',password:'school2-2026'},
+  {name:'School 3',password:'school3-2026'},
+  {name:'School 4',password:'school4-2026'},
+  {name:'School 5',password:'school5-2026'}
+ ],
+ adminPassword:'britus-admin-2026',   // Britus admin: can see all schools
+ apiUrl:''  // IT: set to your server, e.g. 'https://lab.britus.edu/api'. Empty = save on this device only.
+};
+const IMG={"battery-builder": "img/battery-builder.webp", "hero": "img/hero.webp", "joints": "img/joints.webp", "levers": "img/levers.webp", "little-lever": "img/little-lever.webp", "mixer": "img/mixer.webp", "pollinators": "img/pollinators.webp", "power-toys": "img/power-toys.webp", "robotics": "img/robotics.webp"};
+const GRADES=['KG','1','2','3','4','5','6','7','8','9','10','11','12'];
+/* Projects per grade, in the order students must complete them.
+   path = folder of the lab on this website. */
+const PROJECTS={
+ '3':[{id:'levers',path:'labs/levers/',title:'Levers',tag:'Simple Machines · Project 6',desc:'Build first, second and third class levers, test them and find levers in everyday life.',art:'levers'},
+      {id:'little-lever',path:'labs/little-lever-builder/',title:'Little Lever Builder',tag:'Homework',desc:'Build the three levers again, see them in 3D, test them and earn your Lever Engineer certificate.',art:'little'}],
+ '4':[{id:'power-toys',path:'labs/power-toys/',title:'Power Up the Toys',tag:'Electricity',desc:'Build series and parallel circuits, measure the voltage and design a toy that uses batteries.',art:'toys'},
+      {id:'battery-builder',path:'labs/battery-builder/',title:'Battery Builder',tag:'Homework',desc:'Build battery circuits on the snap board and power up a toy car, robot and fan.',art:'battery'}],
+ '5':[{id:'pollinators',path:'labs/pollinators/',title:'Plants and Pollinators',tag:'Project 3',desc:'Learn the parts of a flower, then build, connect, program and test a robot bee.',art:'bee'},
+      {id:'robotics',path:'labs/robotics/',title:'Virtual Robotics Lab',tag:'Robotics',desc:'Build and code animal robots in 3D: frog, turtle, crocodile and parrot.',art:'frog'}],
+ '9':[{id:'joints',path:'labs/joints/',title:'Joints',tag:'Project 1',desc:'Build a hinge joint, wire the servo to the smart hub, code it to bend from 0° to 180° and test it.',art:'joint'},
+      {id:'mixer',path:'labs/mixer/',title:'Build a Mixer',tag:'Project 8 · Moments',desc:'One DC motor turns two mixers through gears. Add a potentiometer, program the speed and test it.',art:'mixer'}]
+};
+const BANNER={'9':'<div class="kitban"><img src="img/board.webp" alt="The Arduino smart hub mainboard" width="150" height="117"><div><b>Your smart hub: the Arduino mainboard</b><span>In Grade 9 you wire servo and DC motors to the smart hub and code them with blocks.</span></div></div>'};
+
+/* =====================================================================
+   DATA LAYER: the only place that reads or writes student data.
+   Today it saves in this browser (localStorage). When SETTINGS.apiUrl is
+   set, it also sends every change to the server and reads the class list
+   from it. See README for the API.
+   ===================================================================== */
+const KEY_STUDENT='britusStudent',KEY_STUDENTS='britusStudents',KEY_PROGRESS='britusLab:v1';
+const Data={
+ _get(k,d){try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}},
+ _set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},
+ current(){return this._get(KEY_STUDENT,null)},
+ setCurrent(s){this._set(KEY_STUDENT,s);const all=this._get(KEY_STUDENTS,{});all[s.id]=Object.assign(all[s.id]||{},s);this._set(KEY_STUDENTS,all);this._push('/students',s)},
+ signOut(){try{localStorage.removeItem(KEY_STUDENT)}catch(e){}},
+ progress(id){const p=this._get(KEY_PROGRESS,{});return(p[id]&&p[id].labs)||{}},
+ async classList(){ // [{student, labs}]
+  if(SETTINGS.apiUrl){try{const r=await fetch(SETTINGS.apiUrl.replace(/\/$/,'')+'/progress',{credentials:'include'});if(r.ok)return await r.json()}catch(e){}}
+  const all=this._get(KEY_STUDENTS,{}),p=this._get(KEY_PROGRESS,{});
+  return Object.values(all).map(s=>({student:s,labs:(p[s.id]&&p[s.id].labs)||{}}))},
+ syncProgress(){ // send this device's progress to the server
+  if(!SETTINGS.apiUrl)return;const p=this._get(KEY_PROGRESS,{});Object.keys(p).forEach(id=>this._push('/progress',{studentId:id,labs:p[id].labs}))},
+ _push(path,body){if(!SETTINGS.apiUrl)return;try{fetch(SETTINGS.apiUrl.replace(/\/$/,'')+path,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify(body)}).catch(()=>{})}catch(e){}}
+};
+
+/* ===================================================================== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const gradeName=g=>g==='KG'?'KG':'Grade '+g;
+const slug=s=>String(s).toLowerCase().trim().replace(/[^a-z0-9؀-ۿ]+/g,'-').replace(/^-|-$/g,'');
+function view(v){['vSignin','vProjects','vTeacherLogin','vDash'].forEach(x=>$(x).hidden=x!==v);window.scrollTo(0,0);
+ const s=Data.current(),stu=v==='vProjects';$('whoName').hidden=!(stu&&s);$('btnSwitch').hidden=!(stu&&s);$('btnTeacher').hidden=v==='vDash'||v==='vTeacherLogin';if(s)$('whoName').textContent=s.name+' · '+gradeName(s.grade)}
+
+/* sign-in */
+$('heroPic').style.backgroundImage='url('+IMG.hero+')';
+$('inSchool').innerHTML='<option value="">Choose your school</option>'+SETTINGS.schools.map(s=>`<option>${esc(s.name)}</option>`).join('');
+$('inGrade').innerHTML='<option value="">Choose your grade</option>'+GRADES.map(g=>`<option value="${g}">${gradeName(g)}</option>`).join('');
+$('fSignin').onsubmit=e=>{e.preventDefault();const name=$('inName').value.trim().replace(/\s+/g,' '),school=$('inSchool').value,grade=$('inGrade').value;
+ if(name.length<2){$('signErr').textContent='Please write your full name.';$('inName').focus();return}
+ if(!school){$('signErr').textContent='Please choose your school.';$('inSchool').focus();return}
+ if(!grade){$('signErr').textContent='Please choose your grade.';$('inGrade').focus();return}
+ $('signErr').textContent='';const s={id:slug(school)+'__'+grade+'__'+slug(name),name,school,grade,joined:new Date().toISOString()};Data.setCurrent(s);showProjects()};
+$('btnSwitch').onclick=()=>{Data.signOut();$('fSignin').reset();view('vSignin')};
+
+/* projects */
+function labState(s,list,i){const pr=Data.progress(s.id),p=list[i],st=pr[p.id]||{};
+ const prevDone=i===0||!!(pr[list[i-1].id]&&pr[list[i-1].id].done);
+ return{done:!!st.done,started:!!st.step,step:st.step||'',locked:!prevDone&&!st.done}}
+function showProjects(){const s=Data.current();if(!s){view('vSignin');return}
+ Data.syncProgress();
+ $('hello').textContent='Hello, '+s.name.split(' ')[0];
+ $('helloSub').textContent=s.school+' · '+gradeName(s.grade)+'. Finish each project to unlock the next one.';
+ $('gradeBar').innerHTML=GRADES.map(g=>`<span class="gchip${g===s.grade?' on':''}">${gradeName(g)}</span>`).join('');
+ const list=PROJECTS[s.grade];
+ if(!list){$('projArea').innerHTML=`<div class="soon"><h2>${gradeName(s.grade)} projects are coming soon</h2><p>Your teacher will tell you when they are ready. Check back soon!</p></div>`;view('vProjects');return}
+ $('projArea').innerHTML=(BANNER[s.grade]||'')+'<div class="grid">'+list.map((p,i)=>{const st=labState(s,list,i);
+  const badge=st.done?'<span class="badge done">Completed</span>':st.locked?'<span class="badge lock">Locked</span>':st.started?'<span class="badge prog">In progress</span>':`<span class="badge">Project ${i+1}</span>`;
+  const btn=st.locked?`<span class="lockmsg">Finish “${esc(list[i-1].title)}” to unlock</span>`:`<a class="btn" href="${p.path}">${st.done?'Open again':st.started?'Continue':'Start project'}</a>`;
+  return`<article class="proj${st.locked?' locked':''}"><div class="ttl"><h3>${esc(p.title)}</h3>${badge}</div><div class="art"><img src="${IMG[p.id]}" alt="${esc(p.title)}" loading="lazy" width="480" height="300"></div><div class="body"><span class="tag">${esc(p.tag)}</span><p>${esc(p.desc)}</p>${st.step&&!st.done?`<div class="step">You are at: ${esc(st.step)}</div>`:''}${btn}</div></article>`}).join('')+'</div>';
+ view('vProjects')}
+
+/* teacher */
+let TEACHER=false;
+$('inTSchool').innerHTML='<option value="">Choose your school</option>'+SETTINGS.schools.map(s=>`<option>${esc(s.name)}</option>`).join('')+'<option value="*">Britus Education (admin)</option>';
+$('btnTeacher').onclick=()=>{if(TEACHER){showDash();return}$('inPass').value='';$('passErr').textContent='';view('vTeacherLogin');$('inPass').focus()};
+document.addEventListener('click',e=>{if(e.target.closest('[data-back]'))home()});
+$('fTeacher').onsubmit=e=>{e.preventDefault();const sc=$('inTSchool').value,pw=$('inPass').value;
+ if(!sc){$('passErr').textContent='Please choose your school.';return}
+ const ok=sc==='*'?pw===SETTINGS.adminPassword:SETTINGS.schools.some(s=>s.name===sc&&s.password===pw);
+ if(ok){TEACHER=sc;try{sessionStorage.setItem('britusTeacher',sc)}catch(_){}showDash()}else{$('passErr').textContent='Wrong password for this school. Please try again.'}};
+$('btnDashOut').onclick=()=>{TEACHER=false;try{sessionStorage.removeItem('britusTeacher')}catch(_){}home()};
+function schoolFilter(){const all=TEACHER==='*';$('fSchool').innerHTML=all?'<option value="">All schools</option>'+SETTINGS.schools.map(s=>`<option>${esc(s.name)}</option>`).join(''):`<option>${esc(TEACHER)}</option>`;$('fSchool').disabled=!all}
+$('fGrade').innerHTML='<option value="">All grades</option>'+GRADES.map(g=>`<option value="${g}">${gradeName(g)}</option>`).join('');
+['fSchool','fGrade','fStatus','fSearch'].forEach(id=>$(id).addEventListener('input',renderDash));
+let ROWS=[];
+async function showDash(){view('vDash');schoolFilter();$('dashSchool').textContent=TEACHER==='*'?'All schools':TEACHER;
+ const mine=r=>TEACHER==='*'||r.student.school===TEACHER;ROWS=(await Data.classList()).filter(mine);renderDash();
+ $('dataNote').innerHTML=SETTINGS.apiUrl?'Showing students from the school server.':'<b>Note:</b> showing students who used the lab on <b>this device</b>. When IT connects the school server (see README), every student of your school from every device will appear here.'}
+function overall(r){const list=PROJECTS[r.student.grade]||[];const d=list.filter(p=>r.labs[p.id]&&r.labs[p.id].done).length;const any=list.some(p=>r.labs[p.id]);return{d,n:list.length,status:list.length&&d===list.length?'done':any?'prog':'none'}}
+function renderDash(){const fs=$('fSchool').value,fg=$('fGrade').value,ft=$('fStatus').value,q=$('fSearch').value.trim().toLowerCase();
+ const rows=ROWS.filter(r=>(!fs||r.student.school===fs)&&(!fg||r.student.grade===fg)&&(!q||r.student.name.toLowerCase().includes(q))&&(!ft||overall(r).status===ft));
+ const c={done:0,prog:0,none:0};rows.forEach(r=>c[overall(r).status]++);
+ $('stats').innerHTML=`<div class="stat"><b>${rows.length}</b><span>Students</span></div><div class="stat"><b>${c.done}</b><span>Finished all projects</span></div><div class="stat"><b>${c.prog}</b><span>In progress</span></div><div class="stat"><b>${c.none}</b><span>Not started</span></div>`;
+ $('tBody').innerHTML=rows.length?rows.sort((a,b)=>a.student.name.localeCompare(b.student.name)).map(r=>{const list=PROJECTS[r.student.grade]||[];
+  const chips=list.length?list.map(p=>{const st=r.labs[p.id];return st&&st.done?`<span class="chip c-done">${esc(p.title)}: completed</span>`:st?`<span class="chip c-prog">${esc(p.title)}: ${esc(st.step)}</span>`:`<span class="chip c-none">${esc(p.title)}</span>`}).join(''):'<span class="chip c-none">No projects yet</span>';
+  const times=Object.values(r.labs).map(x=>x.updated).filter(Boolean).sort();const last=times.length?new Date(times[times.length-1]).toLocaleString():'–';
+  return`<tr><td><b>${esc(r.student.name)}</b></td><td>${esc(r.student.school)}</td><td>${gradeName(r.student.grade)}</td><td>${chips}</td><td>${esc(last)}</td></tr>`}).join(''):'<tr><td colspan="5" class="muted">No students match these filters yet.</td></tr>'}
+$('btnCsv').onclick=()=>{const head=['Student','School','Grade','Project','Status','Step','Last update'];const lines=[head];
+ ROWS.forEach(r=>{const list=PROJECTS[r.student.grade]||[];(list.length?list:[{id:'',title:''}]).forEach(p=>{const st=r.labs[p.id]||{};lines.push([r.student.name,r.student.school,gradeName(r.student.grade),p.title,st.done?'Finished':st.step?'In progress':'Not started',st.step||'',st.updated||''])})});
+ const csv=lines.map(l=>l.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));a.download='britus-stem-lab-progress.csv';document.body.appendChild(a);a.click();a.remove()};
+
+function home(){try{const t=sessionStorage.getItem('britusTeacher');if(t&&t!=='1')TEACHER=t}catch(_){}Data.current()?showProjects():view('vSignin')}
+window.addEventListener('pageshow',()=>{if(!$('vProjects').hidden)showProjects()});
+home();
+</script>
+<script data-goatcounter="https://fatmajoy.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
