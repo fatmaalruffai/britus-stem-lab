@@ -115,7 +115,6 @@ footer .b{font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:.2px}foo
 <!-- Student projects -->
 <section id="vProjects" hidden>
  <div class="head-row"><div><h1 id="hello"></h1><div class="muted" id="helloSub"></div></div></div>
- <div class="gradebar" id="gradeBar" aria-label="Grades"></div>
  <div id="projArea"></div>
 </section>
 
@@ -221,7 +220,10 @@ $('fSignin').onsubmit=e=>{e.preventDefault();const name=$('inName').value.trim()
  if(name.length<2){$('signErr').textContent='Please write your full name.';$('inName').focus();return}
  if(!school){$('signErr').textContent='Please choose your school.';$('inSchool').focus();return}
  if(!grade){$('signErr').textContent='Please choose your grade.';$('inGrade').focus();return}
- $('signErr').textContent='';const s={id:slug(school)+'__'+grade+'__'+slug(name),name,school,grade,joined:new Date().toISOString()};Data.setCurrent(s);showProjects()};
+ $('signErr').textContent='';
+ /* a student keeps the grade she first signed in with (the real lock comes from the school login) */
+ const prev=Object.values(Data._get(KEY_STUDENTS,{})).find(x=>slug(x.school)===slug(school)&&slug(x.name)===slug(name));const g=prev?prev.grade:grade;
+ const s={id:slug(school)+'__'+g+'__'+slug(name),name,school,grade:g,joined:prev?prev.joined:new Date().toISOString()};Data.setCurrent(s);showProjects()};
 $('btnSwitch').onclick=()=>{Data.signOut();$('fSignin').reset();view('vSignin')};
 
 /* projects */
@@ -232,7 +234,7 @@ function showProjects(){const s=Data.current();if(!s){view('vSignin');return}
  Data.syncProgress();
  $('hello').textContent='Hello, '+s.name.split(' ')[0];
  $('helloSub').textContent=s.school+' · '+gradeName(s.grade)+'. Finish each project to unlock the next one.';
- $('gradeBar').innerHTML=GRADES.map(g=>`<span class="gchip${g===s.grade?' on':''}">${gradeName(g)}</span>`).join('');
+ 
  const list=PROJECTS[s.grade];
  if(!list){$('projArea').innerHTML=`<div class="soon"><h2>${gradeName(s.grade)} projects are coming soon</h2><p>Your teacher will tell you when they are ready. Check back soon!</p></div>`;view('vProjects');return}
  $('projArea').innerHTML=(BANNER[s.grade]||'')+'<div class="grid">'+list.map((p,i)=>{const st=labState(s,list,i);
