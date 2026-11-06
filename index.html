@@ -89,7 +89,7 @@ footer .b{font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:.2px}foo
 <div class="bar"><div class="wrap">
  <div class="logo"><img src="img/logo.webp" alt="Britus Education" width="129" height="46" class="brand">
   <span class="sep" aria-hidden="true"></span><b>Virtual STEM Lab</b></div>
- <div class="who"><span id="whoName" class="pill" hidden></span><button class="pill" id="btnSwitch" hidden>Change student</button><button class="pill" id="btnTeacher">Teacher</button></div>
+ <div class="who"><span id="whoName" class="pill" hidden></span><button class="pill" id="btnSwitch" hidden>Log out</button><button class="pill" id="btnTeacher">Teacher</button></div>
 </div></div>
 <div class="sub"><div class="wrap"><span>Build</span><span>Wire</span><span>Code</span><span>Test</span><span style="margin-left:auto">KG – Grade 12</span></div></div>
 
@@ -156,11 +156,8 @@ const SETTINGS={
  // Each school has its own teacher password and sees ONLY its own students.
  // Change the names and passwords here. (Front-end check only; IT replaces this with a real login.)
  schools:[
-  {name:'School 1',password:'school1-2026'},
-  {name:'School 2',password:'school2-2026'},
-  {name:'School 3',password:'school3-2026'},
-  {name:'School 4',password:'school4-2026'},
-  {name:'School 5',password:'school5-2026'}
+  {name:'LIS',password:'lis-2026'}
+  // add the other schools here, e.g. {name:'School name',password:'...'},
  ],
  adminPassword:'britus-admin-2026',   // Britus admin: can see all schools
  apiUrl:''  // IT: set to your server, e.g. 'https://lab.britus.edu/api'. Empty = save on this device only.
