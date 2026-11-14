@@ -8,7 +8,7 @@
 <title>Britus Education Virtual STEM Lab</title>
 <meta name="description" content="Britus Education Virtual STEM Lab: interactive build, wire, code and test projects for KG to Grade 12.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 <style>
 /* Portal: gray and dark blue, flat professional layout (sign-in, grade project cards, teacher dashboard) */
 :root{--bg:#eef0f3;--card:#fff;--ink:#1e2530;--muted:#5d6675;--line:#d5d9e0;--head:#2b3038;--head2:#363c46;--blue:#14365e;--blue2:#1d4a80;--soft:#f5f6f8;--ok:#1e7d4f;--okbg:#e2f2ea;--lock:#8b929e;--field:#fff;--warn:#a1361b;
@@ -29,7 +29,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.55 var(--f)}
 span.pill{cursor:default}
 .sub{background:var(--head2);color:#d9dde3;font-size:13.5px}
 .sub .wrap{padding-block:7px;display:flex;gap:18px;flex-wrap:wrap}
-main{padding-block:26px 10px;min-height:60vh}
+main{padding-block:26px 10px}main:has(section:not([hidden])){min-height:60vh}
 .card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:26px}
 h1,h2,h3{line-height:1.2;margin:0 0 8px;font-weight:700;letter-spacing:-.2px}
 h1{font-size:clamp(24px,3.4vw,32px)}h2{font-size:22px}h3{font-size:17px}
@@ -48,24 +48,6 @@ input,select{font:500 15.5px var(--f);width:100%;border:1px solid var(--line);bo
 .gradebar{display:flex;gap:0;flex-wrap:wrap;margin:16px 0 0;border:1px solid var(--line);border-radius:4px;overflow:hidden;width:max-content;max-width:100%}
 .gchip{background:var(--card);color:var(--muted);padding:6px 11px;font:600 13px var(--f);border-right:1px solid var(--line)}
 .gchip:last-child{border-right:0}.gchip.on{background:var(--blue);color:#fff}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
-@media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}@media (max-width:620px){.grid{grid-template-columns:1fr}}
-.proj{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s,border-color .2s}
-.proj:not(.locked):hover{border-color:var(--blue2);box-shadow:0 6px 18px #14365e1f}
-.proj .ttl{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}
-.proj .ttl h3{margin:0}
-.proj .art{position:relative;aspect-ratio:16/10;background:#fff;border-bottom:1px solid var(--line)}
-.proj .art img{width:100%;height:100%;object-fit:cover;display:block}
-.proj.locked .art img{filter:grayscale(1) brightness(.85);opacity:.55}
-
-.badge{font:600 12px var(--f);border-radius:3px;padding:2px 8px;background:var(--soft);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
-.badge.done{background:var(--okbg);color:var(--ok);border-color:transparent}.badge.lock{color:var(--lock)}.badge.prog{background:#e6edf7;color:var(--blue);border-color:transparent}
-.proj .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
-.tag{font:600 11.5px var(--f);letter-spacing:1px;text-transform:uppercase;color:var(--blue2)}
-.proj p{margin:0;color:var(--muted);font-size:14.5px}
-.proj .step{font-size:13.5px;font-weight:600}
-.proj .btn{margin-top:auto;align-self:flex-start}
-.lockmsg{font-size:13.5px;font-weight:600;color:var(--lock);margin-top:auto}
 .soon{border:1px dashed var(--line);border-radius:6px;padding:46px 20px;text-align:center;color:var(--muted);margin-top:20px;background:var(--card)}
 .dash-filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 @media (max-width:820px){.dash-filters{grid-template-columns:1fr 1fr}}
@@ -82,40 +64,117 @@ th{background:var(--soft);font-weight:600;color:var(--muted);font-size:12.5px;te
 .kitban{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:6px;padding:14px 18px;margin-top:20px}.kitban img{width:130px;height:auto;flex:none}.kitban b{font-size:16px;display:block}.kitban span{color:var(--muted);font-size:14px}@media (max-width:620px){.kitban{flex-direction:column;text-align:center}}
 footer{text-align:center;padding-block:28px 34px;border-top:1px solid var(--line);margin-top:30px}
 footer .b{font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:.2px}footer .s{font-size:12px;color:var(--muted);margin-top:2px}
-@media (prefers-reduced-motion:reduce){.proj{transition:none}}
+
+/* ---------- hero slideshow (sign-in) ---------- */
+.hero{position:relative;background:#141a24;color:#fff;overflow:hidden}
+.slides{position:absolute;inset:0}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;background:radial-gradient(60% 80% at 62% 55%,var(--glow) 0%,transparent 70%),linear-gradient(120deg,#141a24 0%,#1c2433 55%,#141a24 100%)}
+.slide.on{opacity:1}
+.slide img{position:absolute;left:52%;top:50%;width:auto;height:auto;max-width:min(480px,34vw);max-height:360px;transform:translate(-55%,-50%) scale(.94);transition:transform 6s ease;filter:drop-shadow(0 26px 30px rgba(0,0,0,.45))}
+.slide.on img{transform:translate(-55%,-50%) scale(1)}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1fr minmax(0,1.05fr) 360px;gap:24px;align-items:center;min-height:520px;padding-block:36px}
+.hero h1{font:800 clamp(30px,3.6vw,44px)/1.08 var(--f);letter-spacing:-.6px;margin:0 0 12px}
+.hero .lead{color:#c3cad6;font-size:16.5px;max-width:34ch;margin:0 0 26px}
+.cap{border-left:3px solid var(--acc,#5aa0ff);padding-left:12px;min-height:58px}
+.cap small{display:block;font:700 11.5px var(--f);letter-spacing:1.6px;text-transform:uppercase;color:var(--acc,#5aa0ff)}
+.cap b{display:block;font:700 19px var(--f);margin-top:3px}
+.cap span{color:#aeb6c3;font-size:14px}
+.dots{display:flex;gap:8px;margin-top:22px}
+.dots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:#ffffff40;cursor:pointer}
+.dots button.on{background:#fff;width:26px;border-radius:5px}
+.hero .login{background:#fff;color:var(--ink);border-radius:10px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.hero .login h2{font-size:20px;margin:0 0 2px}
+.hero .login .btn{width:100%;margin-top:6px}
+@media (max-width:1000px){.hero .spacer{display:none}.hero .wrap{grid-template-columns:1fr 340px}.slide img{left:38%;max-width:44vw;opacity:.3}}
+@media (max-width:760px){.hero .wrap{grid-template-columns:1fr;min-height:0}.slide img{left:50%;top:24%;max-width:80vw;max-height:240px;opacity:.25}.hero .lead{margin-bottom:16px}}
+/* ---------- project cards (models floating on coloured cards) ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:34px 26px;margin-top:84px}
+.proj{position:relative;border-radius:22px;background:var(--c1);background:linear-gradient(180deg,var(--c1),var(--c2));color:#fff;padding:120px 22px 22px;box-shadow:0 8px 0 var(--c3),0 18px 30px rgba(20,30,50,.18);display:flex;flex-direction:column;gap:8px;text-align:center;transition:transform .25s}
+.proj:not(.locked):hover{transform:translateY(-4px)}
+.proj .model{position:absolute;left:50%;top:-70px;width:78%;height:190px;transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
+.proj .model img{max-width:100%;max-height:190px;width:auto;height:auto;filter:drop-shadow(0 14px 12px rgba(0,0,0,.28));transition:transform .35s}
+.proj:not(.locked):hover .model img{transform:translateY(-6px) rotate(-1.5deg)}
+.proj .glow{position:absolute;left:12%;right:12%;top:100px;height:22px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.45),transparent);pointer-events:none}
+.proj h3{font:800 25px/1.15 'Baloo 2',var(--f);margin:6px 0 0;letter-spacing:.2px}
+.proj .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.proj .chips span{font:700 12.5px var(--f);border:1.5px solid rgba(255,255,255,.55);border-radius:999px;padding:3px 10px;background:rgba(255,255,255,.14)}
+.proj p{margin:2px 0 0;color:rgba(255,255,255,.92);font-size:14.5px}
+.proj .status{font:700 12.5px var(--f);letter-spacing:.4px;text-transform:uppercase;opacity:.95}
+.proj .step{font-size:13.5px;font-weight:600;background:rgba(0,0,0,.14);border-radius:8px;padding:5px 8px}
+.proj .go{margin-top:auto;align-self:center;background:#fff;color:var(--c3);border:0;border-radius:999px;padding:10px 24px;font:800 15px var(--f);text-decoration:none;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+.proj .go:hover{filter:brightness(.96)}
+.proj.locked{--c1:#a3abb7;--c2:#8c95a3;--c3:#6c7584}
+.proj.locked .model img{filter:grayscale(1) opacity(.55) drop-shadow(0 14px 12px rgba(0,0,0,.2))}
+.proj .lockmsg{margin-top:auto;font-weight:700;font-size:14px;color:#fff;background:rgba(0,0,0,.16);border-radius:999px;padding:8px 14px;align-self:center}
+.c-blue{--c1:#4f9bff;--c2:#3b82f0;--c3:#1f5fc4}.c-green{--c1:#4cb860;--c2:#3ea350;--c3:#2a7a38}.c-orange{--c1:#f6b23c;--c2:#ee9d22;--c3:#b86d0c}
+.c-purple{--c1:#a47cff;--c2:#8d63f2;--c3:#6440c4}.c-pink{--c1:#ff6f8e;--c2:#f2557a;--c3:#c23457}.c-teal{--c1:#2cc2ad;--c2:#1aa996;--c3:#0f7d6f}
+.c-navy{--c1:#3d5f99;--c2:#2f4f86;--c3:#1d355e}.c-red{--c1:#ef6a4f;--c2:#e2533a;--c3:#ad3420}
+
+/* ---------- certificate ---------- */
+.cert-tools{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:18px}
+.cert{max-width:980px;margin:0 auto;background:#fff;color:#1e2530;border-radius:6px;box-shadow:0 10px 30px rgba(20,30,50,.15);overflow:hidden;aspect-ratio:1.414/1;display:grid;grid-template-rows:auto 1fr auto;border:10px solid #14365e;outline:2px solid #c9a227;outline-offset:-18px}
+.cert .top{background:#14365e;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 34px}
+.cert .top img{height:44px;width:auto}.cert .top span{font:600 13px var(--f);letter-spacing:2px;text-transform:uppercase;opacity:.85}
+.cert .mid{display:grid;grid-template-columns:1fr 34%;align-items:center;gap:10px;padding:10px 46px}
+.cert .k{font:600 12.5px var(--f);letter-spacing:3px;text-transform:uppercase;color:#a07e12}
+.cert h2{font:800 clamp(26px,4vw,42px)/1.1 'Baloo 2',var(--f);margin:6px 0 14px;color:#14365e}
+.cert .nm{font:800 clamp(24px,3.6vw,38px)/1.15 var(--f);border-bottom:2px solid #d8dde5;padding-bottom:6px;margin:4px 0 10px;display:inline-block;min-width:60%}
+.cert p{margin:4px 0;color:#4b5563;font-size:clamp(13px,1.6vw,16px)}
+.cert .pj{font:800 clamp(19px,2.6vw,27px)/1.2 var(--f);color:#14365e;margin:2px 0}
+.cert .mdl{text-align:center}.cert .mdl img{max-width:100%;max-height:260px;filter:drop-shadow(0 10px 10px rgba(0,0,0,.18))}
+.cert .bot{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding:0 46px 26px;font-size:13px;color:#4b5563}
+.cert .sig{border-top:1.5px solid #9aa3b0;padding-top:5px;min-width:180px;text-align:center}
+.cert .seal{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle,#f3d36b,#c9a227);display:grid;place-items:center;font-size:30px;box-shadow:0 0 0 4px #fff,0 0 0 6px #c9a227}
+.proj .certbtn{background:#ffd75e;color:#5a4300}
+@media (max-width:640px){.cert{aspect-ratio:auto}.cert .mid{grid-template-columns:1fr;padding:16px 20px}.cert .bot{padding:0 20px 20px;flex-wrap:wrap}.cert .top{padding:12px 18px}}
+@media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}.bar,footer,.cert-tools,#vSignin,#vProjects,#vTeacherLogin,#vDash{display:none!important}main{padding:0}#vCert{display:block!important}.cert{box-shadow:none;max-width:none;width:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media (prefers-reduced-motion:reduce){.proj,.slide,.slide img,.proj .model img{transition:none}}
 </style>
 </head>
 <body>
 <div class="bar"><div class="wrap">
- <div class="logo"><img src="img/logo.webp" alt="Britus Education" width="129" height="46" class="brand">
+ <div class="logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQEAAABcCAYAAABuiwBgAAAwfUlEQVR42u19d7jcVbnuu2Z2Sd2ppFdIAoQOoaOAgCCIqIBdOVZQj3r0XPV6FDlHrz6Wc48iV6568WDFglIEpXciRQIESEhCCOmN9LbrzHv/WO9ivr3ym7b3zC7sWc8zzy7zK6t93/rq+wG1VmtFGkkXfpJM12bk9dWcXeSSb3KOld5gFR9YF/pYTl8qOQddnYdK96FI/44EcLb2zO0AlvXk+2ut1mqtAPOoFiM1EsAkkteS3EdyB8nvkBxfTSZeaz3X6rSQgwEMBpASpyeArH6+JjHoZ7Nzbl+FNlkawDD1I4iZ4b323cVOHBdd1wZgr3MuW0ZfUgCGAqjXPMD0w0X9yQLY5ZzLVGge6vXuOjP3dlz2vRld0w6g3TnXEYix0iezc44i8jcBeJv2yGAAlwK4A8CmEten1voyEyA5FMD5AI4HMEobMRBCIMg0gA4R7HyS1znndnZn44kBHAfgPADjAQwB0KB3Q+/LGqJOG8JMG+JMm+vbALQAeBnAXQAWl3LaaQwHAbgAwDQAI9QXZ94ZCLIewF4A/01yfjmMpsBpe47ePVHjaNE7UxpfWuvSDGCnxrkNwAqSCwG85JxrrbQUoHlJATgQwGhD7JMBzAbwUMwAgmRQUxX6lyTQBmCLNvZkALMAzBXB29Mvo814AIC/aTN2p2X1zj0ApgCYqfceYPeUfmaiE9EZwgz/WwNgCYDlALZ3oX/NALYCmARgLIAjAcxIOOWcTuHFAJ4C0NwVZmjuqQdwMoAPac4RvTNJ3O5Qf3cAWA3gfpI3A1jYXaZUYK2YIHn1qp2i1irEBJxz7SQfFxFNAXAogLNkBBqRIJaPlEhYCVFzGYDdhvm8AcBb1A9L5HV5VIDQFgG4DcDTAF4BsNo5t7lM49p6MbeFAKYDOEF9OS6SBrIi3BFGbejS+A2DexHAnQAmiBlOMuNrBvCcmGWDefdMAFP1OVpM6/uS1LqtGpj7swCWAnhV8wIAKyVtJUk146TarKqUulRrvWNsmiPjzwb6liWZ0e/PkDyqGkYhkuNJfpbkcr0rvDNuoT9Zkg+TvIjkoAr3pYHk2ST/QrLNvDe0q2RL6fY8kBwk49vRJK8kudW853GS55A8iORhJI8i+RaS3ya5KJqjG0nOrdTaRIbBn5Lcrj3xHyTHRtcMIflWkteQ/FbNcNg/Cb+TlZnkMJJfljWYJDv082m5iyq20ey7SQ4m+SGSKxIIj9H/HiF5euTH7rK1PKEvKZJzSd6m8WfNu68iOaSSG13vPo3ki2asN5OcEBsxxTguIPmYYZjtYt6ukvtCP2eT/KQ+E+JxkzxTe4MkXyB5iDG41loftwnsp8tJnNxD8jcSUT+DzhbzirWE9zZLv50J4LPGIBUb6VYC+AGARyIdu5J9yZJcAuA/Zbw8XuJxUI0qGS+R0vtapCJYfTwjgnMAKL2/heRdEr2v1jqlpFIdAeC5Ss6Jc+4lkmsApIJ3KHr2ZM0RI6NqrfXxliqgr6ecc+sA/AbAg8hZ6oPFuuItuKScc7sB/ALAnyNCCwxgD4BrAdwbDGHVco/p+fPVn9VmzlIV3ugsYAgM42MYp9anA8BjAB416zMDwHEk01WYkxbn3L5Y0tDfdab/rREjq7X+xgS04Fkt7vMAfg5go9msVbMAG+JbJSawFJ29AdTGv9E5t0vEwCr3pQPATQDuLmXuKq2p5Znv8L+dAJ6BdysCwHCdyulK6+RBVcoz37afNQ/B64EJGEJoA3A/vOU9cPqqc3lt3mfgLfbW7bUBwO8ArAvMqpr9MIxgI4B7AASvQybqV6UlglJVl2YAa3X6QsQ/JGltrc0jz2mOfIwj3/dGTcnE0kz4LumdcV8KMauka0thboXeWSP98k+z7WIEbQAaq90po4duhnf9bTBi8uMA7pBrs6cX81kATxYS23uhdWh99uZZV2dPcPvJZw8xkYIodq/+DnEEWcsg9V2mwH15+xP3rZzrbcBSvnfWGEGCYbDIKdhG8lEAq8xp01NtmcT/S2QLeBw+XLU32isAHoaPsGzUp6XaPLHI9+HkrzeSRJtV6wxxTICPe3AAngyxFCTrABwD4EQxlftkCHTGBjEYPoZkqvbBYu2LYfARhUcDaNKrRgM4Ufdkjf1kpXNul543XP1uhDduZgCscc41JxD1EPhAqkFGytngnNuexAC0bxsAHKZxzdD7V8PHXCyW3anWijGBqC2CD6SZFKSBHooO2yEmcAF8QM+Lhjn1iO5pDKXtJJ+Ej0rsqJJU5EqRMsz4G+CjLEMAVyuAXeFUFpEeBOBwAKcAOF3qw/dIPqBnnA3gc/q+A8BMkj9yzq0jOQnAwWIep8MHct0MYD3JXQDeCuC9EROYAOBf4CNRs2JUWQC/JHkvgDkA3i2iroOP0NwO4DqSjwXGJffiMfBBW1M11sGan9tI3hQMlUZ6JMkDALwDwMW6P0ShbtE+vp/kX+EjLDtqTKB00byZ5AL4kNn6nlIJdNIu0QKuho9s7I0W+rMOwAIZ5FwPvjdfaxRhNurabQBWAOhQfsb5AC4DcJQMhtBp2iSCmQfgX8UIQrsYwOMknwDwaQDnAjhEJzYAvKA9MBTAsWLQVjqsBzAvoa/P6CA5UUzHtr3wYdgLjHRVp35/WNKGbfvgvVb7IglgFIAPiglNFVPcKgYyVozseM3ZNwGs6ckDpd9KAmaSVgEYgx5y/xhf/QZJAStkH+jN1iJGtLtKhkFXxnVELs8h+OaXS9TPKjnsTWIEQVdPiTBaSTYB+CSAM82apnRyzpAU9h4RIM2nWWPfA+AJeM/JPPiw4pSetcCobYP0v6e1js+KgE8QQ6JRa6xRsV3i+2Pw4cjDzBiGxvtX95wmBjNV77kBPix7lKSPs/We0zTONRjgmZB1ZV6/Qydyaw/3c5fExY362ZutTSfLHonO1W5pAClraQ+6vlKQzwRwkjbyFgC3OefW6rp9AP4KHzx0itHNW0VEF4pJpCPJwyZJ/QrA5fAZjjafwDnnWkneLRH7fWIoY0XoP9DJT+RSpNc653ZLwvgcgDMAfB65RC2XoIYtBHAVvKv4s3p+bAANh8Vk+JTnaQBeAvA9AH/RPKTFhL4pVaEJFciBGYhMYJ9OwJ5mAnvECF4NXoFeFN8y6k8zqucitGPrANARgoXMqdckffxjOuXaAPwawC0REd2l774ookuLeGZJ1N4uEb1Vp+RonZwvOuc2kfyJpJ9/lghtDX2QgW0JyaWaE+iZTznnludR9ZrhIxpX650zkCdYyjnXDuBljeMCwwSyCVLTXI2R8AlZ9zrn9sq2kHHOLSJ5O4A3isnVWheYwF7pnM093M99kgJe7QNzFiSBXVWUBCwTGA/gGBFMMKSNkl79Vm38V+BBPq5zzq03+nHw7NwvAj5a6two8/uf4IOyHLwn5jhJDwt0/yaFjx8L4F1xH/PkBliRPmWZZTCymnXdU4AB2piE1ujaJBH+QH0yslts0/2UFAX44LcnZZys4SV2gQmEqMGtPdzPVhmNVvTWREXBOUvFEFui7yrRUujs558H4EqdrsGdNl5EPUiE+3sAv3TOrQo5CFG/OqT77hXhTxDzuAfAn5xzy0Qs/6WTdqPE9qB+bIb3KATis/gCTCDgOgBpEXySTz/46tOyZVgpi0lzLwJOJagC4hV08J6rlE75FudcxjDE8JwV2ktzkPPusMYESieA9QA2SUTrMcLTaXZLUEN605LrnOsguQg+GKYaBlIr4malt55eQGIYBh8qPJbkmhDunRD802EklzoRwD3w6ETh+u2xzUX3Zo3h0OU5hesMYWZLJKz45C/kHnUR4WeMSkLFHYyxxk3FKbRYxqjxPQ+fgNaKWitPEtBEZnuJ+PpMcEeVmWCM7bgPPkBqN7xVeyi85XsCvCtuKrwL8DQAvyZ5g3NuR4LdJB0R6QIA/xBT2w91Orq3lNgF2+9YminE8OxY0yjdOxIncLUZNbUewJsBPOyc+4eRFIIB8QF4L9MLvX2o9Ed1oNfaAPLlxrBpi+BTmVcaJjAR3gJ+ODw02Wzk3HpNJH/mnNsWzZkl5M0AHoD39liJiwWI1RWQWJL+xxKZQDnXM0mK0EnfKldyMFyeDuAzJH8BHxS0NVzvnNsCn3lZa/2JCQwgbh0T3Gqd2FsSGGMTgIvgg32OkHTwaQDrSP4unPKaOyvB7YCP+eiqVJeURm3/14HSYkliC3+mDP08KYHrFTG48VJ33g8f5HQbyUfgvR6vShpIwaRmD+RWQ33pm0xgPwwFGelSNhNOcfh/BvBd5CIpJ8Nb8cdEp619bkAwLkc66cijm1uizJSpDgDlRV2movtiJvAcPAKyMwzmeAD/E97o+SUAbyA5yDmXrTGAfsYEBlDWVxK6cSdQEZMJF1B+7oTPtmw2G/8UWd9Z6Lld6FNgCCyyn9gFBtDlPml/rIQHf1kU2T+GwOcQXA4PxnoFydEDbF/1fyYwgLl2XhAXY/HeKR0/SAOj4Q2FIwoAgFSSUcUE3FXCypa5d1PRfGQkCXwdObQlywyGikF+AcDHSI6qpRX3L0lggtxAA1E9KCghiRkEfRjw1vFZUB0DA/zhukmkhfoUIwu5SoyvyH0pe0gEjErn3E3wsRX/D94duMtcm4H3qHwawKnVRKaqMYEKqgAkG+FjwqsCdd4P1IFSxrsHnbENQnQhqkj43T3RY8ZUV+Q92XxzlQCC8qBsAZ8H8GP4AKEW5KpXTYPPnRjw0Oj9RRJohI+cm9MHGFOK5FTVSOhL89eOzvHwMfOo5GnnKrSviM5eBFfGezt5PJJQh5xzQU36TzGD6+GTrMJz5mH/FOUB1/qLi7ABPt59bG/ZB4yrrREeYadZp+/eCscwdNVYZus4BrE3W0FJoBr6vY1EDAyBZTCQrFEFDoWHqX/ZObc0UpW2AXiU5Hrt+Y/rGSHoKszPgFQL+oskMFSfMULK6U3xbRC8G250FZloyWMzhq0D4MuTBQLZisJhsa4KfS73mVYScJrbVInPjwn2VACfAnCR4NI6MXAxhBXwiNHrjYQ5dKBLAv2FCYyV7jYZOf93b0pPI1A9dCVXxEaQ1NJSlSbq71b4wJhdRnKq9iln+10vgi7WMhAykCSZyUjI8Td1DeoL7N9hyEVQDokZpXnOSvikKyBXybrGBPpq0ylXBx8OOwm5Yp29zQRGIg+sd09KBcYmMQy+8lAQbTcAmK8qUq4bzKXcU52mPxNz3ewEFZ4265uRqB6QhQ6XhGX7G1St0egMKBK3EBY8XeuTuJ/QOf17J3ofpKbGBArp4Pp1sDbHGPj02Wm93LVGSSXDKjV/EWpQrMtnzTUpGSZTqjAU0IXOgwfnCAg+T8JHzyF6bpz2WxLmf7RXOt1rLrWhwiPhqyAND2K8CPBkeIivuea+HUZtOUL3pQKT0xgnwgOKzIyYl+1DmxjJdADH6hl2fKH/48weWo+cW5U1JtB320h4AI16LeAhocRWD9sFwrtGaBOPqJReHbD7RSj1CbpvxmD4Z/XJiMjeBY8aFEBEVwD4I3LJQXnDY8N3xTD/kcvws7p5Jko82inRnmLcZwOYHfpL8hgA/wbgCngo8NBWIodTMQIe0/AEc9/RAL4MDwlWZ4h1FASWGjGnUfDApHPs+DRfdfAwa6HE+mN6/4Bu/cE7cAg8qk0wyp2sE2F5Twsn+jkXHtjzEVQorZrkCEkXB8CnwIbCng7egj1PxUAbRYwNyEUFvhM51+k2eICRuw1s93D4LMNTjZg8BsDJyroLsG1JqdopQY4fok9oBwM4ieRjEsMz8MFKqzU/FLF9iuSd8HgH79Rp/gJ8WnRoi7SWM3TfuTrBH9QhdSY8ClKHTu1xuu8YAO8mucc59zI8YEoImz4XwFqS18NjDXZovs6Br1+RBvAyPB7j9oGONtynVQGSE0n+SGW3Q0nwrSQ/owCiHvESmP6MI/lT9eNblfBUSFx9F8k/kXyW5J6o/HozyUdJ3kHyIZJ/J/k8yV2mfHkHydUqlz7JPNeRfDfJ+0huip77Ksl7SP6K5KUq1hGPdwrJ75N8kmSLeV87yYUkv05ypq6tI/lVknuj97SQbNXv+0h+00Z+qsT6N0i2FShFf4/m+2F9nzFz818kR5I8mOSN0Zw8SPLfSX6J5H+T3KjvtpG8MvSjlj/Qt5nA20muNJsjbJAHSM7pBSZwJsnF6sN/kBzU1T6YZ9Zrg+9l+W0vyUUi5HeSHJPw7P9T5BmtJK8mOc4wj6CTzyO5pMC9z5C8wLzvCJK/NgRt23aS3yE5wzIp/T5X97Un3LdA836amJltWZJ3kpxFMk3ybJK36F2MGEJoa8SIJtcorY+qA8YYdBh8Pvh0dK5IDPhIrw+SvNo5tyWCj6oWA6iXiDu7FMt9KXYAY1B7WHr0KPjQ1jbkkl/qkcvVDzacFunfa+FdgSsArLKYeubZ90mNshGFKaNWtMEn3ewM/RKeXzCc/U6GtDYZ8EJfhkqMf9nYZxbBQ42vl9o2SveshI/cuzXAoUduuxfhU323woeGN0m8XwRf0+BheK/QU1Jp1umzVQbQTRr7Q/C1Dt4ID5h6kDwKKV37CoB7AdylArO1hr5TVPM1gtOGGg2fCfZx5PzGzujmThvtawB+KwzCquh1pk9nw2PWn6SvvgHgu3EZrC6+w8YehOIaSfh7KUPcbQD2WpzDpH6IeY00TJTGuBeQgHc651rz9G0kvDs0pA+nDINqDrUFo3vGiVmOQq5q8opicPFSZaaLCewWg9mk7wYjh6C0CT78d2+SLUOqzWR4l2mTxrpTe2ZtArOstb4g+pu/x5L8F6O/JemI4X9PknxbsA/ke2YFpIApJG+IVJKva2P2qk7Z10ptl+huLPm7csdWasnyGuX1IXXAiIV1svq/D8AnIgt5kgRD+NzwrwIYISv01kogxtjS1jrVLocvimlVkopG4XVlYxZz75X67AIncz5k4bz35nPdluKKzHdfoXHkK7Geb8ylzlmNCfTcqTEc3r01WvrbWfBlsUajeE562JwnAPh36et/lyttA3wZ7NauEL7ZSLMBfATARyVS2z6VA6FVjo2gaoy2zLkIyTfsqbEUu6+c59YIvf9IAgfBB7scD5+ZN94QdyknY7jmQPhyXG+GB5F4EMCtMgSVK5GkZAg7Hh7D4PwSmdLrRjULuQayJxwAYItzrq1GLqXbkGpMoPTWAm8FBvaPlCt53o2hKy0D1j6UWViC5Fj4oJRDxABOFZPCQGAAESMcBW+EmyfGfAOApTVjWnHi74/z09tMYCk86sut8C6di6QSDC2R8MI1m+ELcf4NvpLuBufcnjI599Hw2HPHIReVllgk83W8kYfAh/ReDB/dd6Dm9mGt1YAu4V2MgUqKTCNXQLbGBEo8ebYC2EryRQDzAXwI3jV4ADoDRcYtfPccgGsA3C6xtaMbDOn3AJ4QIZwEH7JbdUmg0tbqcjagcYGGmPvLZKcJqcAjUSvcWcr8jYbP5JwOYCHJJ5xzLTXpqcRJtERAchLJLyuyq5iL8GmS7wuuuqTnlXsSykV5iMJtf0tyR55+XKWTs1+7nIwbdIJCtDtMlF1W4cVnG3tJrSXv4Y9oP24keS/JN/SXvdGXXITBIr2e5HXwSSeXw0d8xSexg08MuRrAn1WCKtVd96Aw/PfBB6IsIfkcfKWej2B/l6Wr4CYaLhWkIWGscYBPCNgJv4fU42AT2QtfVbhcQ952+JLkY+BTk0Nefwd6qf5kf5ECtFfPg09qgvbKQySfCZgOfVka6DNhw8YinXLObSX5U3hgio8k2AB2A/i/AG4SA3CVCBuOuLZzzr1I8moR1ye12KwwA3DwabcXigAtgKbFAYiLdYaoQqv+NEit+QN8iG3JTFju1LtUcbkdwAfNOwYygZfSRsJHJwamnIY3Ko+Gx6GsSQJlMoOsGMEakjdJz5odbcYnAfzFObe7klw2ek7Asd9E8kfSk98encqV2GSN8HH270ECtFYX2pHwlvxno1qEpfZpLcn58K7RYJfJDjTiL3NPNSbYrurQT+D7+iqeQFiApwHcA19II5yMW+CTStb2hHSiTbFOKspMqPZBdxmB2WRt8KXHJ4vZzUbnwKQ2+DLiu7TZaCSDUKZ8vJm3JnjUo67aRZxUijYjcQyYMFuteQCwyZSYaLQdPkDNGZp6Gd7oXWMC3SE+eMSZv8IDQQS33VMA7jRqQNXFVfXlAfh6f4ej/IKexSSfe+Fdm5PhA54+Dp98A/hMuu/KNjHYMMgUvAV/OnxI8wXIAWy6bs59KrJ9DBgmQHKqJL4jACwgeUM+idP8vQ3AHZIWZwBYCOCBSkuqA00SsBtyIYB/aJM3w7sRV/Y0Q1K24MPwEY5zUMHcAWXi7YI3RrbARyoGJrACwKPOua0FNu6zEt3PQC79uBKSGKQKcIAwgLQY6hclYQ2Dj2HZXUR9yJK8HT74bZYOqif7y7j7A7zYTonLZ8MHrrykSe8NDrsYPo5gDipoNY8SdWyJ7/C3y5PME/5+QZv1aKkMjd3URy3YKV/vTMDspXr4aNEQHzKkVLXOObeZ5B/0jNYIf7FPtz5ruDCT1yyReCt81d1VvaierIfHFgyAmvUVHCvz1AfIW5rceEQ6dPKsRlSosxv7IjyjHv2ocG0FWn0eiaiUdcw451r6W3BQn19cgWasln1geW8wgVxXHAE8q5M3g9IKbHT7oCq2GdWvl+CNpcFFVZIeb2sCmH+no73RK/skqlfgeuD+WNLKdPWdPTnGMta1/6kDRkzbBo8mswrAq73VHf3cAp+puAfVMZixyN/52lZ9sijBaJnkCpNBkAnEwGIbrwgmQUnX5ln7gv8rdWzFnqF+ZtG5qGs7gGypxNkFdyx7coz92SYQVIK9AHaU6/uuQmuFx7fbHm2YajGBklQV2UlelXGqsRiD0n3BzZgC0OKcazGbP5NPEqlmXr/d3EKMCtLWPudcexlzkob3poRaBW3Oueak/pio1YaIJuoA1AWPCUkUYCBWbRyk+WShMZprQ6RoS4j0LMKsbJ8Hh3dFczdIz87kgZPvd0ygQ8S3uw/0pR2+sEcz+l4QzQqU6DkheQA8gMvxIpaXSd4vVYfR2NLaeFlTzace3oMxDB7RaVue99Tr2mHwEZHb8/neDXHUwRtfz4KPvCOA50neB2B1McYiXMTT4Q2loXblOnl3njHMLlzfCJ8xeQhyNRyg/51KcqWMhCl5b5634cCGIJvgC+XMhs9oXRkTsxljI3yS2snw0YYZAMtI3g0PiMNCbkkR+TF6xgMkFxr37mHwhvRZ8Ml59wB4Il8oeX9hAnsAPAofEtsXGNJuMaVqSSMsdlKKiE8AsNs597C+vk/MaaP6hyRxEx6F6WMisgki0j3w/vFfwyP7phLePRu+EtB4+KCkiWKKN5H8swVdlb/9XPi4iiYR4ygAt5L8uXNuR4w6rPvGArgUPoLyCN0baha+DcDPSd5lN7S5d5CI/936OUWnbEaS5CUAriP5WxFxQKk+FMD/gC9yc6AZ8uHwgLItopWQm3ElfKxK6Ps0+BT0c5Fz0y4TQ35NtTL9nALgA/Du5lmSxrKSLi8E8CuStyeB2JIcL+Z2OnxMyXStwfOSZC6BR8I6Ej7MvRXe7Xk1yZsqAYzbm/aBib1ZLMJk2w0R1v4poe5AhZ9/vIqLhMzFP9p6Aua6c0jeSvKHocinvh8ashvzGIvOJXm3yYrsUEGXnSoOskTvD3UQNpI8U/dfRHJdlE3ZRvIHcR9JnqVCKXH7Y8D8N2OxxV2+bTJImVCL4CmSb5WEYe8dSvIygc+Gca1Vf1vN/UtIfkjFUsK9Z5h6EqW0D4fTmOR5JH9D8iWTgdlM8kJjZ7H9nEPyGhVAsfUjbB+fJ3m5JAs7p4eR/DHJ57RWNKC3s0heQXJVnj4vNH1y/VESgHNuQ1f1zAq9P7yzRSLzXpSJXlTqq6JT2EbsOSOSHwSP/BOyBzO6YG8B49wxAD4PX44L8C7Xu2XobNDJezZyFYWDhTyoBpsBLJH6MMKoCoMTbBA74OHdAoZkgFJvzCPZjITHM/gkfNj0Jvh6CBt08p0gHfc4AJ9S3xeaR50NDwpzpIy3twD4u957vE7I8fAl1P4JPgBrhe7dAB+evge+jNpQ/X8vfGzITuRKo++GDwmGVJzTdaLXI5dn0WztRWaMIwC8Fx5It0Hz+aj201B4NKtjJYF8AcAukrfq9E5LXbkUPjDM2moO0HMvgY863aBxj9HaZDQv7xDOweZ+KQ283mGizUlxkjmVsiT/IIwDpyo7Tkaqr+n0/pM9FRMg3MNzR+gUCSfOCpIfE45AA8lGklP13I3mBFlF8k16Rp2wFj5HcqmpYPRDgWrY96VJTte1L5rn/SGhVJoj+RYjAbxC8vOCeh9B8g0k/2bmZB/JT1v7huaBJHeT/F+6N625mqrTd5/uX0/y/bI9hL5OkERgqxw9oupH00keSvJw/QyVpxpJXizppMOUR9tB8rwgCZg5uZjkMlOR6Sskp5EcTLJJ0uWd5jkPqyBrGOdRqrC0L8K4eEGVqF6QVPZhkh8geV2Eh/G0Wcsa7HofZgInJqgDY6Nr60j+TNfcHOoIFvEZnyPCD7X4vmprApprJ5C83mzE9STPivo4XsQcxPVr4hJo1o4gcTm0G2UvsKLyRDOeFpL/Fuo8GkK6QgQeNv53JI6nSL7DiMFLSZ4Y9SElFe4lUxPxW7F6KZXietPXm1UWvdC6DRXzuMvct4PkuYHB6OcUkrcZFeoXJKfnUdeeNnPxGcPk61Sy7SdR2boOMclLxBAHqQTdwSSvNSrVZpKfiMdQQ4rpg5qPWRcnkW6mFneSCoC+T5Z9wGf7FfPRj5bBKYTDzgcQEmNS9kSW5f4fEoFDH4K7MJxq22TEAjpXNoo3dKj8syuP0TP8/lZ4XMPQt9uD4c4Y716QeuGMgbZd6sWRxguQApCOxpSVoS54JYJn47Vy6+prBrnsyTC3GSN9xShYzjm31zn3IID74SNJgc6l3IO340ypMpSq9BcAaxKCeu6HLy2f0djOgE9Kgtx9iwHcic5I2ssB/AbALc65VxW12O6cC5B563XdSADTrA2pX9kEBhBWWzbSr48A8K/aOHXSHU8wVuy2At6EQKAztAnrZNN4xDn3SgzGYjbjLum1o5AQI6BNVHQtEjISA/F2mO8nIYdklIWvFbhM/bDvWCbCmahNvUDlxOqkm4d4gOHyeFj7SfAw7TLz0ikc2vjt0/sPw9dnLFJoZbtsCENgkq7Uh2HS98fq3avlqsxGHpKUSrU9CR+LMk2enGPhI0Kd6kRuR2ewkgcB3KcYmlDLMwR+LYev9ThNYw7eoEx/NAwOFIQbC+KRldHn3XmusxF+eXgnnQxrBxpj4JJCFXqi72hPNUNEiE49V2A8cVaiDcc9TG6yEBm6QACdrxWZFaFsJvlzXbNaRkNIGlitU7hRTLE5gUllove6PK5ZV46kHFXQss+x7xoqo169GOACGS/zta3wMR/TRLQnk7zZBBLZsO6sDJXbojUKQUMt+r5D9D5KxsKWLjGBwCm7gejbHUlgMID23nh3Ql/qJJpVgzHZkzOlDf2UTplGnTSh2i6QJ0Q4QhGeixxq0SoAa/KV/UogBgthZv+XioiaBZ5lCSId7buDpKY4AM8Yy/t+hCbp5cea+xA52qJgmLfBB94sALDYjC+cnu3oDMWW1OdYrUmVQhPqn0XGTkXrMsp4XLZrnM0Jh1v4fSd8HkhYhzliBqvzMFYUmP82eVpaJDENij00daUSvzo7E8AEkoudczt6kOga4cuULwHwaG+qBurLMQB2k1xWaihrGS0m6qfhqyGvRS7D7Rj4isyzStioQ5CrSgw9Z1MZ0oglBluHMVuiJBATRHzdBHh3YwbeVbmt0Ka2peXMHlgG4CpJO8sArDXhtUGaGIrO8G0sMPZi1yRJqKmISVoA3fHm3bvgox4LHWZ74HNkAhMYLpvH6jx9S6MwNH+bGdd+gDjlqgPjxLk3SUftKTvAYHhfbwber9qbNolGMcNtOlXbK8yUshGxBf13m+nLUnj/9MwSmID16QPeN72ti0zJ5SEOlmjo7HStxNoJ+n6fxtpSrm1IhP53feLrh4tZniuJyEoyLoFhpbq4L2I1LmOMkJMNE2gJ819g3zQbwyuQC7lO6mcpeA8Fw9vLZQL1GkxjD9NgiD0f1gfsA2mdrrtQnSzCWEx1wdqtd4dMt+d0WqTzqG3BsDYMOZQiwMful1IUw0XGxfg7V0CMLrU1mM3doTnt6IptKCGxZgK81+Bk+KCqeWI4SWoX8kgq6S6um+3jIPgw7EHGhtFS5FntQV3IwwRida2YOpbNI8V1iQkMlmjS0MOEN0jW4/EkG5xzbb2oEtQjByVdDRerSyDAYOTJmE2+Ft7ltZ9hMAInGYJcBBzM5nJFNg6LnPKuAFMotTWavnVK4+3K2mqOgtT4dviY+dnIAbZmI1tGsROTXVi7eD4axITrDLMolnjGBEYyJI9x1ZX5rG5LAk0aUE8zgSZ4K/k0/VzXi5JAYAI7UCFkoS6Kn2vhE6o2xZtKxsDJMrKly9Vzsb+FvBizy5bIUGJiG4Y8EF5dyc1X6PEH4IvWHKz1eRYeJHYPgHfCeyMK9bnSB0sqgV668o6uSl5FGXRJTMAsxlT4zKweqU1n/MxTZFzZKytrbzKBRvVha5XmwRX626zFEvgAkWaLsaD49HcAeCOAaxOMdg0l6vHOnFxJ37NAn8shEOsJaSz3WWbcTSL+z2l9NsEH3dysuWqCD9Y5rIBto5LIyi6ScFjGO2I7SkilRx7jniuzX+UlEEX5z/PECDLVprTIEDdXp2+bpIGneoH4w8YfD197YBWqk0rsEkTtJAa5g+QdSLa2vxE+yOSGSLcEgCaSaQXalHLaZhPWO5WgO7sSmRrMBt9n+peW2FuWimVcgZcC+LQYwAYA3wPwq2BQJbkPnUFg6its04nVOKt+bdS7B6M0uPq6SHpo1QGYb/67xbzKmfC5YgJjRYw9lYQwCh44YYgW+FAFkvSYPcAg99SrL4drkdrQi03AlrEPf6QYwU54K/SeyBA1Fp29BaWI98XE5kKbsJAnYS9ykW9pMfr6ctZFv4bMwKlS034E4GfOuW0h6UoMJl2CYbCrYnu+Z7XAB/7sM8xncBG7Rz0641c2ozOgTndg4F1ZTMBIAQ3oHMPckwa5wwCcZgyTp4kZ9GgmlN41Cx7IoQ77x5n3lXYAPNBEqzbe7mgDTUaukEspxqS6hJOrIzJMpco0TNnqSzuMmnV4CQwq3puDpf4cqa+eAvBrpd+mAOQrUtuWx0CXqoCa04lRSxIIjHgIOlv686mcwyJmaetOxMbFcvq5nyG5VElgNHzseYPEGtcDBBcgsM5Drtgj4ENg30KysSelAb3rKPi4/UAIfTGUeTp8LEebPrujDTQdwPQiDNRFGy4m3ozZ1CnkYvdLVW+cIZDNep6Dh+Y6qNjGjiTBMfB1E5uQK06zKeGw6iiBcLqzrwvduxU5v/9IALOKZH4O10EXvtsY2cHKKQ1X1IiYKoEQ66RjzsvDhapEc47i7uejc2DEeHgrb0hdTVWbIenEGQcPXDHaiK/Veje7wDSpqLgjJE7uM0zABgdNAzCzCAOtL6K3BuCMrJE+GgqI667ABl6PXGLPeABHS+1inLGnn00APqbU6AZJNSEld5tE72yCuJ0tdiLmGWe+MaGISG//v0t2CohZnRyd9K89Ts8fIanbFpfZ0kXJ13VLHdAAD4VHfJnQ1U3aRf17LHz66yHRgjnp5W8mOSTKFKsWA0hL5Dy3kqJiiQtXEtfXWh2vuQkbr0PEuhw56/IoAPNIjrT5AxFO3xydWEhiBnrXDmPUm2qud1HgzgRDpEnjeUWMgJImTgQwVffG8GNpHUhfhkfSmSjxOo6eYwLBHmj2MCOidnlOzcEA6hLmKB2n4xZp++AL6LSor0dF9BTP7TTkEr6Ww4OExgFC2TL2IQtJBqlC4pYAES/TCVgRS2SJRDdMhp73JhAHtZG/COBMgw7jKt0Xs/FOggfmnGImv9ISUUGPgEmG2a9YhXENXixJgNp4QR9+QpswtLMAXERykC2XZWw/5yIX5top9t/M8ybkMAemAjhBKlrWwF4HUf1U8+40gHrznOfgIbzC32cCOI1kvWXw6ucM+DiAA5GDVLNGsiYRUJ0lKgGDXCIDYujDcAANJuQ3EIj1IEwFMC4QoLFBvAnASREjsHSRDZKMJNV98FmPa4wKc4I8brC4B0JoOkPSFeArXi3MJ4lYws6HKpWwnzodnCl7Q9SZKfB4bx/SpFalNl303hDwcZnePS5BbAuMYC58nv05ZoG6XMklqS9616nw6LJHRX0pO868yEluA2gaIpE0QFtnozJkNkT2MnhwjpBe3Gb0+VUA7tJJFIjpMwDOJzlagBnjAVwEj1Q7OToNZ5CsUx/D+F+Vnkv4qL+PiikHGLQjtT7v05jCnpkAYLIRo9fCYwjs0jUT4DEE30FymGEos9TnCyWFPCQ92RJtkySFGWZNj9Z9Z0ZqwGz4ZLgUgMGSgAKcfJi3mQDOITlGNDEcHgX52/AJbWPNOlh8gjSAVFSPcD48GnRGh9gHARxi11JM5SJ9gkHwQQAbAl3qWbGxtg4+uzcJntyhc/xFHYDBdv/UxbqNFvA4baqLxZGykTheyc1vRbM5Ov0v0wKwiIhzulwpU0je4px7tYJ9GQkfdnqFPBIp7F+iqlIFSYdLypihTT7evOsgqT5rtJhhLepFfJPgswrPkNgdmHQLcnH42+DLql8k5pmFB6r4urwd2/TuQ0XYi5GL6w8E3kzyNlVQBjzIxVJ5byiD6VdEbPWy50yXTWKp1DpIUvkkfX7vEwp0ugfAjXpPUGuuBPBGkiu04U/RCTwEwG/hQTSogitrNX+UOnElyRfEfE7RHD4ke8GbZdeZK7UiWO7nw5cXXyIGN15j/ziAqerHgZKSZsNnd4bozIP13mGGKZ6h0O6VAPYqruP3OkxO1uHyFZK/kDQ0VAfa5VqLLICbADxsDri06OKNklICkc/T+55yzm0x+2qMvgsu9qAWvYXkQ/DFfdtgCH8syeNIflZ4ac0RmGHAnHuW5FGVEME1sFEkjyT5EeHp7YjeW0pbJRDNC0keKANZV/ozmOQMkueT/H4EkBm3b0g07NY8CDfuPQLKfFrgoba1Ci76MQFahs9CYeZZ6Oqswf37doCs1nuGCER0S7SeNFDZW0l+QfiDK/W8cN0irVFQv1KCxd6e8LzQHhSY5u+jZ3UIMHOu6d8pJB9PeMauCE/vcZInR+P6stk3oe0x43pUOIDnCrwzbq+Q/ITW4iCSN0Xz2ZHQh/NIjhHM+R1mHmiwGf8g/MOgNjSQ/GgEC/4syRuEZ7je/P8hHcZWNT1aGIhronftJDlf6xvg3CeS/KL6uttcmxHY6Y0kT7IM4Fgt6C9IrjYT0C5QxFb9JMkHVISiEkxgupBRf2JAIGne265Pa/R3R3RNWKhHSH5TuPQTytT9R4v4vybE2T0GFNL2I6OfXwr4/t0pJCmgyv8tUEk7/lZ92oswxIxZoxaDZPvPMZMSiOiPIsZBc88PNQ+XijDCPmjVRrsmPFPPmybmuzehT0tJvl1EdXXEcJq1+c8yfWtQXYMnIwx+e99zIqq45sB01WDoSLjnUa1rSkz+KrO24Zo7SB5jnndJngOgXSCwbzOEdq3pb7wndwnQtNHMWZPWZlWedW3RPj4vqjORElrxq9G72sxz5pOcZxjGnREttxtG3Ebyn17TDyQaHiuR9yGJc8FIYqvcDpOhYlMFROC0RJoj9b6/wwNc2nLbQffOJhg34mCWkFI5RfrwBpKbyoglmCyRbpLEy416Z3tklQ2RgvODr7yrGW/6tVl63xCJqe3IhepmNT4Xue4yxu8dW36HSJzdr3/OuY0kvy8bwSWa/zoZrG4BcL2i7HZK3K+XQXG5/n4kPFM66mqSV6svb4aPRtwDn7RzPTyWf4NE4rUyJC6GB/54Gh4nIZTbaiP5N8UNvF8i71j1bxeAhwH8CsD8AORivBurAVyjdTlF/d6ivfxbAI/BZ2I2SyQfLdWoUWO6Vn0OjOVvmssrJOoPlpr0WOiD5nuPfh8kt16bWZNBGsvjwW6hce4i+Ut5RN4vumvSfRtlN7gBHiEprjW5WOOZJG9PsF0EG9JTyJWhWycVsDlSDUNZuB1SfRCsl+Pl4rGEbw2AQR9OA9jpnNtaIV14mNw8aeTgn/IldWQTfLgW1SarRa3XwDc65/aV0ZcQltyAHBhmJjJGWqa0MV9tty7MQ2AAIePPprvGqD4WVzCb4D4NjGtTPvQa2TsOEuMLTGCZc26nvh8rXX+QCGwbgD1JhU3CiQgfTTlOlvCX4OvpdWh/HQgfDbhZ/vIdel57nudN1j3jNN5NAFY459ZaL1J0T7305Tmy/K8HsNw5ty5BWpui/oRyYSsUuBTnysyRfj5YjHUFolqIUrlGRnaysG4dALYl7UOpVTPU5wO0ZusAvOyc21Tg4BynfZ5koN/tnNserfOo6LCw9LTJIjXV2gBphVSXarlZq31PpZ9R7P6+/vxy2/8HhuKiUrStkXAAAAAASUVORK5CYII=" alt="Britus Education" width="129" height="46" class="brand">
   <span class="sep" aria-hidden="true"></span><b>Virtual STEM Lab</b></div>
  <div class="who"><span id="whoName" class="pill" hidden></span><button class="pill" id="btnSwitch" hidden>Log out</button><button class="pill" id="btnTeacher">Teacher</button></div>
 </div></div>
-<div class="sub"><div class="wrap"><span>Build</span><span>Wire</span><span>Code</span><span>Test</span><span style="margin-left:auto">KG – Grade 12</span></div></div>
 
-<main class="wrap">
-<!-- Student sign-in -->
-<section id="vSignin" hidden>
- <div class="card signin">
-  <div class="form">
-   <h1>Virtual STEM Lab</h1>
-   <p class="muted">Build it, wire it, code it and test it, right in your browser. Tell us who you are to start your projects.</p>
+<!-- Student sign-in: slideshow of finished projects + login -->
+<section id="vSignin" class="hero" hidden>
+ <div class="slides" id="slides" aria-hidden="true"></div>
+ <div class="wrap">
+  <div>
+   <h1>Britus Education<br>Virtual STEM Lab</h1>
+   <p class="lead">Build it, wire it, code it and test it, right in your browser.</p>
+   <div class="cap" id="cap" aria-live="polite"></div>
+   <div class="dots" id="dots" role="tablist" aria-label="Projects"></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="login">
+   <h2>Student login</h2>
+   <p class="muted" style="margin:0 0 4px;font-size:14px">Tell us who you are to open your projects.</p>
    <form id="fSignin" novalidate>
-    <label for="inName">Your full name</label><input id="inName" autocomplete="name" placeholder="e.g. Sara Ahmed">
+    <label for="inName">Your name (first name + father's name)</label><input id="inName" autocomplete="name" placeholder="e.g. Sara Ahmed">
     <label for="inSchool">Your school</label><select id="inSchool"></select>
     <label for="inGrade">Your grade</label><select id="inGrade"></select>
+    <label for="inSPass">Password</label><input id="inSPass" type="password" autocomplete="current-password" placeholder="Ask your teacher">
     <div class="err" id="signErr" role="alert"></div>
-    <button class="btn" type="submit">Continue</button>
+    <button class="btn" type="submit">Log in</button>
    </form>
   </div>
-  <div class="pic" role="img" aria-label="Student robotics models built with the smart kit" id="heroPic"></div>
  </div>
 </section>
 
+<main class="wrap">
 <!-- Student projects -->
 <section id="vProjects" hidden>
  <div class="head-row"><div><h1 id="hello"></h1><div class="muted" id="helloSub"></div></div></div>
  <div id="projArea"></div>
+</section>
+
+<!-- Certificate -->
+<section id="vCert" hidden>
+ <div class="cert-tools"><button class="btn" id="btnPrint" type="button">Print or save as PDF</button><button class="btn ghost" id="btnCertBack" type="button">Back to my projects</button></div>
+ <div class="cert" id="cert"></div>
 </section>
 
 <!-- Teacher login -->
@@ -123,7 +182,7 @@ footer .b{font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:.2px}foo
  <div class="card" style="max-width:480px;margin:0 auto">
   <h2>Teacher area</h2>
   <p class="muted">Each school has its own password. You will see only your school's students.</p>
-  <form id="fTeacher" novalidate><label for="inTSchool">School</label><select id="inTSchool"></select><label for="inPass">Password</label><input id="inPass" type="password" autocomplete="current-password">
+  <form id="fTeacher" novalidate><label for="inTName">Your name (first name + father's name)</label><input id="inTName" autocomplete="name" placeholder="e.g. Fatma Ahmed"><label for="inTSchool">School</label><select id="inTSchool"></select><label for="inPass">Password</label><input id="inPass" type="password" autocomplete="current-password">
    <div class="err" id="passErr" role="alert"></div>
    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" type="submit">Open dashboard</button><button class="btn ghost" type="button" data-back>Back</button></div></form>
  </div>
@@ -148,6 +207,7 @@ footer .b{font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:.2px}foo
 </main>
 <footer><div class="b">Britus Education</div><div class="s">© 2026 Fatma Alruffai</div></footer>
 
+<script src="models.js"></script>
 <script>
 /* =====================================================================
    SETTINGS: edit these to configure the platform
@@ -156,27 +216,59 @@ const SETTINGS={
  // Each school has its own teacher password and sees ONLY its own students.
  // Change the names and passwords here. (Front-end check only; IT replaces this with a real login.)
  schools:[
-  {name:'LIS',password:'lis-2026'}
+  {name:'LIS',password:'lis-2026',studentPassword:'Joy LIS'}   // password = teacher dashboard; studentPassword = student login (capitals and spaces do not matter)
   // add the other schools here, e.g. {name:'School name',password:'...'},
  ],
  adminPassword:'britus-admin-2026',   // Britus admin: can see all schools
  apiUrl:''  // IT: set to your server, e.g. 'https://lab.britus.edu/api'. Empty = save on this device only.
 };
-const IMG={"battery-builder": "img/battery-builder.webp", "hero": "img/hero.webp", "joints": "img/joints.webp", "levers": "img/levers.webp", "little-lever": "img/little-lever.webp", "mixer": "img/mixer.webp", "pollinators": "img/pollinators.webp", "power-toys": "img/power-toys.webp", "robotics": "img/robotics.webp"};
+const IMG=window.MODEL_IMG||{};
+/* Slideshow on the login page: the finished models from our projects */
+const SLIDES=[
+ {id:'reflection',grade:'Grade 9 · Project 10',title:'Reflection',text:'An infrared signal bounces off a mirror to the receiver.',glow:'#7b1fa2',acc:'#ff8ab8'},
+ {id:'windturbines',grade:'Grade 9 · Project 12',title:'Wind Turbines',text:'A Lego windmill with a speed dial and a power light.',glow:'#00838f',acc:'#ffe082'},
+ {id:'weatherseesaw',grade:'Grade 9 · Project 13',title:'Weather Seesaw',text:'Warm periods and ice ages on a Lego seesaw.',glow:'#1565c0',acc:'#ffb27a'},
+ {id:'mixer',grade:'Grade 9 · Project 8',title:'Build a Mixer',text:'One DC motor turns two mixers through gears.',glow:'#2e7d4a',acc:'#6fdc8c'},
+ {id:'chromatography',grade:'Grade 9 · Project 5',title:'Chromatography',text:'Separate the colours hidden in ink.',glow:'#00695c',acc:'#80e0d0'},
+ {id:'goldfoil',grade:'Grade 9 · Project 4',title:'Gold Foil Experiment',text:'Fire alpha particles at an atom on a conveyor belt.',glow:'#8a6400',acc:'#ffd76b'},
+ {id:'energywheel',grade:'Grade 9 · Project 3',title:'Energy Wheel',text:'A Ferris wheel that shows how energy cycles in an ecosystem.',glow:'#2e7d32',acc:'#9be29f'},
+ {id:'weightmachine',grade:'Grade 9 · Project 2',title:'Weight Machine',text:'A servo winds a cord over a pulley to lift a weight.',glow:'#9a4a1a',acc:'#ffb27a'},
+ {id:'joints',grade:'Grade 9 · Project 1',title:'Joints',text:'A hinge joint that bends like a knee, driven by a servo.',glow:'#1f4f9a',acc:'#7fb2ff'},
+ {id:'handwash',grade:'Grade 7 · Activity 3',title:'Touchless Hand Wash Timer',text:'Build it in 3D: soap, sensor and a 20-second servo timer.',glow:'#8a6420',acc:'#ffc46b'},
+ {id:'touchless',grade:'Grade 7 · IR sensor + servo',title:'Touchless Inventions',text:'A trash can, a parking gate and a candy dispenser.',glow:'#5a3aa8',acc:'#c9b2ff'},
+ {id:'conductivity',grade:'Grade 7 · Activity 5',title:'Conductivity Meter',text:'Salt water conducts electricity better!',glow:'#1f6f9a',acc:'#7fd3f2'},
+ {id:'pollinators',grade:'Grade 5 · Project 3',title:'Plants and Pollinators',text:'A robot bee that visits the flower.',glow:'#7a8b1e',acc:'#c8e86a'},
+ {id:'ocean',grade:'Grade 5 · Project 4',title:'Cleaning the Ocean',text:'Three WeDo machines take plastic out of the sea.',glow:'#00838f',acc:'#7fe3ea'},
+ {id:'robotics',grade:'Grade 5 · Robotics',title:'Virtual Robotics Lab',text:'Build and code animal robots in 3D.',glow:'#5a3aa8',acc:'#b9a2ff'},
+ {id:'power-toys',grade:'Grade 4 · Electricity',title:'Power Up the Toys',text:'Series and parallel batteries in a toy car.',glow:'#9a3a22',acc:'#ffa184'},
+ {id:'levers',grade:'Grade 3 · Simple Machines',title:'Levers',text:'First, second and third class levers.',glow:'#1d5aa8',acc:'#8cc0ff'}
+];
 const GRADES=['KG','1','2','3','4','5','6','7','8','9','10','11','12'];
 /* Projects per grade, in the order students must complete them.
    path = folder of the lab on this website. */
+const COLORS=['c-blue','c-green','c-orange','c-purple','c-pink','c-teal','c-navy','c-red'];
 const PROJECTS={
- '3':[{id:'levers',path:'labs/levers/',title:'Levers',tag:'Simple Machines · Project 6',desc:'Build first, second and third class levers, test them and find levers in everyday life.',art:'levers'},
-      {id:'little-lever',path:'labs/little-lever-builder/',title:'Little Lever Builder',tag:'Homework',desc:'Build the three levers again, see them in 3D, test them and earn your Lever Engineer certificate.',art:'little'}],
- '4':[{id:'power-toys',path:'labs/power-toys/',title:'Power Up the Toys',tag:'Electricity',desc:'Build series and parallel circuits, measure the voltage and design a toy that uses batteries.',art:'toys'},
-      {id:'battery-builder',path:'labs/battery-builder/',title:'Battery Builder',tag:'Homework',desc:'Build battery circuits on the snap board and power up a toy car, robot and fan.',art:'battery'}],
- '5':[{id:'pollinators',path:'labs/pollinators/',title:'Plants and Pollinators',tag:'Project 3',desc:'Learn the parts of a flower, then build, connect, program and test a robot bee.',art:'bee'},
-      {id:'robotics',path:'labs/robotics/',title:'Virtual Robotics Lab',tag:'Robotics',desc:'Build and code animal robots in 3D: frog, turtle, crocodile and parrot.',art:'frog'}],
- '9':[{id:'joints',path:'labs/joints/',title:'Joints',tag:'Project 1',desc:'Build a hinge joint, wire the servo to the smart hub, code it to bend from 0° to 180° and test it.',art:'joint'},
-      {id:'mixer',path:'labs/mixer/',title:'Build a Mixer',tag:'Project 8 · Moments',desc:'One DC motor turns two mixers through gears. Add a potentiometer, program the speed and test it.',art:'mixer'}]
+ '3':[{id:'levers',chips:['Physics','Build','Test'],color:'c-blue',path:'labs/levers/index.html',title:'Levers',tag:'Simple Machines · Project 6',desc:'Build first, second and third class levers, test them and find levers in everyday life.',art:'levers'},
+      {id:'little-lever',chips:['Build','3D','Homework'],color:'c-orange',path:'labs/little-lever-builder/index.html',title:'Little Lever Builder',tag:'Homework',desc:'Build the three levers again, see them in 3D, test them and earn your Lever Engineer certificate.',art:'little'}],
+ '4':[{id:'power-toys',chips:['Circuits','Build','Test'],color:'c-red',path:'labs/power-toys/index.html',title:'Power Up the Toys',tag:'Electricity',desc:'Build series and parallel circuits, measure the voltage and design a toy that uses batteries.',art:'toys'},
+      {id:'battery-builder',chips:['Circuits','Homework'],color:'c-teal',path:'labs/battery-builder/index.html',title:'Battery Builder',tag:'Homework',desc:'Build battery circuits on the snap board and power up a toy car, robot and fan.',art:'battery'}],
+ '5':[{id:'pollinators',chips:['Biology','Build','Code'],color:'c-green',path:'labs/pollinators/index.html',title:'Plants and Pollinators',tag:'Project 3',desc:'Learn the parts of a flower, then build, connect, program and test a robot bee.',art:'bee'},
+      {id:'ocean',chips:['Environment','Build','Code'],color:'c-teal',path:'labs/ocean/index.html',title:'Cleaning the Ocean',tag:'Project 4',desc:'Build the WeDo Reel, Sweep and Grab machines in 3D, program them and find which one is best for each kind of ocean plastic.'},
+      {id:'robotics',chips:['Build','Code','Robots'],color:'c-purple',path:'labs/robotics/index.html',title:'Virtual Robotics Lab',tag:'Robotics',desc:'Build and code animal robots in 3D: frog, turtle, crocodile and parrot.',art:'frog'}],
+ '7':[{id:'handwash',chips:['Health','3D','Code'],color:'c-orange',path:'labs/handwash/index.html',title:'Touchless Hand Wash Timer',tag:'Activity 3 · Touchless Soap Dispenser',desc:'Build it in 3D: an IR sensor sees your hand, soap comes out and a servo counts 20 seconds of washing.',art:'handwash'},
+      {id:'touchless',chips:['IR sensor','Servo','3D'],color:'c-purple',path:'labs/touchless/index.html',title:'Touchless Inventions',tag:'IR sensor + servo · 3 builds',desc:'Use the same idea to build a touchless trash can, a smart parking gate and a candy dispenser, then design your own invention.',art:'touchless'},
+      {id:'conductivity',chips:['Chemistry','3D','Code'],color:'c-teal',path:'labs/conductivity/index.html',title:'Conductivity Meter',tag:'Activity 5 · Water + Salt',desc:'Build it in 3D: dip the probe in salt water and tap water, watch the RGB LED glow and read the Serial Monitor.',art:'conductivity'}],
+ '9':[{id:'joints',chips:['Biology','Build','Code'],color:'c-blue',path:'labs/joints/index.html',title:'Joints',tag:'Project 1',desc:'Build a hinge joint, wire the servo to the smart hub, code it to bend from 0° to 180° and test it.',art:'joint'},
+      {id:'weightmachine',chips:['Health','Build','Code'],color:'c-orange',path:'labs/weightmachine/index.html',title:'Weight Machine',tag:'Project 2',desc:'Build a pulley tower in 3D, wire the 270° servo to port 13, code the OLED and lift a weight safely for older adults.'},
+      {id:'energywheel',chips:['Ecosystems','Build','Code'],color:'c-green',path:'labs/energywheel/index.html',title:'Energy Wheel',tag:'Project 3',desc:'Build a Lego Ferris wheel with a 360° servo and a button. Label the bins to show how energy and matter cycle in an ecosystem.'},
+      {id:'goldfoil',chips:['Chemistry','Build','Code'],color:'c-orange',path:'labs/goldfoil/index.html',title:'Gold Foil Experiment',tag:'Project 4',desc:'Build a Lego conveyor with an ultrasonic loader, design your own gold foil atom and fire alpha particles at it, like Rutherford.'},
+      {id:'chromatography',chips:['Chemistry','Experiment','OLED'],color:'c-teal',path:'labs/chromatography/index.html',title:'Chromatography',tag:'Project 5',desc:'Separate the colours in ink, measure Rf values, then code your real results onto the OLED screen.'},
+      {id:'mixer',chips:['Physics','Build','Code'],color:'c-green',path:'labs/mixer/index.html',title:'Build a Mixer',tag:'Project 8 · Moments',desc:'One DC motor turns two mixers through gears. Add a potentiometer, program the speed and test it.',art:'mixer'},
+      {id:'reflection',chips:['Physics','Light','Code'],color:'c-purple',path:'labs/reflection/index.html',title:'Reflection',tag:'Project 10',desc:'Bounce an invisible infrared signal off a Lego mirror stand, record the remote\'s hex codes and prove the law of reflection.'},
+      {id:'windturbines',chips:['Energy','Build','Code'],color:'c-teal',path:'labs/windturbines/index.html',title:'Wind Turbines',tag:'Project 12',desc:'Build the kit windmill with two chains, control its speed with a dial and make an LED glow with its power.'},
+      {id:'weatherseesaw',chips:['Climate','Sensor','Servo'],color:'c-blue',path:'labs/weatherseesaw/index.html',title:'Weather Seesaw',tag:'Project 13',desc:'A temperature sensor tips a Lego seesaw between warm periods and ice ages, then replays 800,000 years of climate.'}]
 };
-const BANNER={'9':'<div class="kitban"><img src="img/board.webp" alt="The Arduino smart hub mainboard" width="150" height="117"><div><b>Your smart hub: the Arduino mainboard</b><span>In Grade 9 you wire servo and DC motors to the smart hub and code them with blocks.</span></div></div>'};
+const BANNER={};
 
 /* =====================================================================
    DATA LAYER: the only place that reads or writes student data.
@@ -206,17 +298,26 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const gradeName=g=>g==='KG'?'KG':'Grade '+g;
 const slug=s=>String(s).toLowerCase().trim().replace(/[^a-z0-9؀-ۿ]+/g,'-').replace(/^-|-$/g,'');
-function view(v){['vSignin','vProjects','vTeacherLogin','vDash'].forEach(x=>$(x).hidden=x!==v);window.scrollTo(0,0);
- const s=Data.current(),stu=v==='vProjects';$('whoName').hidden=!(stu&&s);$('btnSwitch').hidden=!(stu&&s);$('btnTeacher').hidden=v==='vDash'||v==='vTeacherLogin';if(s)$('whoName').textContent=s.name+' · '+gradeName(s.grade)}
+function view(v){['vSignin','vProjects','vTeacherLogin','vDash','vCert'].forEach(x=>$(x).hidden=x!==v);window.scrollTo(0,0);
+ const s=Data.current(),stu=v==='vProjects'||v==='vCert';$('whoName').hidden=!(stu&&s);$('btnSwitch').hidden=!(stu&&s);$('btnTeacher').hidden=v==='vDash'||v==='vTeacherLogin';if(s)$('whoName').textContent=s.name+' · '+gradeName(s.grade)}
 
 /* sign-in */
-$('heroPic').style.backgroundImage='url('+IMG.hero+')';
+/* slideshow */
+(function(){const box=$('slides'),dots=$('dots'),cap=$('cap');let i=0,t;
+ const list=SLIDES.filter(x=>IMG[x.id]);if(!list.length)return;
+ box.innerHTML=list.map(x=>`<div class="slide" style="--glow:${x.glow}"><img src="${IMG[x.id]}" alt=""></div>`).join('');
+ dots.innerHTML=list.map((x,k)=>`<button type="button" role="tab" aria-label="${esc(x.title)}"></button>`).join('');
+ function go(k){i=(k+list.length)%list.length;[...box.children].forEach((e,n)=>e.classList.toggle('on',n===i));[...dots.children].forEach((e,n)=>{e.classList.toggle('on',n===i);e.setAttribute('aria-selected',n===i)});
+  const x=list[i];cap.style.setProperty('--acc',x.acc);cap.innerHTML=`<small>${esc(x.grade)}</small><b>${esc(x.title)}</b><span>${esc(x.text)}</span>`}
+ function auto(){clearInterval(t);if(!matchMedia('(prefers-reduced-motion: reduce)').matches)t=setInterval(()=>{if(!$('vSignin').hidden&&!document.hidden)go(i+1)},5000)}
+ [...dots.children].forEach((b,k)=>b.onclick=()=>{go(k);auto()});go(0);auto()})();
 $('inSchool').innerHTML='<option value="">Choose your school</option>'+SETTINGS.schools.map(s=>`<option>${esc(s.name)}</option>`).join('');
 $('inGrade').innerHTML='<option value="">Choose your grade</option>'+GRADES.map(g=>`<option value="${g}">${gradeName(g)}</option>`).join('');
 $('fSignin').onsubmit=e=>{e.preventDefault();const name=$('inName').value.trim().replace(/\s+/g,' '),school=$('inSchool').value,grade=$('inGrade').value;
- if(name.length<2){$('signErr').textContent='Please write your full name.';$('inName').focus();return}
+ if(name.split(' ').filter(w=>w.length>=2).length<2){$('signErr').textContent='Please write two names: your first name and your father\'s name.';$('inName').focus();return}
  if(!school){$('signErr').textContent='Please choose your school.';$('inSchool').focus();return}
  if(!grade){$('signErr').textContent='Please choose your grade.';$('inGrade').focus();return}
+ {const sp=(SETTINGS.schools.find(s=>s.name===school)||{}).studentPassword;const nz=x=>String(x||'').toLowerCase().replace(/\s+/g,'');if(sp&&nz(sp)!==nz($('inSPass').value)){$('signErr').textContent='Wrong password. Ask your teacher for the password.';$('inSPass').focus();return}}
  $('signErr').textContent='';
  /* a student keeps the grade she first signed in with (the real lock comes from the school login) */
  const prev=Object.values(Data._get(KEY_STUDENTS,{})).find(x=>slug(x.school)===slug(school)&&slug(x.name)===slug(name));const g=prev?prev.grade:grade;
@@ -235,26 +336,29 @@ function showProjects(){const s=Data.current();if(!s){view('vSignin');return}
  const list=PROJECTS[s.grade];
  if(!list){$('projArea').innerHTML=`<div class="soon"><h2>${gradeName(s.grade)} projects are coming soon</h2><p>Your teacher will tell you when they are ready. Check back soon!</p></div>`;view('vProjects');return}
  $('projArea').innerHTML=(BANNER[s.grade]||'')+'<div class="grid">'+list.map((p,i)=>{const st=labState(s,list,i);
-  const badge=st.done?'<span class="badge done">Completed</span>':st.locked?'<span class="badge lock">Locked</span>':st.started?'<span class="badge prog">In progress</span>':`<span class="badge">Project ${i+1}</span>`;
-  const btn=st.locked?`<span class="lockmsg">Finish “${esc(list[i-1].title)}” to unlock</span>`:`<a class="btn" href="${p.path}">${st.done?'Open again':st.started?'Continue':'Start project'}</a>`;
-  return`<article class="proj${st.locked?' locked':''}"><div class="ttl"><h3>${esc(p.title)}</h3>${badge}</div><div class="art"><img src="${IMG[p.id]}" alt="${esc(p.title)}" loading="lazy" width="480" height="300"></div><div class="body"><span class="tag">${esc(p.tag)}</span><p>${esc(p.desc)}</p>${st.step&&!st.done?`<div class="step">You are at: ${esc(st.step)}</div>`:''}${btn}</div></article>`}).join('')+'</div>';
+  const chips=(p.chips||[]).map(c=>`<span>${esc(c)}</span>`).join('');
+  const status=st.done?'Completed ✓':st.locked?'Locked':st.started?'In progress':'Project '+(i+1);
+  const btn=st.locked?`<span class="lockmsg">🔒 Finish “${esc(list[i-1].title)}” first</span>`:(st.done?`<a class="go certbtn" href="#cert/${p.id}">🏆 Get my certificate</a><a href="${p.path}" style="color:#fff;font-weight:700;font-size:13.5px">Open the project again</a>`:`<a class="go" href="${p.path}">${st.started?'Continue':'Start'}</a>`);
+  return`<article class="proj ${p.color||COLORS[i%COLORS.length]}${st.locked?' locked':''}"><div class="glow"></div><div class="model">${IMG[p.id]?`<img src="${IMG[p.id]}" alt="${esc(p.title)} model">`:''}</div><div class="status">${status}</div><h3>${esc(p.title)}</h3><div class="chips">${chips}</div><p>${esc(p.desc)}</p>${st.step&&!st.done?`<div class="step">You are at: ${esc(st.step)}</div>`:''}${btn}</article>`}).join('')+'</div>';
  view('vProjects')}
 
 /* teacher */
 let TEACHER=false;
 $('inTSchool').innerHTML='<option value="">Choose your school</option>'+SETTINGS.schools.map(s=>`<option>${esc(s.name)}</option>`).join('')+'<option value="*">Britus Education (admin)</option>';
-$('btnTeacher').onclick=()=>{if(TEACHER){showDash();return}$('inPass').value='';$('passErr').textContent='';view('vTeacherLogin');$('inPass').focus()};
+$('btnTeacher').onclick=()=>{if(TEACHER){showDash();return}$('inPass').value='';$('inTName').value='';$('passErr').textContent='';view('vTeacherLogin');$('inPass').focus()};
 document.addEventListener('click',e=>{if(e.target.closest('[data-back]'))home()});
-$('fTeacher').onsubmit=e=>{e.preventDefault();const sc=$('inTSchool').value,pw=$('inPass').value;
+const normPw=x=>String(x||'').toLowerCase().replace(/\s+/g,'');
+$('fTeacher').onsubmit=e=>{e.preventDefault();const sc=$('inTSchool').value,pw=$('inPass').value,tn=$('inTName').value.trim().replace(/\s+/g,' ');
+ if(tn.split(' ').filter(w=>w.length>=2).length<2){$('passErr').textContent='Please write two names: your first name and your father\'s name.';$('inTName').focus();return}
  if(!sc){$('passErr').textContent='Please choose your school.';return}
- const ok=sc==='*'?pw===SETTINGS.adminPassword:SETTINGS.schools.some(s=>s.name===sc&&s.password===pw);
- if(ok){TEACHER=sc;try{sessionStorage.setItem('britusTeacher',sc)}catch(_){}showDash()}else{$('passErr').textContent='Wrong password for this school. Please try again.'}};
+ const ok=sc==='*'?pw===SETTINGS.adminPassword:SETTINGS.schools.some(s=>s.name===sc&&normPw(s.password)===normPw(pw));
+ if(ok){TEACHER=sc;try{sessionStorage.setItem('britusTeacher',sc);sessionStorage.setItem('britusTeacherName',tn)}catch(_){}showDash()}else{$('passErr').textContent='Wrong password for this school. Please try again.'}};
 $('btnDashOut').onclick=()=>{TEACHER=false;try{sessionStorage.removeItem('britusTeacher')}catch(_){}home()};
 function schoolFilter(){const all=TEACHER==='*';$('fSchool').innerHTML=all?'<option value="">All schools</option>'+SETTINGS.schools.map(s=>`<option>${esc(s.name)}</option>`).join(''):`<option>${esc(TEACHER)}</option>`;$('fSchool').disabled=!all}
 $('fGrade').innerHTML='<option value="">All grades</option>'+GRADES.map(g=>`<option value="${g}">${gradeName(g)}</option>`).join('');
 ['fSchool','fGrade','fStatus','fSearch'].forEach(id=>$(id).addEventListener('input',renderDash));
 let ROWS=[];
-async function showDash(){view('vDash');schoolFilter();$('dashSchool').textContent=TEACHER==='*'?'All schools':TEACHER;
+async function showDash(){view('vDash');schoolFilter();let tnm='';try{tnm=sessionStorage.getItem('britusTeacherName')||''}catch(_){}$('dashSchool').textContent=(tnm?tnm+' · ':'')+(TEACHER==='*'?'All schools':TEACHER);
  const mine=r=>TEACHER==='*'||r.student.school===TEACHER;ROWS=(await Data.classList()).filter(mine);renderDash();
  $('dataNote').innerHTML=SETTINGS.apiUrl?'Showing students from the school server.':'<b>Note:</b> showing students who used the lab on <b>this device</b>. When IT connects the school server (see README), every student of your school from every device will appear here.'}
 function overall(r){const list=PROJECTS[r.student.grade]||[];const d=list.filter(p=>r.labs[p.id]&&r.labs[p.id].done).length;const any=list.some(p=>r.labs[p.id]);return{d,n:list.length,status:list.length&&d===list.length?'done':any?'prog':'none'}}
@@ -263,17 +367,33 @@ function renderDash(){const fs=$('fSchool').value,fg=$('fGrade').value,ft=$('fSt
  const c={done:0,prog:0,none:0};rows.forEach(r=>c[overall(r).status]++);
  $('stats').innerHTML=`<div class="stat"><b>${rows.length}</b><span>Students</span></div><div class="stat"><b>${c.done}</b><span>Finished all projects</span></div><div class="stat"><b>${c.prog}</b><span>In progress</span></div><div class="stat"><b>${c.none}</b><span>Not started</span></div>`;
  $('tBody').innerHTML=rows.length?rows.sort((a,b)=>a.student.name.localeCompare(b.student.name)).map(r=>{const list=PROJECTS[r.student.grade]||[];
-  const chips=list.length?list.map(p=>{const st=r.labs[p.id];return st&&st.done?`<span class="chip c-done">${esc(p.title)}: completed</span>`:st?`<span class="chip c-prog">${esc(p.title)}: ${esc(st.step)}</span>`:`<span class="chip c-none">${esc(p.title)}</span>`}).join(''):'<span class="chip c-none">No projects yet</span>';
+  const chips=list.length?list.map(p=>{const st=r.labs[p.id];return st&&st.done?`<span class="chip c-done">🏆 ${esc(p.title)}: completed</span>`:st?`<span class="chip c-prog">${esc(p.title)}: ${esc(st.step)}</span>`:`<span class="chip c-none">${esc(p.title)}</span>`}).join(''):'<span class="chip c-none">No projects yet</span>';
   const times=Object.values(r.labs).map(x=>x.updated).filter(Boolean).sort();const last=times.length?new Date(times[times.length-1]).toLocaleString():'–';
   return`<tr><td><b>${esc(r.student.name)}</b></td><td>${esc(r.student.school)}</td><td>${gradeName(r.student.grade)}</td><td>${chips}</td><td>${esc(last)}</td></tr>`}).join(''):'<tr><td colspan="5" class="muted">No students match these filters yet.</td></tr>'}
 $('btnCsv').onclick=()=>{const head=['Student','School','Grade','Project','Status','Step','Last update'];const lines=[head];
  ROWS.forEach(r=>{const list=PROJECTS[r.student.grade]||[];(list.length?list:[{id:'',title:''}]).forEach(p=>{const st=r.labs[p.id]||{};lines.push([r.student.name,r.student.school,gradeName(r.student.grade),p.title,st.done?'Finished':st.step?'In progress':'Not started',st.step||'',st.updated||''])})});
  const csv=lines.map(l=>l.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));a.download='britus-stem-lab-progress.csv';document.body.appendChild(a);a.click();a.remove()};
 
-function home(){try{const t=sessionStorage.getItem('britusTeacher');if(t&&t!=='1')TEACHER=t}catch(_){}Data.current()?showProjects():view('vSignin')}
+
+/* certificate: #cert/<projectId>, only for a project the student has finished */
+function showCert(id){const s=Data.current();if(!s){view('vSignin');return}
+ const list=PROJECTS[s.grade]||[],p=list.find(x=>x.id===id),st=p&&Data.progress(s.id)[p.id];
+ if(!p||!st||!st.done){location.hash='';showProjects();return}
+ const d=new Date(st.updated||Date.now()).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+ $('cert').innerHTML=`<div class="top"><img src="${document.querySelector('.logo img').src}" alt="Britus Education"><span>Virtual STEM Lab</span></div>
+ <div class="mid"><div><div class="k">Certificate of achievement</div><h2>Well done!</h2><p>This certificate is proudly presented to</p><div class="nm">${esc(s.name)}</div>
+ <p>${esc(s.school)} · ${gradeName(s.grade)}</p><p style="margin-top:12px">for successfully finishing the project</p><div class="pj">${esc(p.title)}</div><p>${esc(p.tag)} · ${(p.chips||[]).map(esc).join(' · ')}</p></div>
+ <div class="mdl">${IMG[p.id]?`<img src="${IMG[p.id]}" alt="${esc(p.title)} model">`:''}</div></div>
+ <div class="bot"><div class="sig">${d}<br><b>Date</b></div><div class="seal" aria-hidden="true">🏆</div><div class="sig">&nbsp;<br><b>Teacher</b></div></div>`;
+ view('vCert')}
+$('btnPrint').onclick=()=>window.print();
+$('btnCertBack').onclick=()=>{location.hash='';showProjects()};
+window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#cert\/(.+)$/);if(m)showCert(decodeURIComponent(m[1]));else if(!$('vCert').hidden)showProjects()});
+
+function home(){try{const t=sessionStorage.getItem('britusTeacher');if(t&&t!=='1')TEACHER=t}catch(_){}const m=location.hash.match(/^#cert\/(.+)$/);Data.current()?(m?showCert(decodeURIComponent(m[1])):showProjects()):view('vSignin')}
 window.addEventListener('pageshow',()=>{if(!$('vProjects').hidden)showProjects()});
 home();
 </script>
-<script data-goatcounter="https://fatmajoy.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<!-- gc --><script data-x="https://fatmajoy.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

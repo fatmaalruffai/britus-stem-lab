@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Weather Seesaw</title>
+<style>
+/* Grade 9 · Project 13 · Weather Seesaw. Same 3D layout and kit as Joints; climate blue accent */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#1565c0;--acc-d:#0d47a1;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #ff8a3d}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#ff8a3d,#1565c0);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+table.dt{width:100%;border-collapse:collapse;margin:8px 0}.dt th{background:#16233f;color:#fff;padding:7px;font-size:14px}.dt td{border:1px solid var(--line);height:34px;padding:5px 8px;font-weight:600;font-size:14px}
+.gsvg{width:100%;height:auto;display:block;background:var(--tray);border-radius:10px;margin:6px 0}
+.oled{background:#05070a;color:#e8f4ff;border-radius:8px;padding:8px 10px;font:600 13px Consolas,monospace;display:inline-block}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:15px}.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok)}
+.sl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.sl output{font:800 20px Consolas,monospace;min-width:64px;text-align:right}
+.gauge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.gauge div{background:var(--tray);border-radius:9px;padding:8px;text-align:center}.gauge b{display:block;font-size:24px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--surf)}
+.ex .tag{display:inline-block;background:var(--acc);color:var(--onacc);font:800 11.5px "Segoe UI",system-ui,sans-serif;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;margin-bottom:4px}
+.ex h3{margin-top:4px}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.pc div{background:var(--tray);border-radius:9px;padding:8px;font-size:14px}.pc b{display:block}
+@media(max-width:560px){.pc{grid-template-columns:1fr}}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}.cmp th,.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:left}.cmp th{background:var(--navy);color:#fff}
+.opt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.opt label{display:grid;gap:3px;font-weight:700;font-size:14px}
+.opt select,textarea{font:inherit;padding:7px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+textarea{width:100%;min-height:90px}
+@media(max-width:560px){.opt{grid-template-columns:1fr}}
+.tips{margin:6px 0;padding-left:22px}.tips li{margin:4px 0}
+.foil{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:360px;margin:8px auto;background:#b3261e;padding:10px;border-radius:10px}
+.foil button{aspect-ratio:1;border-radius:50%;border:3px solid #7a1712;cursor:pointer;font:700 12px inherit;color:#fff}
+.foil button.solid{border-radius:8px;background:#b3261e;border-color:#e57373}.foil button.hole{background:#fdf6e3;color:#7a1712}
+.heat{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:360px;margin:8px auto}.heat div{border-radius:6px;padding:6px 2px;text-align:center;font:700 12px/1.3 inherit;background:var(--tray)}
+svg.sim{width:100%;height:auto;display:block;background:#0f1626;border-radius:10px;margin:6px 0}
+.oledbox{background:#05070a;border-radius:10px;padding:10px;display:flex;justify-content:center;margin:8px 0}.oledbox canvas{image-rendering:pixelated;width:100%;max-width:512px;border:2px solid #f2c230;border-radius:4px}
+.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}.nums label{display:grid;gap:3px;font-weight:700;font-size:14px}.nums input,.mtab input{font:inherit;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink);width:100%}
+.mtab{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}.mtab th,.mtab td{border:1px solid var(--line);padding:6px;text-align:left}.mtab th{background:var(--navy);color:#fff}.mtab td.ok{background:rgba(46,125,50,.15)}.mtab td.no{background:rgba(198,40,40,.12)}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-right:4px;border:1px solid rgba(0,0,0,.25)}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">🌡️</div><div><h1>Weather Seesaw</h1><p>Grade 9 · Project 13 · A seesaw that tips between warm periods and ice ages</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Project steps"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D model of the weather seesaw. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="iso">3D</button><button class="btn" data-v="front">Front</button><button class="btn" data-v="seesaw">Seesaw</button><button class="btn" data-v="sensor">Sensor</button><button class="btn" data-v="board">Board</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+</div>
+<div>
+<!-- 1 Build -->
+<section class="card panel" id="p0">
+ <div class="k">Step 1 · Build</div>
+ <h2>Build the seesaw</h2>
+ <p style="margin-top:0">The book shows one way to build a seesaw with a servo and a gear, and asks: will you build it as shown, or improve it? For each step, <b>find the right part</b> in the box (some are traps!), then <b>show where and how it goes</b>. Every mistake is counted.</p>
+ <ol class="steps" id="bSteps"></ol>
+ <div class="small"><b>Parts box</b></div>
+ <div class="tray" id="tray"></div>
+ <div id="bQ" hidden></div>
+ <div class="msg" id="mB"></div>
+ <div class="next"><button class="btn pri" data-go="1" id="nB" disabled>Next: wire it ▶</button></div>
+</section>
+<!-- 2 Wire -->
+<section class="card panel" id="p1">
+ <div class="k">Step 2 · Wire</div>
+ <h2>Connect the sensor and the servo</h2>
+ <p style="margin-top:0">Book: the humidity and temperature sensor goes into <b>port 2</b>, the 270° servo into <b>port 13</b>. No hints unless you make two mistakes on the same wire.</p>
+ <div class="wires" id="wList"></div>
+ <h3>Goes to</h3><div class="pins" id="pins"></div>
+ <div class="msg" id="mW">Choose a cable first.</div>
+ <div class="next"><button class="btn pri" data-go="2" id="nW" disabled>Next: write the code ▶</button></div>
+</section>
+<!-- 3 Code -->
+<section class="card panel" id="p2">
+ <div class="k">Step 3 · Code</div>
+ <h2>Program the seesaw</h2>
+ <p style="margin-top:0">Book: program the servo to change its angle based on the temperature reading. Fill in every <b style="background:#ffd27a;color:#141a2b;padding:0 4px;border-radius:3px">?</b>.</p>
+ <pre class="code" id="gCode" style="min-height:0"></pre>
+ <div class="row"><button class="btn pri" id="gCheck">✔ Check and upload</button></div>
+ <div class="msg" id="mC"></div>
+ <div class="next"><button class="btn pri" data-go="3" id="nC" disabled>Next: discover ▶</button></div>
+</section>
+<!-- 4 Discover -->
+<section class="card panel" id="p3">
+ <div class="k">Step 4 · Discover (book)</div>
+ <h2>Test your temperature threshold</h2>
+ <p style="margin-top:0">The room is about 24 °C. Change the temperature with a hair dryer, your breath, a fan or the AC. Is your threshold set correctly?</p>
+ <div class="sl"><span>Threshold</span><input type="range" id="thr" min="15" max="40" value="20" aria-label="Temperature threshold"><output id="thrO">20 °C</output></div>
+ <div class="row"><button class="btn" data-tool="dryer">💨🔥 Hair dryer</button><button class="btn" data-tool="blow">😮‍💨 Blow on it</button><button class="btn" data-tool="fan">🌀 Fan</button><button class="btn" data-tool="ac">❄️ AC</button><button class="btn" data-tool="off">✋ Stop</button></div>
+ <div class="stats"><div><b id="dT">24.0</b><span>°C (sensor)</span></div><div><b id="dH">45</b><span>% humidity</span></div><div><b id="dS">ICE AGE</b><span>seesaw</span></div></div>
+ <svg class="sim" viewBox="0 0 400 160" id="gT" role="img" aria-label="Temperature graph with the threshold line"></svg>
+ <ol class="steps" id="dTasks"><li>At room temperature, the seesaw shows the <b>ice age</b> side.</li><li>Warm the sensor until it flips to the <b>warm period</b>.</li><li>Cool it until it flips <b>back</b>.</li><li>Make <b>2 full cycles</b> (warm → cold → warm → cold).</li></ol>
+ <div class="msg" id="mD">Set a threshold, then use the tools.</div>
+ <div class="next"><button class="btn pri" data-go="4" id="nD" disabled>Next: model Earth's history ▶</button></div>
+</section>
+<!-- 5 History -->
+<section class="card panel" id="p4">
+ <div class="k">Step 5 · Improve the model</div>
+ <h2>800,000 years on a seesaw</h2>
+ <p style="margin-top:0">The book's seesaw only knows two positions. Make it <b>smooth</b> with <code>map()</code>, then feed it a simplified record of Earth's temperature from ice cores (difference from today, in °C).</p>
+ <pre class="code" id="hCode" style="min-height:0"></pre>
+ <div class="row"><button class="btn pri" id="hRun">▶ Check and play 800,000 years</button></div>
+ <svg class="sim" viewBox="0 0 400 170" id="hG" role="img" aria-label="Simplified temperature record of the last 800,000 years"></svg>
+ <div class="small" id="hYr"></div>
+ <div id="hQ" hidden>
+  <div class="q">How many ice ages (deep cold dips) did your seesaw show?</div><div class="choices"><button class="btn" data-hq1="8">About 8</button><button class="btn" data-hq1="2">2</button><button class="btn" data-hq1="50">About 50</button></div><div class="fb" id="hQ1m"></div>
+  <div class="q">Look at the shape: which happens faster?</div><div class="choices"><button class="btn" data-hq2="warm">Warming at the end of an ice age</button><button class="btn" data-hq2="cool">Cooling into an ice age</button><button class="btn" data-hq2="same">Both take the same time</button></div><div class="fb" id="hQ2m"></div>
+ </div>
+ <div class="msg" id="mH">Fill in the map() line.</div>
+ <div class="next"><button class="btn pri" data-go="5" id="nH" disabled>Next: test ▶</button></div>
+</section>
+<!-- 6 Test -->
+<section class="card panel" id="p5">
+ <div class="k">Step 6 · Test</div>
+ <h2>Measure your success</h2>
+ <label class="chk"><input type="checkbox" data-ms="0"><span>The seesaw oscillates back and forth with a 270° servo motor.</span></label>
+ <label class="chk"><input type="checkbox" data-ms="1"><span>It changes its angle depending on the temperature sensor reading.</span></label>
+ <label class="chk"><input type="checkbox" data-ms="2"><span>We used only the materials provided.</span></label>
+ <label class="chk"><input type="checkbox" data-ms="3"><span>We included design ideas from every team member.</span></label>
+ <div class="q">Your seesaw flips in seconds. Earth's real ice-age cycle takes about…</div><div class="choices"><button class="btn" data-tq="100k">100,000 years</button><button class="btn" data-tq="100">100 years</button><button class="btn" data-tq="1">1 year</button></div><div class="fb" id="tQm"></div>
+ <div class="next"><button class="btn pri" data-go="6" id="nT" disabled>Next: math and science ▶</button></div>
+</section>
+<!-- 7 Math -->
+<section class="card panel" id="p6">
+ <div class="k">Step 7 · Math and science connection</div>
+ <h2>Comparing two functions</h2>
+ <div class="pc"><div><b>Table A: Region A</b>June 62% · July 65% · August 68%</div><div><b>Graph B: Region B</b><svg viewBox="0 0 220 110" style="width:100%;height:auto;background:#fff;border-radius:6px" aria-label="Graph B: June 70%, July 80%, August 90%"><g stroke="#ddd"><line x1="30" y1="10" x2="30" y2="95"/><line x1="30" y1="95" x2="210" y2="95"/><line x1="30" y1="75" x2="210" y2="75"/><line x1="30" y1="55" x2="210" y2="55"/><line x1="30" y1="35" x2="210" y2="35"/><line x1="30" y1="15" x2="210" y2="15"/></g><g font-size="9" fill="#333"><text x="5" y="98">60</text><text x="5" y="78">70</text><text x="5" y="58">80</text><text x="5" y="38">90</text><text x="5" y="18">100</text><text x="55" y="107">June</text><text x="115" y="107">July</text><text x="170" y="107">August</text></g><circle cx="65" cy="75" r="4" fill="#111"/><circle cx="125" cy="55" r="4" fill="#d32f2f"/><circle cx="185" cy="35" r="4" fill="#1565c0"/></svg></div></div>
+ <div id="quiz"></div>
+ <div class="next"><button class="btn pri" data-go="7" id="nQ" disabled>Next: reflect ▶</button></div>
+</section>
+<!-- 8 Reflect -->
+<section class="card panel" id="p7">
+ <div class="k">Step 8 · Reflect</div>
+ <h2>How did you do?</h2>
+ <p class="small" style="margin-top:0">Choose one box in each row that best describes your work.</p>
+ <div class="lvh" aria-hidden="true"><span>Beginner</span><span>Emerging</span><span>Accomplished</span><span>Expanding</span></div>
+ <div class="rub" id="rub"></div>
+ <div class="msg" id="mA"></div>
+ <div class="next"><button class="btn pri" id="finish" disabled>Finish my project 🎉</button></div>
+ <div id="fin" hidden>
+  <h3>🎉 Project complete: Weather Seesaw</h3>
+  <p style="margin:0">Your seesaw reads real temperatures and tips between warm periods and ice ages, and it can replay 800,000 years of Earth's climate. Understanding these cycles helps us see how fast today's warming is: that is climate action (SDG 13).</p>
+  <img id="finImg" alt="Your finished weather seesaw in 3D">
+  <div class="row"><button class="btn pri" data-go="8">Try the challenges 🏆</button></div>
+ </div>
+</section>
+<!-- 9 Challenges -->
+<section class="card panel" id="p8">
+ <div class="k">Step 9 · Challenges</div>
+ <h2>Think like a meteorologist</h2>
+ <p style="margin-top:0">Earn a star for each challenge: <b id="stars">0</b> / 4 ⭐</p>
+ <div class="ch"><div class="chh"><span class="star" data-st="c1">☆</span><h3 style="margin:0">💧 Humidity seesaw (book challenge)</h3></div>
+  <p>Program the seesaw to respond to <b>humidity</b> instead of temperature. Then test it on different days.</p>
+  <pre class="code" id="c1code" style="min-height:0"></pre>
+  <div class="row"><button class="btn pri" id="c1run">Check and upload</button></div>
+  <div class="row" id="c1days" hidden><button class="btn" data-day="dry">☀️ Dry desert day</button><button class="btn" data-day="humid">🌧 Humid coastal day</button><button class="btn" data-day="blow">😮‍💨 Blow on it</button></div>
+  <div id="c1q" hidden><div class="q">Does responding to humidity change the cycles your seesaw shows?</div><div class="choices"><button class="btn" data-c1="yes">Yes: humidity follows rain and dry seasons, not ice ages</button><button class="btn" data-c1="no">No, it is exactly the same</button><button class="btn" data-c1="ice">Humidity causes ice ages</button></div></div>
+  <div class="msg" id="c1msg">Fill in the code.</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c2">☆</span><h3 style="margin:0">〰️ Stop the shaking</h3></div>
+  <p>When the temperature hovers right at the threshold, the seesaw flips back and forth every reading. Engineers fix this with <b>two</b> thresholds (called hysteresis). Fill in the code, then compare.</p>
+  <pre class="code" id="c2code" style="min-height:0"></pre>
+  <div class="row"><button class="btn pri" id="c2run">Check and run 60 readings</button></div>
+  <svg class="sim" viewBox="0 0 400 150" id="c2svg" role="img" aria-label="Noisy temperature with one or two thresholds"></svg>
+  <div class="msg" id="c2msg">Fill in the code.</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c3">☆</span><h3 style="margin:0">🚀 Faster than ever</h3></div>
+  <p>NASA: at the end of past ice ages, Earth warmed about <b>5 °C over about 5,000 years</b>. Since 1880 it has warmed about <b>1.2 °C in about 140 years</b>.</p>
+  <div class="q">Rate at the end of an ice age (°C per year)?</div><div class="choices"><button class="btn" data-c3a="0.001">0.001</button><button class="btn" data-c3a="1">1</button><button class="btn" data-c3a="0.1">0.1</button></div><div class="fb" id="c3am"></div>
+  <div class="q">Rate since 1880 (°C per year, rounded)?</div><div class="choices"><button class="btn" data-c3b="0.009">about 0.009</button><button class="btn" data-c3b="0.9">about 0.9</button><button class="btn" data-c3b="0.0001">about 0.0001</button></div><div class="fb" id="c3bm"></div>
+  <div class="q">So today's warming is about how many times faster?</div><div class="choices"><button class="btn" data-c3c="9">About 9 times</button><button class="btn" data-c3c="2">About 2 times</button><button class="btn" data-c3c="1000">About 1,000 times</button></div><div class="fb" id="c3cm"></div>
+  <div class="msg" id="c3msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c4">☆</span><h3 style="margin:0">📟 Weather station on the OLED</h3></div>
+  <p>Show the temperature, the humidity and the period name on the controller's OLED screen.</p>
+  <pre class="code" id="c4code" style="min-height:0"></pre>
+  <div class="row"><button class="btn pri" id="c4run">Check and run</button></div>
+  <div class="oledbox"><canvas id="oC4" width="128" height="64" aria-label="OLED weather station"></canvas></div>
+  <div class="msg" id="c4msg"></div></div>
+ <div class="next"><button class="btn pri" data-go="9">Next: build it another way ▶</button></div>
+</section>
+<!-- 10 Other designs -->
+<section class="card panel" id="p9">
+ <div class="k">Step 10 · Other designs</div>
+ <h2>Build it another way</h2>
+ <p style="margin-top:0">The book asks if you will build the seesaw as shown or improve it. Here are five other ways to show warm periods and ice ages with the same sensor and servo. Watch each one run in 3D, then invent your own.</p>
+ <div class="ex"><span class="tag">Book design</span><h3>Seesaw</h3><p>Warm side down in warm periods, ice side down in ice ages.</p><div class="row"><button class="btn" data-ds="seesaw">▶ Run in 3D</button></div></div>
+ <div class="ex"><span class="tag">Example 1</span><h3>Climate dial</h3><p>The servo turns a pointer over a half-circle dial from "ice age" to "warm period", like a big thermometer.</p><div class="row"><button class="btn" data-ds="dial">▶ Run in 3D</button></div>
+  <div class="pc"><div><b>✔ Good</b>Shows <i>how</i> warm, not just warm or cold.</div><div><b>✘ Watch out</b>Use map() so the pointer moves smoothly.</div></div></div>
+ <div class="ex"><span class="tag">Example 2</span><h3>Growing glacier</h3><p>A white "ice sheet" block slides out over the land when it is cold and pulls back when it is warm.</p><div class="row"><button class="btn" data-ds="glacier">▶ Run in 3D</button></div>
+  <div class="pc"><div><b>✔ Good</b>Shows what really happens to ice in ice ages.</div><div><b>✘ Watch out</b>Needs a rack-and-gear slider: harder to build.</div></div></div>
+ <div class="ex"><span class="tag">Example 3</span><h3>Climate pendulum</h3><p>A pendulum swings slowly between a sun and a snowflake, showing that the climate keeps oscillating.</p><div class="row"><button class="btn" data-ds="pendulum">▶ Run in 3D</button></div>
+  <div class="pc"><div><b>✔ Good</b>A perfect picture of "oscillation".</div><div><b>✘ Watch out</b>Hang the weight low so the servo is not overloaded.</div></div></div>
+ <div class="ex"><span class="tag">Example 4</span><h3>Sea level tower</h3><p>Warm periods melt ice, so the sea rises. A blue "sea" plate moves up a tower in warm periods and down in ice ages.</p><div class="row"><button class="btn" data-ds="sea">▶ Run in 3D</button></div>
+  <div class="pc"><div><b>✔ Good</b>Links temperature to sea level rise.</div><div><b>✘ Watch out</b>The cord and pulley must be tight.</div></div></div>
+ <div class="ex"><span class="tag">Example 5</span><h3>Tilting Earth</h3><p>One cause of ice ages is the slow change in the tilt of Earth's axis. A globe on the servo tilts a little more or less.</p><div class="row"><button class="btn" data-ds="earth">▶ Run in 3D</button></div>
+  <div class="pc"><div><b>✔ Good</b>Shows a cause, not just the result.</div><div><b>✘ Watch out</b>The real change is small (about 22° to 24.5°) and very slow.</div></div></div>
+ <div class="ex"><h3>Compare the 6 designs</h3><div style="overflow-x:auto"><table class="cmp"><tr><th>Design</th><th>Moves</th><th>Shows best</th><th>How hard</th></tr>
+  <tr><td>Seesaw</td><td>Tips left/right</td><td>Warm or ice age</td><td>Easy</td></tr><tr><td>Climate dial</td><td>A pointer</td><td>How warm</td><td>Easy</td></tr>
+  <tr><td>Growing glacier</td><td>Ice block slides</td><td>Ice sheets growing</td><td>Hard</td></tr><tr><td>Pendulum</td><td>Swings</td><td>Oscillation</td><td>Medium</td></tr>
+  <tr><td>Sea level tower</td><td>Plate goes up/down</td><td>Melting raises the sea</td><td>Medium</td></tr><tr><td>Tilting Earth</td><td>A globe tilts</td><td>One cause of ice ages</td><td>Medium</td></tr></table></div></div>
+ <div class="ex" id="dz"><span class="tag">Your turn</span><h3>Design your own climate model</h3>
+  <p>Choose your ideas, press <b>Try my design</b> and read the engineer's check.</p>
+  <div class="opt">
+   <label>Model<select id="dMod"><option value="seesaw">Seesaw</option><option value="dial">Climate dial</option><option value="glacier">Growing glacier</option><option value="pendulum">Pendulum</option><option value="sea">Sea level tower</option><option value="earth">Tilting Earth</option></select></label>
+   <label>Sensor reading<select id="dRead"><option value="t">Temperature</option><option value="h">Humidity</option></select></label>
+   <label>Movement<select id="dMove"><option value="two">Two positions (if/else)</option><option value="map">Smooth (map)</option></select></label>
+   <label>Thresholds<select id="dThr"><option value="1">One threshold</option><option value="2">Two (no shaking)</option></select></label>
+  </div>
+  <div class="row"><button class="btn pri" id="dTry">▶ Try my design</button></div>
+  <div class="msg" id="dChk">Choose your ideas and press Try my design.</div>
+  <h3>Tips and hints</h3>
+  <ul class="tips">
+   <li><b>The DHT11 is slow:</b> read it every 2 seconds, not faster.</li>
+   <li><b>Test safely:</b> a hair dryer on low, held 20 cm away. Never wet the sensor.</li>
+   <li><b>Balance the seesaw</b> before you attach the servo, so the servo does not strain.</li>
+   <li><b>Label the sides</b> clearly: sun for warm periods, snowflake for ice ages.</li>
+   <li><b>Use map()</b> for smooth movement, and two thresholds to stop shaking.</li>
+  </ul>
+  <h3>Your team's plan</h3>
+  <p class="small" style="margin-top:0">Write what you will build, the parts you need, and one idea from every team member.</p>
+  <textarea id="dPlan" aria-label="Your team's plan" placeholder="Our model is … It reads … It moves … Parts: … Ideas from each member: …"></textarea>
+  <div class="row"><button class="btn" id="dSave">💾 Save our plan</button><span class="small" id="dSaved"></span></div>
+ </div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+/* ================== Weather Seesaw · Grade 9 Project 13 · 3D lab ================== */
+const $=id=>document.getElementById(id);
+const S=['Build','Wire','Code','Discover','Earth history','Test','Math','Reflect','Challenges','Other designs'];
+const KEY='britus-g9-weatherseesaw';
+const st=(()=>{const d={done:[],placed:0,wires:{},code:0,thr:20,dt:{},hist:0,hq1:null,hq2:null,meas:{},tq:null,quiz:{},rub:{},finished:0,ch:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off'};
+function hud(h){$('hud').innerHTML=h}
+function banner(t){const b=$('banner');b.textContent=t;b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,4000)}
+
+/* ================== 3D scene ================== */
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[-3,3,0.5],r:34,aspect:.7,views:{
+ iso:[0.5,1.12,34,[-3.5,3,0.5]],front:[0,1.4,28,[-2,3.5,0]],seesaw:[0.3,1.25,17,[0.5,3.5,0]],sensor:[0.4,0.9,12,[-5,1.2,3.5]],board:[0.3,0.8,16,[-11.5,1.4,4.5]],fin:[0.45,1.12,32,[-3.5,3,0.5]],wide:[0.35,1.1,24,[-1,3.5,1]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const YEL=0xf5c400,YH=0x9c7a00,GRN=0x2f7d3b,RED=0xd8322f,GRY=0x9aa0a6,ORG=0xf08a24;
+const parts={};const BUILD_N=10;
+/* ===== Lego kit parts (same kit and colours as the Joints lab): Technic beams with holes, bricks with studs ===== */
+const LG=c=>M(c,{roughness:.32,metalness:0});
+const BLU=0x2457c5;
+const holeM=M(0x1c1c1c,{roughness:.8});
+function hole(par,x,y,z,ax,depth,col){/* round Technic hole: dark hole + raised rim ring on both faces */
+ const h=Cy(0.2,depth+0.02,holeM,par,x,y,z,ax,14);h.castShadow=false;
+ [-1,1].forEach(s=>{const r=new THREE.Mesh(new THREE.TorusGeometry(0.25,0.055,6,16),LG(col));r.position.set(x,y,z);if(ax==='z')r.position.z+=s*depth/2;if(ax==='x'){r.position.x+=s*depth/2;r.rotation.y=Math.PI/2}par.add(r)})}
+/* Technic beam: dir 'y' upright or 'x' along x. Holes go through z (the face you see). */
+function tbeam(par,x,y,z,len,dir,col,rim){const w=dir==='y'?[0.72,len,0.8]:[len,0.72,0.8];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8;hole(par,dir==='x'?x+t:x,dir==='y'?y+t:y,z,'z',0.8,rim||col)}}
+/* Lego brick with studs on top; dir 'x' or 'z'. Optional Technic holes on the side */
+function brick(par,x,y,z,len,dir,col,holes){const w=dir==='x'?[len,0.96,0.8]:[0.8,0.96,len];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8,sx=dir==='x'?x+t:x,sz=dir==='z'?z+t:z;Cy(0.24,0.18,LG(col),par,sx,y+0.57,sz,'y',16);
+  if(holes&&i<n-1){const hx=dir==='x'?sx+0.4:x,hz=dir==='z'?sz+0.4:z;hole(par,hx,y-0.05,hz,dir==='x'?'z':'x',0.8,col)}}}
+/* base plate */
+parts.plate=grp();(()=>{Bx(30,0.5,16,M(0x7c8186,{roughness:.45}),parts.plate,-1,0.25,0);for(let i=0;i<15;i++)for(let k=0;k<8;k++)Cy(0.3,0.22,M(0x8d9297,{roughness:.4}),parts.plate,-15+i*2,0.6,-7+k*2,'y',14)})();
+
+const AX=M(0x8a949b,{metalness:.6,roughness:.3});
+/* ===== seesaw (book build steps 1-5) ===== */
+const PX=0.5,PY=3.05;
+parts.pedestal=grp();[0.98,1.94].forEach(y=>brick(parts.pedestal,PX,y,0,1.6,'x',0xa7adb3,true));
+parts.pivot=grp();(()=>{Bx(1.6,0.3,1.2,M(0x2a2a2a,{roughness:.5}),parts.pivot,PX,2.62,0);const h=new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.38,1.2,16,1,false,0,Math.PI),M(0x2a2a2a));h.rotation.x=Math.PI/2;h.position.set(PX,2.78,0);parts.pivot.add(h);Cy(0.12,1.8,AX,parts.pivot,PX,PY,0,'z',10)})();
+parts.beam=grp();const SW=grp(parts.beam);SW.position.set(PX,PY,0);tbeam(SW,0,0.42,0,10.4,'x',GRN);Cy(0.3,0.9,LG(0x9be34a),SW,0,0.42,0,'z',12);
+/* climate cards: sun (warm) on the right end, snowflake + ice on the left */
+const cardG=grp(SW);parts.cards=cardG;
+(()=>{const sunT=tex(200,200,(x,w,h)=>{x.fillStyle='#fff8e1';x.fillRect(0,0,w,h);x.fillStyle='#ffb300';x.beginPath();x.arc(100,100,46,0,7);x.fill();x.strokeStyle='#ff8f00';x.lineWidth=10;for(let i=0;i<12;i++){const a=i/12*Math.PI*2;x.beginPath();x.moveTo(100+Math.cos(a)*58,100+Math.sin(a)*58);x.lineTo(100+Math.cos(a)*86,100+Math.sin(a)*86);x.stroke()}x.fillStyle='#bf360c';x.font='bold 22px Arial';x.textAlign='center';x.fillText('WARM',100,190)});
+ const iceT=tex(200,200,(x,w,h)=>{x.fillStyle='#e3f2fd';x.fillRect(0,0,w,h);x.strokeStyle='#1e88e5';x.lineWidth=9;x.lineCap='round';for(let i=0;i<6;i++){const a=i/6*Math.PI*2;x.beginPath();x.moveTo(100,95);x.lineTo(100+Math.cos(a)*70,95+Math.sin(a)*70);x.stroke();[0.55].forEach(f=>{const px=100+Math.cos(a)*70*f,py=95+Math.sin(a)*70*f;[-1,1].forEach(s=>{x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.cos(a+s*0.8)*22,py+Math.sin(a+s*0.8)*22);x.stroke()})})}x.fillStyle='#0d47a1';x.font='bold 22px Arial';x.textAlign='center';x.fillText('ICE AGE',100,192)});
+ [[4.4,sunT,0xffc107],[-4.4,iceT,0xe3f2fd]].forEach(([x,t,c])=>{brick(cardG,x,1.36,0,1.6,'x',c);const p=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.8),new THREE.MeshStandardMaterial({map:t,roughness:.6,side:THREE.DoubleSide}));p.position.set(x,2.85,0.05);cardG.add(p)});
+ Bx(1.4,0.5,1.2,M(0xffffff,{opacity:.75,roughness:.1}),cardG,-4.4,2.1+1.1,-0.9)})();
+/* grey 270° servo in front of the pedestal + crank and link (book steps 2-4) */
+parts.servo=grp();const horn=grp();(()=>{const g=grp(parts.servo);g.position.set(PX+2.2,1.55,1.5);K.RBox(2.5,2.1,1.3,0.12,M(GRY,{roughness:.45}),g,0,0,0);Bx(3.6,0.18,1.3,M(0x8a9096),g,0,0.45,0);
+ const l=tex(256,128,(x,w,h)=>{x.fillStyle='#9aa0a6';x.fillRect(0,0,w,h);x.fillStyle='#2b2f33';x.font='bold 30px Arial';x.textAlign='center';x.fillText('270° SERVO',w/2,72)});const lb=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.0),new THREE.MeshStandardMaterial({map:l}));lb.position.set(0,-0.2,0.66);g.add(lb);
+ Cy(0.4,0.3,M(0xd9dcde),g,0.55,0.55,0.8,'z',16);horn.position.set(PX+2.75,2.1,2.4);parts.servo.add(horn);Bx(1.3,0.28,0.18,M(0xf2f2f2),horn,0.5,0,0)})();
+parts.link=grp();const linkG=grp(parts.link);const LINK0=3.0;tbeam(linkG,0,0,0,LINK0,'x',YEL);
+const ATT=V3(2.4,0.42,0);/* attach point on the seesaw, local */
+/* DHT11 sensor on a brick, port 2 */
+parts.sensor=grp();(()=>{const g=grp(parts.sensor);g.position.set(-5.2,0.5,3.4);brick(g,0,0.48,0,1.6,'x',0x2457c5);const t=tex(200,160,(x,w,h)=>{x.fillStyle='#1f5fbf';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 18px Arial';x.fillText('DHT11',60,150);x.font='bold 14px Arial';x.fillText('- + S',150,30)});
+ const s=M(0x1f5fbf);const pcb=Bx(1.8,0.12,1.5,s,g,0,1.08,0);pcb.material=[s,s,new THREE.MeshStandardMaterial({map:t}),s,s,s];
+ const gt=tex(64,64,(x,w,h)=>{x.fillStyle='#e8f0f5';x.fillRect(0,0,w,h);x.fillStyle='#9fb3c2';for(let i=0;i<6;i++)for(let k=0;k<6;k++)x.fillRect(4+i*10,4+k*10,6,6)});const gm=new THREE.MeshStandardMaterial({map:gt});const cube=Bx(0.8,0.55,0.95,M(0xe8f0f5),g,-0.35,1.42,0);cube.material=[gm,gm,gm,gm,gm,gm];
+ [[0.55,0x111111],[0.7,0xd8322f],[0.85,0xf2c230]].forEach(([x,c])=>Bx(0.12,0.3,0.12,M(c),g,x,1.25,-0.55))})();
+/* Kidsuno mainboard: the same board as the Joints lab (clear case, coloured ports 1-9, yellow screen frame) + live OLED */
+const BX=-12.5,BZ=4.2;
+parts.board=grp();const board=grp(parts.board);board.position.set(BX,0.5,BZ);
+const oc=document.createElement('canvas');oc.width=220;oc.height=240;const octx=oc.getContext('2d');const oT=new THREE.CanvasTexture(oc);oT.encoding=THREE.sRGBEncoding;
+function oled(lines,circ){octx.fillStyle='#050505';octx.fillRect(0,0,220,240);if(!lines)return oT.needsUpdate=true;octx.fillStyle='#e8f4ff';octx.strokeStyle='#e8f4ff';octx.lineWidth=3;const big=!circ;octx.textAlign='left';octx.font=(big?'bold 44px':'bold 23px')+' Consolas,monospace';
+ lines.forEach((l,i)=>octx.fillText(l,8,(big?100:34)+i*(big?56:28)));if(circ){[[60,140],[160,140]].forEach(([x,y])=>{octx.beginPath();octx.arc(x,y,44,0,7);octx.stroke()});octx.beginPath();octx.moveTo(104,140);octx.lineTo(116,140);octx.stroke()}oT.needsUpdate=true}
+oled(null);
+function boardTex(){const c=document.createElement('canvas');c.width=640;c.height=460;const x=c.getContext('2d');x.fillStyle='#141618';x.fillRect(0,0,640,460);
+ const P2=[['#2a7de1','#e2382f','#f2c230','#2e9e4f'],['#2a7de1','#e2382f','#f2c230','#2e9e4f'],['#2a7de1','#e2382f','#2e9e4f','#2e9e4f'],['#2a7de1','#f2c230','#ffffff','#f2c230']];
+ const port=(cx,cy,n,cols)=>{const s=44;[[0,0],[1,0],[0,1],[1,1]].forEach(([i,k],j)=>{x.fillStyle=cols[j];x.fillRect(cx-s+i*s,cy-s+k*s,s-3,s-3)});x.fillStyle='#111';x.font='bold 46px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(n,cx,cy)};
+ [6,7,8,9].forEach((n,i)=>port(110+i*140,70,n,P2[i]));[4,3,2,1].forEach((n,i)=>port(110+i*140,390,n,[P2[i][2],P2[i][3],P2[i][1],P2[i][0]]));port(48,230,5,['#f08a24','#2e9e4f','#2a7de1','#f2c230']);
+ x.fillStyle='#f2c230';x.fillRect(120,150,190,160);x.fillStyle='#050505';x.fillRect(140,170,110,120);x.save();x.translate(282,230);x.rotate(Math.PI/2);x.fillStyle='#111';x.font='bold 26px sans-serif';x.textAlign='center';x.fillText('kidsuno',0,8);x.restore();
+ ['#f5d76e','#f5d76e','#f5d76e','#e53935'].forEach((cl,i)=>{x.fillStyle=cl;x.fillRect(430,160+i*34,26,22)});x.fillStyle='#c9ccd0';x.fillRect(560,300,60,40);x.fillStyle='#3a3d42';x.fillRect(360,190,50,50);
+ x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=3;for(let i=0;i<7;i++)for(let k=0;k<5;k++){x.beginPath();x.arc(46+i*91,46+k*92,20,0,7);x.stroke()}
+ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+(()=>{const side=M(0x1a1c1e),pcb=new THREE.Mesh(new THREE.BoxGeometry(6.4,0.5,4.6),[side,side,new THREE.MeshStandardMaterial({map:boardTex(),roughness:.55}),side,side,side]);pcb.position.y=0.55;pcb.castShadow=true;board.add(pcb);
+ Bx(6.8,1.3,5.0,M(0xdfeaf2,{opacity:.28,roughness:.08}),board,0,0.65,0);for(let i=0;i<7;i++)for(let k=0;k<5;k++)Cy(0.28,0.25,M(0xe8f0f6,{opacity:.35,roughness:.08}),board,-2.9+i*0.97,1.42,-2.0+k*1.0,'y',14);
+ const scr=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.2),new THREE.MeshBasicMaterial({map:oT}));scr.rotation.x=-Math.PI/2;scr.position.set(-1.25,0.815,0);board.add(scr);
+ Bx(0.6,0.4,0.9,M(0xc7cbcf,{metalness:.7,roughness:.25}),board,2.8,0.55,-2.4)})();
+/* servo cable plugs into the side port, like the Joints lab */
+function pinPos(port,k){const v=V3(-3.45,1.0,[-0.12,0,0.12][k]);board.updateMatrixWorld();return board.localToWorld(v)}
+function tagSprite(text,col){const t=tex(200,80,(x,w,h)=>{x.fillStyle=col;x.beginPath();x.moveTo(12,4);x.lineTo(w-12,4);x.quadraticCurveTo(w-4,4,w-4,12);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,12);x.quadraticCurveTo(4,4,12,4);x.fill();x.fillStyle='#fff';x.font='bold 34px Arial';x.textAlign='center';x.fillText(text,w/2,44)});
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(2.2,.88,1);return s}
+const tag13=tagSprite('D13','#c4501a');tag13.position.copy(pinPos('13',1)).add(V3(-0.3,1.6,0));K.sc.add(tag13);tag13.visible=false;
+
+/* laptop */
+parts.laptop=grp(parts.board);(()=>{const g=parts.laptop;g.position.set(-14.5,0.5,-3.8);Bx(5.2,0.25,3.4,M(0xb7bcc2,{metalness:.5,roughness:.35}),g,0,0.13,0);Bx(4.6,0.04,2.0,M(0x2b2e33),g,0,0.27,0.3);
+ const sT=tex(320,200,(x,w,h)=>{x.fillStyle='#0e2a33';x.fillRect(0,0,w,h);x.fillStyle='#00979c';x.fillRect(0,0,w,26);x.fillStyle='#fff';x.font='bold 16px Arial';x.fillText('Project_13_Weather_Seesaw',8,18);x.font='14px Consolas';x.fillStyle='#cfe';["#include \"DHT.h\"", "float t = dht.readTemperature();", "if (t > THRESHOLD)", "  myservo.write(180);", "else myservo.write(0);"].forEach((l,i)=>x.fillText(l,10,52+i*24))});
+ const sc=grp(g);sc.position.set(0,0.25,-1.7);sc.rotation.x=-0.25;const bz=Bx(5.2,3.4,0.15,M(0x9aa0a6,{metalness:.5,roughness:.35}),sc,0,1.7,0);const s=new THREE.Mesh(new THREE.PlaneGeometry(4.8,3.0),new THREE.MeshBasicMaterial({map:sT}));s.position.set(0,1.75,0.08);sc.add(s)})();
+
+
+parts.usb=parts.laptop;
+const oledC=document.createElement('canvas');oledC.width=512;oledC.height=256;const oledT=new THREE.CanvasTexture(oledC);
+board.traverse(o=>{if(o.isMesh&&o.material&&o.material.map===oT){o.material=new THREE.MeshBasicMaterial({map:oledT});o.geometry=new THREE.PlaneGeometry(1.1,0.55)}});
+function oledPaint(cv,items){const x=cv.getContext('2d'),s=cv.width/128;x.fillStyle='#02040a';x.fillRect(0,0,cv.width,cv.height);x.fillStyle='#e8f6ff';(items||[]).forEach(it=>{x.font=`bold ${8*(it.z||1)*s}px Consolas,monospace`;x.textBaseline='top';x.fillText(it.s,it.x*s,it.y*s)})}
+function oled3(items){oledPaint(oledC,items);oledT.needsUpdate=true}
+oled3([]);
+/* environment props: hair dryer, fan, AC breeze */
+const props=grp();const dryer=grp(props),fan=grp(props),blades=grp(fan);const SPOS=V3(-5.55,1.95,3.4);
+(()=>{dryer.position.set(-5.5,4.6,6.2);dryer.rotation.x=-0.7;Cy(0.6,2.4,M(0xc2185b,{roughness:.4}),dryer,0,0,0,'z',20);Cy(0.4,1.6,M(0xc2185b),dryer,0,-1.0,0.5,null,14);Cy(0.45,0.3,M(0x333),dryer,0,0,-1.3,'z',16);
+ fan.position.set(-5.5,2.3,7.0);Cy(1.4,0.2,M(0xeceff1,{opacity:.35}),fan,0,0,0,'z',30);for(let i=0;i<4;i++){const b=Bx(1.2,0.4,0.06,M(0x90caf9),blades,0,0,0);b.rotation.z=i*Math.PI/2;b.position.set(0.6*Math.cos(i*Math.PI/2),0.6*Math.sin(i*Math.PI/2),0)}Cy(0.15,1.6,M(0x607d8b),fan,0,-1.0,0,null,10);
+ dryer.visible=fan.visible=false})();
+const puffs=[];for(let i=0;i<14;i++){const p=Sp(0.13,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0}),props,0,0,0,8);p.castShadow=false;puffs.push({m:p,t:i/14})}
+/* cables */
+const cab=grp();const WCOL={b:0x7a4a2b,r:0xe03a3a,o:0xf08a24,k:0x222222,y:0xf2c230};
+function port2(k){const v=V3(0.7+[-0.12,0,0.12][k],1.0,2.6);board.updateMatrixWorld();return board.localToWorld(v)}
+function tube(pts,col,r){K.mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),60,r||0.07,6,false),M(col,{roughness:.45}),cab)}
+function drawCables(){while(cab.children.length){const m=cab.children.pop();m.geometry&&m.geometry.dispose()}if(st.placed<BUILD_N)return;
+ [['sb','b',0,-0.14],['sr','r',1,0],['so','o',2,0.14]].forEach(([id,k,pin,o])=>{const on=!!st.wires[id];const a=V3(PX+1.5+o,0.9,2.2);const end=on?pinPos('13',pin):V3(-2,0.62,4+o*3);const pts=[a,V3(a.x,0.75,3.5)];if(on)pts.push(V3(-8,0.8+o,2.6),V3(-17,0.8,2.6+o),V3(end.x-1,0.95,end.z));else pts.push(V3(-1,0.7,4.5+o*2));pts.push(end);tube(pts,WCOL[k])});
+ if(['sb','sr','so'].some(id=>st.wires[id])){const e=pinPos('13',1);Bx(0.5,0.32,0.5,0x111111,cab,e.x-0.2,e.y,e.z)}
+ [['dg','k',0,0.55],['dv','r',1,0.7],['ds','y',2,0.85]].forEach(([id,k,pin,xx])=>{const on=!!st.wires[id];const a=V3(-5.2+xx,1.6,3.4-0.55);const end=on?port2(pin):V3(-6+xx*2,0.6,1.4);tube(on?[a,V3(a.x,1.9,2.8),V3((a.x+end.x)/2,1.7,end.z+0.8),V3(end.x,1.3,end.z+0.4),end]:[a,V3(a.x,1.2,2.4),end],WCOL[k],0.06)});
+ if(st.wires.usb){const a=V3(BX+2.8,1.05,BZ-2.85),b=V3(-11.9,0.7,-3.8);tube([a,V3(a.x,0.7,a.z-1.0),V3(-10.6,0.65,-2.6),V3(-11.4,0.7,-3.6),b],0x2b2b2b,0.12)}}
+const tag2=tagSprite('Port 2','#1565c0');tag2.position.copy(port2(1)).add(V3(0,1.5,0.4));K.sc.add(tag2);tag2.visible=false;tag13.material.map=tagSprite('Port 13','#c4501a').material.map;
+
+/* ===== other designs (each driven by the same servo angle) ===== */
+let dsg='seesaw';
+const dialG=grp();const dialPtr=grp(dialG);(()=>{const t=tex(512,280,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);const g=x.createLinearGradient(0,0,w,0);g.addColorStop(0,'#1e88e5');g.addColorStop(.5,'#e0e0e0');g.addColorStop(1,'#ff7043');x.fillStyle=g;x.beginPath();x.moveTo(256,260);x.arc(256,260,240,Math.PI,0);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(256,260,120,Math.PI,0);x.fill();x.fillStyle='#0d47a1';x.font='bold 26px Arial';x.fillText('ICE AGE',30,250);x.fillStyle='#bf360c';x.fillText('WARM',400,250)});
+ const p=new THREE.Mesh(new THREE.PlaneGeometry(7,3.83),new THREE.MeshStandardMaterial({map:t,side:THREE.DoubleSide}));p.position.set(PX,4.6,-0.4);dialG.add(p);[-3.3,3.3].forEach(dx=>tbeam(dialG,PX+dx,1.8,-0.6,2.6,'y',GRN));dialPtr.position.set(PX,2.85,-0.25);tbeam(dialPtr,1.6,0,0,3.4,'x',RED)})();
+const glacG=grp();const glacier=grp(glacG);(()=>{const t=tex(256,128,(x,w,h)=>{x.fillStyle='#5d8a2e';x.fillRect(0,0,w,h);x.fillStyle='#795548';for(let i=0;i<20;i++)x.fillRect(Math.random()*w,Math.random()*h,8,4)});const land=new THREE.Mesh(new THREE.BoxGeometry(10,0.3,5),[M(0x6d4c41),M(0x6d4c41),new THREE.MeshStandardMaterial({map:t}),M(0x6d4c41),M(0x6d4c41),M(0x6d4c41)]);land.position.set(PX+1,0.75,0);glacG.add(land);
+ glacier.position.set(PX-4,1.3,0);Bx(6,0.8,4.4,M(0xf5fbff,{roughness:.2}),glacier,-3,0,0);Bx(6,0.2,4.4,M(0xbbdefb,{opacity:.8}),glacier,-3,0.5,0)})();
+const penG=grp();const pend=grp(penG);(()=>{tbeam(penG,PX,6.6,-0.5,4.8,'x',YEL);[-2.4,2.4].forEach(dx=>tbeam(penG,PX+dx,3.6,-0.5,6.0,'y',GRN));pend.position.set(PX,6.6,0);Cy(0.06,4.2,AX,pend,0,-2.1,0,null,8);Sp(0.6,M(0x90a4ae,{metalness:.5,roughness:.3}),pend,0,-4.4,0,20)})();
+const seaG=grp();const seaPlate=grp(seaG);(()=>{tbeam(seaG,PX-1.2,4.2,-0.6,7.6,'y',GRN);tbeam(seaG,PX+1.2,4.2,-0.6,7.6,'y',GRN);const t=tex(256,256,(x,w,h)=>{x.fillStyle='#0288d1';x.fillRect(0,0,w,h);x.strokeStyle='#81d4fa';x.lineWidth=6;for(let i=0;i<5;i++){x.beginPath();for(let k=0;k<=w;k+=16)x.lineTo(k,40+i*45+Math.sin(k*.1)*8);x.stroke()}});
+ Bx(3.2,0.3,3,M(0x0288d1),seaPlate,0,0,0).material=[M(0x0277bd),M(0x0277bd),new THREE.MeshStandardMaterial({map:t}),M(0x0277bd),M(0x0277bd),M(0x0277bd)];seaPlate.position.set(PX,2,0);
+ const rt=tex(64,512,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);x.fillStyle='#333';x.font='bold 16px Arial';for(let i=0;i<=10;i++){x.fillRect(0,h-10-i*48,i%5?14:26,3)}x.fillText('SEA',4,20)});const r=new THREE.Mesh(new THREE.PlaneGeometry(0.8,6.4),new THREE.MeshStandardMaterial({map:rt}));r.position.set(PX+2.2,4,0);seaG.add(r)})();
+const earthG=grp();const globe=grp(earthG);(()=>{const t=tex(512,256,(x,w,h)=>{x.fillStyle='#1565c0';x.fillRect(0,0,w,h);x.fillStyle='#43a047';[[60,90,70,40],[200,70,60,60],[300,120,90,50],[420,80,50,40],[130,170,40,30]].forEach(([a,b,c,d])=>{x.beginPath();x.ellipse(a,b,c,d,0.3,0,7);x.fill()});x.fillStyle='#fff';x.fillRect(0,0,w,22);x.fillRect(0,h-22,w,22)});
+ Cy(0.15,1.4,AX,earthG,PX,1.2,0,null,8);globe.position.set(PX,3.6,0);Sp(1.8,new THREE.MeshStandardMaterial({map:t,roughness:.6}),globe,0,0,0,32);Cy(0.06,4.6,M(0xff5252),globe,0,0,0,null,8);
+ const sun=Sp(1.0,new THREE.MeshBasicMaterial({color:0xffc107}),earthG,PX+7,4,0,20);sun.castShadow=false})();
+const OTH={dial:dialG,glacier:glacG,pendulum:penG,sea:seaG,earth:earthG};Object.values(OTH).forEach(g=>g.visible=false);
+function layout(){const built=st.placed>=BUILD_N,ss=dsg==='seesaw';if(built){[parts.beam,parts.cards,parts.link,parts.pivot,parts.pedestal].forEach(g=>g.visible=ss)}Object.entries(OTH).forEach(([k,g])=>g.visible=built&&dsg===k)}
+
+/* ===== climate physics + servo ===== */
+const env={T:24,H:45,tool:'off',t:0,read:24,readH:45,next:0};let ang=0,tgtAng=0,mode='temp',flips=0,lastSide=null,hist=null,warmMode=null;
+const TOOLS={off:[24,45,.05],dryer:[40,30,.25],blow:[27,85,.2],fan:[20,45,.12],ac:[16,35,.12]};
+function sideOf(a){return a>=90?'warm':'ice'}
+K.hooks.push(dt=>{
+ const [tt,th,k]=TOOLS[env.tool];env.T+=(tt-env.T)*Math.min(1,k*dt);env.H+=(th-env.H)*Math.min(1,(env.tool==='blow'?0.8:0.15)*dt);if(env.tool==='blow'&&env.t>2.5)env.tool='off';env.t+=dt;
+ env.next-=dt;if(env.next<=0){env.next=2;env.read=Math.round(env.T*10)/10;env.readH=Math.round(env.H);if(controlOn)control()}
+ if(hist){hist.i+=dt*hist.spd;const n=HIST.length-1;if(hist.i>=n){hist.i=n;hist.done=true}const v=histVal(hist.i);tgtAng=Math.max(0,Math.min(180,(v-(-8))*180/(2-(-8))));drawHist(hist.i)}
+ const d=tgtAng-ang;if(Math.abs(d)>0.3){ang+=Math.sign(d)*Math.min(Math.abs(d),200*dt)}
+ placeMech();
+ /* props */
+ dryer.visible=env.tool==='dryer';fan.visible=env.tool==='fan'||env.tool==='ac';if(fan.visible)blades.rotation.z+=dt*15;
+ const src=env.tool==='dryer'?V3(-5.5,4.6,6.2):env.tool==='fan'||env.tool==='ac'?V3(-5.5,2.3,6.8):env.tool==='blow'?V3(-5.5,2.6,7.2):null;
+ puffs.forEach(p=>{if(!src){p.m.material.opacity=0;return}p.t=(p.t+dt*0.8)%1;p.m.position.lerpVectors(src,SPOS,p.t);p.m.material.color.setHex(env.tool==='dryer'?0xff7043:env.tool==='ac'?0x81d4fa:env.tool==='blow'?0xffffff:0xb0bec5);p.m.material.opacity=0.65*(1-p.t)});
+ if(cur===3)discTick()});
+function placeMech(){const tilt=(ang-90)/90*0.32;SW.rotation.z=tilt;
+ horn.rotation.z=(ang-90)*Math.PI/180*0.6+Math.PI/2;
+ const tip=V3(1.0,0,0).applyEuler(horn.rotation).add(horn.position);const at=ATT.clone().applyEuler(SW.rotation).add(SW.position);at.z=2.4;
+ const d=at.clone().sub(tip);linkG.position.copy(tip).add(at).multiplyScalar(.5);linkG.rotation.z=Math.atan2(d.y,d.x);linkG.scale.x=d.length()/LINK0;
+ const f=ang/180;dialPtr.rotation.z=Math.PI-f*Math.PI;glacier.position.x=PX-4+(1-f)*6.5;pend.rotation.z=(f-0.5)*1.1;seaPlate.position.y=1.6+f*5;globe.rotation.z=-(0.38+f*0.05)}
+let controlOn=false;
+function control(){const v=mode==='hum'?env.readH:env.read,thr=mode==='hum'?60:st.thr;
+ if(mode==='hyst'){if(v>29)warmMode=true;if(v<27)warmMode=false;tgtAng=warmMode?180:0}else tgtAng=v>thr?180:0;
+ const s=sideOf(tgtAng);if(lastSide&&s!==lastSide){flips++;SFX.tick()}lastSide=s}
+
+/* ================== 1. Build ================== */
+const BUILD=[
+ {id:'plate',tray:'Grey base plate',task:'Book step 1 · Start with the base plate.',q:'Why build on the base plate?',o:['The pivot and the servo must stay lined up','It keeps the sensor warm','It powers the servo'],a:0,ok:'Everything must stay lined up for the seesaw to work.',view:'iso'},
+ {id:'pedestal',tray:'Grey Technic bricks (×2)',task:'Book step 1 · Build the middle support.',q:'Where does the support go?',o:['In the middle, under the centre of the seesaw','At one end','On top of the servo'],a:0,ok:'A seesaw balances on its middle.',why:{1:'At the end it would just tip over.',2:'The servo moves: it cannot hold the seesaw.'},view:'seesaw'},
+ {id:'pivot',tray:'Black hinge + axle',task:'Book step 2 · Make the point it turns around.',q:'What is the axle on top for?',o:['It is the pivot: the seesaw turns around it','It drives the servo','It holds the sensor'],a:0,ok:'This is the fulcrum, like on a playground seesaw.',why:{1:'The servo drives the seesaw, not the other way.',2:'The sensor sits on its own brick.'},view:'seesaw'},
+ {id:'beam',tray:'Long green beam (12 studs)',task:'Book step 2 · Add the seesaw.',q:'Where do you fix the long beam?',o:['Through its middle hole on the pivot, so both sides are equal','Near one end','Flat on the base plate'],a:0,ok:'Balanced: both arms are the same length.',why:{1:'An unbalanced seesaw is too heavy for the servo on one side.',2:'It must be free to tip.'},view:'seesaw'},
+ {id:'servo',tray:'Grey 270° servo',task:'Book step 3 · Add the motor.',q:'Why the 270° servo here, not the 360° one?',o:['It moves to an exact angle and holds it','It spins faster','It is quieter'],a:0,ok:'The seesaw needs exact angles: warm side or ice side.',why:{1:'Speed is not the point: holding an angle is.',2:'Sound is not the reason.'},view:'seesaw'},
+ {id:'link',tray:'Yellow Technic beam (link)',task:'Book step 4 · Connect the servo to the seesaw.',q:'How does the yellow beam work?',o:['It joins the servo horn to the seesaw, so turning the servo tips the seesaw','It holds the seesaw flat forever','It is a handle'],a:0,ok:'Servo turns → link pushes → seesaw tips.',why:{1:'Then it could not move at all.',2:'The servo moves it, not your hand.'},view:'seesaw'},
+ {id:'cards',tray:'Sun card + snowflake card',task:'Book step 5 · Show what each side means.',q:'Which way round?',o:['Sun on one end (warm period), snowflake on the other (ice age)','Both cards on the same end','Cards on the base plate'],a:0,ok:'Now everyone can read your model.',why:{1:'Then the seesaw shows nothing.',2:'They must ride on the seesaw.'},view:'seesaw'},
+ {id:'sensor',tray:'Humidity & temperature sensor (DHT11)',task:'Add the sensor that reads the weather.',q:'Where is the best place for the sensor?',o:['Out in the open air, away from the servo and board','Inside a closed box','Taped on top of the servo'],a:0,ok:'It must feel the real air temperature.',why:{1:'Closed in, it cannot feel changes.',2:'The servo warms up when it works.'},view:'sensor'},
+ {id:'board',tray:'Kidsuno controller',task:'Add the brain of the project.',q:'Where does the controller go?',o:['Beside the seesaw, away from the moving parts','On the seesaw','Under the pivot'],a:0,ok:'Safe from the moving seesaw.',why:{1:'It would ride up and down!',2:'There is no room there.'},view:'board'},
+ {id:'usb',tray:'USB cable + laptop',task:'Book wire: connect to your device.',q:'What does the USB cable do?',o:['It powers the controller and uploads the code','It measures temperature','It moves the seesaw'],a:0,ok:'Ready to wire the sensor and servo.',view:'iso'}];
+const EXTRA=[['x1','Orange 360° servo','A 360° servo keeps spinning. The seesaw needs exact angles: the 270° servo.'],['x2','Ultrasonic sensor','It measures distance, not weather.'],['x3','Soil moisture sensor','It measures wet soil, not air.'],['x4','Thermometer (glass)','The controller cannot read a glass thermometer.'],['x5','Button module','The seesaw moves by itself, from the sensor.'],['x6','Wheels','The seesaw does not drive anywhere.'],['x7','DC motor','A DC motor cannot stop at an exact angle.'],['x8','Weight and cord','That was the Weight Machine.']];
+/* ===== Build (harder): find the right part for each book step, then show where and how it goes ===== */
+let bSel=null,bStrike=0;
+const TRAY=[...BUILD.map(b=>({id:b.id,lab:b.tray})),...EXTRA.map(b=>({id:b[0],lab:b[1]}))].sort((a,b)=>a.lab.localeCompare(b.lab));
+function showParts(){BUILD.forEach((b,i)=>parts[b.id].visible=i<st.placed);if(typeof layout==='function')layout()}
+function bOpts(i){const b=BUILD[i];const idx=b.o.map((x,j)=>j);const r=i%idx.length;return idx.slice(r).concat(idx.slice(0,r))}
+function drawBuild(){const n=BUILD.length,c=st.placed;
+ $('bSteps').innerHTML=BUILD.map((b,i)=>`<li class="${i<c?'dn':i===c?'cur':''}">${i<c?`${b.task} <span class="small">(${b.tray})</span>`:i===c?b.task:'<span class="small">…</span>'}</li>`).join('');
+ $('tray').innerHTML=TRAY.map(p=>{const k=BUILD.findIndex(b=>b.id===p.id);return`<button type="button" class="btn ${k>=0&&k<c?'used':''} ${bSel===p.id?'sel':''}" data-part="${p.id}">${p.lab}</button>`}).join('');
+ const q=$('bQ');if(bSel&&c<n){const b=BUILD[c];q.hidden=false;q.innerHTML=`<div class="q">${b.q}</div><div class="choices">${bOpts(c).map(j=>`<button type="button" class="btn" data-bo="${j}">${b.o[j]}</button>`).join('')}</div>`}else q.hidden=true;
+ const man=$('bMan');if(man){const st0=BUILD[c];man.innerHTML=(c<n&&st0.pg&&typeof MAN!=='undefined')?st0.pg.map(k=>`<figure style="margin:6px 0"><img src="${MAN[k]}" alt="Kit installation steps, page ${k}" style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff"><figcaption class="small">Kit installation steps · page ${k}</figcaption></figure>`).join(''):''}
+ hud(`<div class="h">Step <b>${Math.min(c+1,n)}</b> of ${n} · mistakes <b>${st.bMist||0}</b></div>`);
+ if(c>=n){msg('mB','good',`✔ Built in ${n} steps with ${st.bMist||0} mistake${st.bMist===1?'':'s'}! Turn the model with your finger to check it.`);$('nB').disabled=false;done(0)}}
+function bMiss(t){bStrike++;st.bMist=(st.bMist||0)+1;save();SFX.bad();const b=BUILD[st.placed];msg('mB','bad',t+(bStrike>=3?`<br>💡 Hint: you need the <b>${b.tray}</b>.`:''));drawBuild()}
+$('tray').addEventListener('click',e=>{const el=e.target.closest('[data-part]');if(!el||st.placed>=BUILD.length)return;const id=el.dataset.part,want=BUILD[st.placed];
+ if(id===want.id){bSel=id;SFX.click();msg('mB','',`Right part: <b>${want.tray}</b>. Now answer the question below.`);drawBuild();return}
+ bSel=null;const x=EXTRA.find(p=>p[0]===id);bMiss(x?'Not in this project: '+x[2]:'Not this part for this step. Read the step again and look at the book picture.')});
+$('bQ').addEventListener('click',e=>{const el=e.target.closest('[data-bo]');if(!el)return;const want=BUILD[st.placed],j=+el.dataset.bo;
+ if(j===want.a){st.placed++;save();SFX.ok();bSel=null;bStrike=0;parts[want.id].visible=true;if(typeof placeBins==='function')placeBins();dropIn(parts[want.id],K.hooks,4);if(want.view)K.view(want.view);msg('mB','good','✔ '+want.ok);drawBuild();if(st.placed>=BUILD.length&&typeof onBuilt==='function')onBuilt()}
+ else bMiss((want.why&&want.why[j])||'Not quite. Look at the 3D model and the book picture.')});
+
+function onBuilt(){layout();drawCables()}
+
+/* ================== 2. Wire ================== */
+const WIRES=[
+ {id:'usb',name:'USB cable',sub:'controller → computer',hex:'#2b2b2b',to:'Computer',hint:'The USB cable connects the controller to your device.'},
+ {id:'dg',name:'Sensor − wire',sub:'DHT11 ground',hex:'#222',to:'2 GND',hint:'− is ground. Book: the sensor goes into port 2.'},
+ {id:'dv',name:'Sensor + wire',sub:'DHT11 power',hex:'#e03a3a',to:'2 V',hint:'+ is power: V on port 2.'},
+ {id:'ds',name:'Sensor S wire',sub:'DHT11 data',hex:'#f2c230',to:'D2',hint:'S is the data signal: D2.'},
+ {id:'sb',name:'Servo brown wire',sub:'270° servo',hex:'#7a4a2b',to:'13 GND',hint:'Brown is ground on port 13.'},
+ {id:'sr',name:'Servo red wire',sub:'270° servo',hex:'#e03a3a',to:'13 V',hint:'Red is power: V on port 13.'},
+ {id:'so',name:'Servo orange wire',sub:'270° servo',hex:'#f08a24',to:'D13',hint:'The signal goes to D13.'}];
+const TGT=['2 GND','2 V','D2','13 GND','13 V','D13','A0','Computer'];let wSel=null;const wStrike={};
+function drawWires(){$('wList').innerHTML=WIRES.map(w=>`<button type="button" class="wire ${st.wires[w.id]?'ok':''} ${wSel===w.id?'sel':''}" data-w="${w.id}"><i style="background:${w.hex}"></i><span>${w.name}<small>${w.sub}${st.wires[w.id]?' → '+w.to+' ✔':''}</small></span></button>`).join('');
+ $('pins').innerHTML=TGT.map(p=>`<button type="button" class="btn" data-pin="${p}">${p.replace(/^13 /,'Port 13 · ').replace(/^2 /,'Port 2 · ').replace(/^D13$/,'Port 13 · D13').replace(/^D2$/,'Port 2 · D2')}</button>`).join('');
+ const n=Object.keys(st.wires).length;hud(`<div class="h">Connections: <b>${n}</b> / ${WIRES.length}</div>`);
+ if(n===WIRES.length){msg('mW','good','✔ All connected: the sensor on port 2, the 270° servo on port 13, and USB.');$('nW').disabled=false;done(1)}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-w]');if(b){wSel=b.dataset.w;SFX.click();const w=WIRES.find(x=>x.id===wSel);msg('mW','',`${w.name} selected. Where does it go?`);drawWires();K.view('board');return}
+ const p=e.target.closest('[data-pin]');if(!p)return;if(!wSel){SFX.bad();msg('mW','bad','Choose a cable first.');return}
+ const w=WIRES.find(x=>x.id===wSel);if(p.dataset.pin===w.to){st.wires[w.id]=1;save();wSel=null;SFX.ok();drawCables();msg('mW','good',`✔ ${w.name} → ${w.to}.`);drawWires()}else{SFX.bad();wStrike[w.id]=(wStrike[w.id]||0)+1;msg('mW','bad',`Not ${p.dataset.pin}.`+(wStrike[w.id]>=2?' 💡 '+w.hint:' Think again.'))}});
+
+/* ================== 3. Code ================== */
+const sel=(o,k,opts,cv)=>`<select data-${o}="${k}" style="font:inherit;background:#ffd27a;color:#141a2b;border:0;border-radius:4px"><option value="">?</option>${[...new Set(opts)].sort().map(x=>`<option ${cv&&cv[k]===x?'selected':''}>${x}</option>`).join('')}</select>`;
+const CB={e1:['DHT.h','Servo.h','Wire.h'],e2:['2','13','A0'],e3:['DHT11','OLED','SERVO'],e4:['13','2','9'],e5:['readTemperature','readHumidity'],e6:['>','<'],e7:['180','0'],e8:['0','180'],e9:['2000','20','200000']};
+const CBW={e1:'The sensor library is DHT.h.',e2:'The sensor is on port 2.',e3:'Our sensor type is the DHT11.',e4:'The servo is on port 13.',e5:'We want the temperature first.',e6:'WARM when the temperature is ABOVE the threshold.',e7:'Warm period: tip the seesaw all the way, 180°.',e8:'Ice age: back to 0°.',e9:'The DHT11 needs about 2 seconds between readings: 2000 ms.'};
+const cv={};
+function drawCode(){$('gCode').innerHTML=['#include &lt;Servo.h&gt;',`#include "${sel('cb','e1',CB.e1,cv)}"`,`#define DHTPIN ${sel('cb','e2',CB.e2,cv)}`,`#define DHTTYPE ${sel('cb','e3',CB.e3,cv)}`,`const int THRESHOLD = ${st.thr};   // you will tune this in Discover`,'Servo myservo;','DHT dht(DHTPIN, DHTTYPE);','','void setup() {',`  myservo.attach(${sel('cb','e4',CB.e4,cv)});`,'  dht.begin();','}','','void loop() {',`  float t = dht.${sel('cb','e5',CB.e5,cv)}();`,'  if (isnan(t)) return;          // no reading? try again',`  if (t ${sel('cb','e6',CB.e6,cv)} THRESHOLD) {`,`    myservo.write(${sel('cb','e7',CB.e7,cv)});        // warm period`,'  } else {',`    myservo.write(${sel('cb','e8',CB.e8,cv)});        // ice age`,'  }',`  delay(${sel('cb','e9',CB.e9,cv)});`,'}'].join('\n');
+ if(st.code){msg('mC','good','✔ Uploaded! The seesaw now reads the sensor every 2 seconds.');$('nC').disabled=false;done(2)}}
+$('gCode').addEventListener('change',e=>{const k=e.target.dataset.cb;if(k)cv[k]=e.target.value});
+let cTries=0;$('gCheck').onclick=()=>{const bad=Object.keys(CB).filter(k=>cv[k]!==CB[k][0]);cTries++;if(bad.length){SFX.bad();msg('mC','bad',`${Object.keys(CB).length-bad.length} of ${Object.keys(CB).length} correct. `+(cTries>=2?'💡 '+CBW[bad[0]]:'Check your code and try again.'));return}st.code=1;save();SFX.done();banner('⬆ Upload complete');drawCode()};
+
+/* ================== 4. Discover ================== */
+const tlog=[];let cycles=0,phase=0;
+$('thr').oninput=e=>{st.thr=+e.target.value;save();$('thrO').textContent=st.thr+' °C';phase=0;cycles=0;st.dt={};drawTasks()};
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{env.tool=b.dataset.tool;env.t=0;SFX.click();K.view(b.dataset.tool==='off'?'iso':'wide')});
+function discTick(){$('dT').textContent=env.read.toFixed(1);$('dH').textContent=env.readH;$('dS').textContent=sideOf(tgtAng)==='warm'?'WARM':'ICE AGE';
+ if(!discTick.last||performance.now()-discTick.last>500){discTick.last=performance.now();tlog.push(env.T);if(tlog.length>120)tlog.shift();drawGraph();checkTasks()}
+ hud(`<div class="h">Sensor: <b>${env.read.toFixed(1)} °C</b> · ${env.readH}% · threshold <b>${st.thr} °C</b> → <b>${sideOf(tgtAng)==='warm'?'☀ warm period':'❄ ice age'}</b></div>`)}
+function drawGraph(){const y=v=>140-(v-14)*4.5;let h=`<line x1="0" y1="${y(st.thr)}" x2="400" y2="${y(st.thr)}" stroke="#ffb300" stroke-dasharray="6 4" stroke-width="2"/><text x="6" y="${y(st.thr)-4}" fill="#ffcc80" font-size="11">threshold ${st.thr} °C</text>`;
+ [16,20,24,28,32,36,40].forEach(v=>h+=`<text x="372" y="${y(v)+4}" fill="#7f8aa3" font-size="10">${v}°</text>`);h+=`<polyline points="${tlog.map((v,i)=>`${i*3.3},${y(v)}`).join(' ')}" fill="none" stroke="#ff7043" stroke-width="2.5"/>`;$('gT').innerHTML=h}
+function checkTasks(){const t=st.dt,s=sideOf(tgtAng);if(!t.a&&env.tool==='off'&&Math.abs(env.T-24)<0.6&&s==='ice')t.a=1;if(t.a&&!t.b&&s==='warm')t.b=1;if(t.b&&!t.c&&s==='ice'&&env.read<st.thr)t.c=1;
+ if(t.c){if(phase===0&&s==='warm')phase=1;if(phase===1&&s==='ice'){phase=0;cycles++}if(cycles>=1&&!t.d){t.d=cycles>=1&&t.c?(t.dd=(t.dd||0)+0):0}}
+ if(t.c&&cycles>=1)t.d=1;save();drawTasks()}
+function drawTasks(){const t=st.dt,li=$('dTasks').children;['a','b','c','d'].forEach((k,i)=>li[i].className=t[k]?'dn':(i===0||t['abcd'[i-1]])?'cur':'');
+ if(st.thr<=24)msg('mD','bad',`At ${st.thr} °C the room (24 °C) already counts as warm. Move the threshold above room temperature.`);else if(st.thr>=38)msg('mD','bad',`At ${st.thr} °C even the hair dryer cannot make it warm. Lower the threshold.`);
+ else if(t.d){msg('mD','good',`✔ Threshold ${st.thr} °C works: room = ice age, heated = warm period, and it oscillates.`);$('nD').disabled=false;done(3)}else msg('mD','',t.c?'One more full cycle: warm it, then cool it again.':t.b?'Now cool it down (fan or AC).':t.a?'Now warm the sensor.':'Press ✋ Stop and wait for room temperature.')}
+
+/* ================== 5. Earth history ================== */
+/* simplified shape of the ice-core record: slow cooling, fast warming, about every 100,000 years (°C difference from today) */
+const HIST=[];(()=>{for(let k=0;k<=800;k++){const yr=800-k,c=(yr%100)/100;let v=c<0.1?-8+(1-c/0.1)*0:0;const ph=((800-yr)%100)/100;v=ph<0.88?1.5-ph/0.88*9.5:-8+(ph-0.88)/0.12*9.5;v+=Math.sin(k*0.9)*0.6;HIST.push(Math.max(-9,Math.min(2.5,v)))}})();
+const histVal=i=>HIST[Math.min(HIST.length-1,Math.max(0,Math.round(i)))];
+function drawHist(i){const x=k=>k/800*400,y=v=>15+(2.5-v)*12;let h=`<line x1="0" y1="${y(0)}" x2="400" y2="${y(0)}" stroke="#3a4a6b" stroke-dasharray="4 4"/><text x="4" y="${y(0)-4}" fill="#7f8aa3" font-size="10">today's temperature</text>`;
+ h+=`<polyline points="${HIST.map((v,k)=>`${x(k)},${y(v)}`).join(' ')}" fill="none" stroke="#3a4a6b" stroke-width="1.5"/>`;if(i!=null)h+=`<polyline points="${HIST.slice(0,Math.round(i)+1).map((v,k)=>`${x(k)},${y(v)}`).join(' ')}" fill="none" stroke="#4fc3f7" stroke-width="2.5"/><circle cx="${x(i)}" cy="${y(histVal(i))}" r="5" fill="#ffeb3b"/>`;
+ h+=`<text x="2" y="166" fill="#7f8aa3" font-size="10">800,000 years ago</text><text x="350" y="166" fill="#7f8aa3" font-size="10">today</text>`;$('hG').innerHTML=h;if(i!=null)$('hYr').textContent=`${Math.round((800-i))*1000} years ago · ${histVal(i).toFixed(1)} °C compared with today`}
+const HB={e1:['-8','0','24'],e2:['2','180','40'],e3:['0','90'],e4:['180','270']};const hv={};
+function drawHCode(){$('hCode').innerHTML=['void loop() {','  float t = nextTemperature();     // from the ice-core file, °C vs today',`  int angle = map(t, ${sel('hc','e1',HB.e1,hv)}, ${sel('hc','e2',HB.e2,hv)}, ${sel('hc','e3',HB.e3,hv)}, ${sel('hc','e4',HB.e4,hv)});`,'  myservo.write(angle);','  delay(50);','}'].join('\n')}
+$('hCode').addEventListener('change',e=>{const k=e.target.dataset.hc;if(k)hv[k]=e.target.value});
+$('hRun').onclick=()=>{const bad=Object.keys(HB).filter(k=>hv[k]!==HB[k][0]);if(bad.length){SFX.bad();msg('mH','bad',{e1:'The coldest value in the file is about −8 °C.',e2:'The warmest value is about +2 °C.',e3:'The coldest temperature should give the ice-age end: 0°.',e4:'The warmest should tip it all the way: 180°.'}[bad[0]]);return}
+ controlOn=false;hist={i:0,spd:40,done:false};SFX.ok();K.view('seesaw');msg('mH','','▶ Playing 800,000 years… watch the seesaw.');const w=setInterval(()=>{if(hist&&hist.done){clearInterval(w);$('hQ').hidden=false;msg('mH','','Now answer the questions.')}},300)};
+function hqDraw(){if(st.hq1){const ok=st.hq1==='8';$('hQ1m').style.color=ok?'var(--ok)':'var(--warn)';$('hQ1m').textContent=ok?'✔ About 8 ice ages, roughly one every 100,000 years.':'Count the deep dips on the graph.'}
+ if(st.hq2){const ok=st.hq2==='warm';$('hQ2m').style.color=ok?'var(--ok)':'var(--warn)';$('hQ2m').textContent=ok?'✔ Cooling into an ice age is slow; warming out of it is much faster (the steep climbs).':'Look at the steep parts of the graph.'}
+ if(st.hq1==='8'&&st.hq2==='warm'){msg('mH','good','✔ Your seesaw now moves smoothly and tells Earth\'s climate story.');$('nH').disabled=false;done(4)}}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-hq1]'),b=e.target.closest('[data-hq2]');if(a){st.hq1=a.dataset.hq1;save();st.hq1==='8'?SFX.ok():SFX.bad();hqDraw()}if(b){st.hq2=b.dataset.hq2;save();st.hq2==='warm'?SFX.ok():SFX.bad();hqDraw()}});
+
+/* ================== 6. Test ================== */
+function drawTest(){document.querySelectorAll('[data-ms]').forEach(c=>c.checked=!!st.meas[c.dataset.ms]);if(st.tq){const ok=st.tq==='100k';$('tQm').style.color=ok?'var(--ok)':'var(--warn)';$('tQm').textContent=ok?'✔ About 100,000 years: our model is a huge speed-up!':'Look at the history graph: one cycle is about 100,000 years.'}
+ if([0,1,2,3].every(i=>st.meas[i])&&st.tq==='100k'){$('nT').disabled=false;done(5)}}
+document.addEventListener('change',e=>{const c=e.target.closest('[data-ms]');if(c){st.meas[c.dataset.ms]=c.checked?1:0;save();SFX.click();drawTest()}});
+document.querySelectorAll('[data-tq]').forEach(b=>b.onclick=()=>{st.tq=b.dataset.tq;save();st.tq==='100k'?SFX.ok():SFX.bad();drawTest()});
+
+/* ================== 7. Math ================== */
+const Q=[{q:'1a. What is the rate of change of Region A (Table A)?',o:['3% per month','62% per month','6% per month'],a:0,e:'62 → 65 → 68: it goes up 3 each month.'},
+ {q:'1a. What is the rate of change of Region B (Graph B)?',o:['10% per month','3% per month','70% per month'],a:0,e:'70 → 80 → 90: up 10 each month.'},
+ {q:'1b. Are the functions linear or nonlinear?',o:['Both linear: each goes up by the same amount every month','Both nonlinear','A is linear, B is not'],a:0,e:'A constant rate of change means a straight line.'},
+ {q:'Which region\'s humidity is rising faster?',o:['Region B','Region A','They rise the same'],a:0,e:'10% per month is more than 3% per month.'},
+ {q:'Write Region A as a function of m (months after June).',o:['H = 62 + 3m','H = 3 + 62m','H = 62m'],a:0,e:'Start 62, add 3 each month.'},
+ {q:'If Region B kept the same rate, what would it reach in October? Is that possible?',o:['110%: impossible, humidity cannot pass 100%, so the pattern must stop','110%: possible','90%: it stops in August'],a:0,e:'Real data can only follow a linear model for a while.'},
+ {q:'In Step 5, map(t, −8, 2, 0, 180) with t = −3 gives which angle?',o:['90°','45°','135°'],a:0,e:'−3 is exactly halfway between −8 and 2, so halfway between 0° and 180°.'},
+ {q:'How could a weather seesaw support SDG 13: Climate Action?',o:['It makes climate change easy to see, so people understand why to act','It stops ice ages','It cools the room'],a:0,e:'Models help people understand and act.'},
+ {q:'Which career studies weather and climate data every day?',o:['Meteorologist','Architect','Pilot'],a:0,e:'Meteorologists forecast weather and study climate.'}];
+function drawQuiz(){$('quiz').innerHTML=Q.map((x,i)=>{const c=st.quiz[i];return`<div class="q">${x.q}</div><div class="choices">${x.o.map((o,j)=>`<button type="button" class="btn ${c==null?'':j===x.a&&c===x.a?'right':j===c?'wrong':''}" data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div><div class="fb" style="color:${c===x.a?'var(--ok)':'var(--warn)'}">${c==null?'':c===x.a?'✔ '+x.e:'Try again.'}</div>`}).join('');
+ const ok=Q.every((x,i)=>st.quiz[i]===x.a);$('nQ').disabled=!ok;if(ok)done(6)}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const i=+b.dataset.q,o=+b.dataset.o;st.quiz[i]=o;save();o===Q[i].a?SFX.ok():SFX.bad();drawQuiz()});
+
+/* ================== 8. Reflect ================== */
+const LV=['Not yet, even with help.','With some help.','Yes, on my own.','Yes, and I can help a classmate.'];
+const RUB=[['I can identify key parts of a problem to solve it effectively.',LV],['I can construct a prototype with wired electronic components.',LV],['I can program my prototype to accomplish the challenge.',LV],['I can work well with my team to accomplish our goals.',LV],['How I feel about this project',['☹️','😐','🙂','😄']]];
+function drawRub(){$('rub').innerHTML=RUB.map((r,i)=>`<div><div class="rq">${i+1}. ${r[0]}</div><div class="lv" role="radiogroup" aria-label="${r[0]}">${r[1].map((t,j)=>`<button type="button" role="radio" aria-checked="${st.rub[i]===j}" class="${st.rub[i]===j?'on':''}" data-r="${i}" data-l="${j}">${t}</button>`).join('')}</div></div>`).join('');
+ const n=Object.keys(st.rub).length;$('finish').disabled=n<RUB.length;msg('mA','',n<RUB.length?`${n} of ${RUB.length} rows done.`:'All rows done. Press Finish!')}
+$('rub').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;st.rub[b.dataset.r]=+b.dataset.l;save();SFX.click();drawRub()});
+function showFin(){st.placed=BUILD_N;WIRES.forEach(w=>st.wires[w.id]=1);showParts();drawCables();hist=null;controlOn=false;ang=tgtAng=150;placeMech();oled3([{s:'T 31.5 C',x:0,y:4,z:2},{s:'WARM',x:0,y:36,z:2}]);K.view('fin',true);setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false},500)}
+$('finish').onclick=()=>{st.finished=1;save();done(7);SFX.done();showFin();setTimeout(()=>$('fin').scrollIntoView({behavior:'smooth',block:'center'}),600)};
+
+/* ================== 9. Challenges ================== */
+function star(k,id,h){msg(id,'good',h);if(!st.ch[k]){st.ch[k]=1;save()}SFX.done();drawStars();banner('⭐ Challenge complete!')}
+function drawStars(){const n=['c1','c2','c3','c4'].filter(k=>st.ch[k]).length;$('stars').textContent=n;document.querySelectorAll('[data-st]').forEach(e=>{const on=!!st.ch[e.dataset.st];e.textContent=on?'★':'☆';e.closest('.ch').classList.toggle('won',on)})}
+/* c1 humidity */
+const C1={e1:['readHumidity','readTemperature'],e2:['60','6','600']};const c1v={};const c1d={};
+$('c1code').innerHTML=['void loop() {',`  float h = dht.${sel('c1','e1',C1.e1)}();`,'  if (isnan(h)) return;','  Serial.print("Humidity: "); Serial.println(h);',`  if (h &gt; ${sel('c1','e2',C1.e2)}) myservo.write(180);   // humid`,'  else myservo.write(0);                 // dry','  delay(2000);','}'].join('\n');
+$('c1code').addEventListener('change',e=>{const k=e.target.dataset.c1;if(k)c1v[k]=e.target.value});
+$('c1run').onclick=()=>{const bad=Object.keys(C1).filter(k=>c1v[k]!==C1[k][0]);if(bad.length){SFX.bad();msg('c1msg','bad',bad[0]==='e1'?'Read the humidity this time.':'Humidity is a percentage from 0 to 100. The book uses 60.');return}
+ mode='hum';controlOn=true;SFX.ok();$('c1days').hidden=false;msg('c1msg','','✔ Uploaded. Try each kind of day.');K.view('wide')};
+document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{const d=b.dataset.day;if(d==='dry'){TOOLS.off=[34,20,.3]}else if(d==='humid'){TOOLS.off=[31,78,.3]}else{env.tool='blow';env.t=0}if(d!=='blow')env.tool='off';c1d[d]=1;SFX.click();
+ setTimeout(()=>{msg('c1msg','',`Humidity ${Math.round(env.H)}% → ${sideOf(tgtAng)==='warm'?'humid side':'dry side'}.`);if(c1d.dry&&c1d.humid&&c1d.blow)$('c1q').hidden=false},2600)});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c1]');if(!b)return;if(b.dataset.c1==='yes'){TOOLS.off=[24,45,.05];star('c1','c1msg','⭐ Yes! Humidity rises and falls with rain, seasons and even your breath, so the seesaw now shows wet and dry cycles, not ice ages. Choosing the right measurement matters.')}else{SFX.bad();msg('c1msg','bad','Think: does your breath make an ice age?')}});
+/* c2 hysteresis */
+const C2={e1:['29','27'],e2:['27','29']};const c2v={};
+$('c2code').innerHTML=['bool warm = false;','void loop() {','  float t = dht.readTemperature();',`  if (t &gt; ${sel('c2','e1',C2.e1)}) warm = true;    // clearly warm`,`  if (t &lt; ${sel('c2','e2',C2.e2)}) warm = false;   // clearly cold`,'  myservo.write(warm ? 180 : 0);','  delay(2000);','}'].join('\n');
+$('c2code').addEventListener('change',e=>{const k=e.target.dataset.c2;if(k)c2v[k]=e.target.value});
+$('c2run').onclick=()=>{const bad=Object.keys(C2).filter(k=>c2v[k]!==C2[k][0]);if(bad.length){SFX.bad();msg('c2msg','bad','Switch to warm only ABOVE the higher number (29), and back to cold only BELOW the lower one (27).');return}
+ let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};const T=[];for(let i=0;i<60;i++)T.push(28+Math.sin(i/9)*1.0+(rnd()-.5)*1.8+(i>40?2.2:0));
+ let a=null,f1=0,w=false,f2=0,b=null;const s1=[],s2=[];T.forEach(v=>{const s=v>28;if(a!==null&&s!==a)f1++;a=s;s1.push(s);if(v>29)w=true;if(v<27)w=false;if(b!==null&&w!==b)f2++;b=w;s2.push(w)});
+ const y=v=>120-(v-24)*15;let h=`<line x1="0" y1="${y(28)}" x2="400" y2="${y(28)}" stroke="#ffb300" stroke-dasharray="5 4"/><line x1="0" y1="${y(29)}" x2="400" y2="${y(29)}" stroke="#ff7043"/><line x1="0" y1="${y(27)}" x2="400" y2="${y(27)}" stroke="#4fc3f7"/><polyline points="${T.map((v,i)=>`${i*6.6},${y(v)}`).join(' ')}" fill="none" stroke="#fff" stroke-width="2"/>`;
+ s1.forEach((s,i)=>h+=`<rect x="${i*6.6}" y="134" width="6" height="6" fill="${s?'#ff7043':'#4fc3f7'}"/>`);s2.forEach((s,i)=>h+=`<rect x="${i*6.6}" y="143" width="6" height="6" fill="${s?'#ff7043':'#4fc3f7'}"/>`);$('c2svg').innerHTML=h;
+ star('c2','c2msg',`⭐ One threshold: the seesaw flipped <b>${f1}</b> times. Two thresholds: only <b>${f2}</b>. Thermostats in homes and air conditioners use this trick.`)};
+/* c3 rates */
+const c3={};document.addEventListener('click',e=>{const a=e.target.closest('[data-c3a]'),b=e.target.closest('[data-c3b]'),c=e.target.closest('[data-c3c]');if(!a&&!b&&!c)return;
+ const fb=(id,ok,t1,t2)=>{$(id).style.color=ok?'var(--ok)':'var(--warn)';$(id).textContent=ok?t1:t2;ok?SFX.ok():SFX.bad()};
+ if(a){c3.a=a.dataset.c3a;fb('c3am',c3.a==='0.001','✔ 5 ÷ 5,000 = 0.001 °C per year.','Divide: 5 °C ÷ 5,000 years.')}
+ if(b){c3.b=b.dataset.c3b;fb('c3bm',c3.b==='0.009','✔ 1.2 ÷ 140 ≈ 0.0086, about 0.009 °C per year.','Divide: 1.2 °C ÷ 140 years.')}
+ if(c){c3.c=c.dataset.c3c;fb('c3cm',c3.c==='9','✔ 0.0086 ÷ 0.001 ≈ 9: roughly ten times faster, as NASA says.','Divide the two rates.')}
+ if(c3.a==='0.001'&&c3.b==='0.009'&&c3.c==='9')star('c3','c3msg','⭐ Natural ice-age cycles are slow. Today\'s warming is about ten times faster than warming at the end of an ice age. That is why climate action is urgent.')});
+/* c4 OLED weather station */
+const C4={e1:['t','h'],e2:['h','t'],e3:['WARM','ICE AGE'],e4:['ICE AGE','WARM']};const c4v={};
+$('c4code').innerHTML=['display.clearDisplay();','display.setTextSize(2);','display.setCursor(0, 0);',`display.print("T "); display.println(${sel('c4','e1',C4.e1)});`,`display.print("H "); display.println(${sel('c4','e2',C4.e2)});`,`if (t &gt; THRESHOLD) display.println("${sel('c4','e3',C4.e3)}");`,`else display.println("${sel('c4','e4',C4.e4)}");`,'display.display();'].join('\n');
+$('c4code').addEventListener('change',e=>{const k=e.target.dataset.c4;if(k)c4v[k]=e.target.value});
+$('c4run').onclick=()=>{const bad=Object.keys(C4).filter(k=>c4v[k]!==C4[k][0]);if(bad.length){SFX.bad();msg('c4msg','bad',bad[0]==='e1'?'T is the temperature variable: t.':bad[0]==='e2'?'H is the humidity variable: h.':'Above the threshold it is WARM; otherwise ICE AGE.');return}
+ const T=env.read,H=env.readH,items=[{s:'T '+T.toFixed(1),x:0,y:0,z:2},{s:'H '+H,x:0,y:22,z:2},{s:T>st.thr?'WARM':'ICE AGE',x:0,y:44,z:2}];oledPaint($('oC4'),items);oled3(items);K.view('board');star('c4','c4msg','⭐ Your controller is now a tiny weather station.')};
+
+/* ================== 10. Other designs ================== */
+let demo=null;
+function setDesign(d){dsg=d;layout();hist=null;controlOn=false;K.view(d==='seesaw'?'seesaw':'wide');document.querySelectorAll('[data-ds]').forEach(b=>b.classList.toggle('sel',b.dataset.ds===d));
+ clearInterval(demo);let k=0;tgtAng=0;demo=setInterval(()=>{k++;tgtAng=k%2?180:0;if(d==='dial'||d==='sea'||d==='glacier')tgtAng=[0,60,120,180,120,60][k%6];if(k>8)clearInterval(demo)},1500)}
+document.querySelectorAll('[data-ds]').forEach(b=>b.onclick=()=>{SFX.click();setDesign(b.dataset.ds)});
+$('dTry').onclick=()=>{const m=$('dMod').value,r=$('dRead').value,mv=$('dMove').value,th=$('dThr').value;setDesign(m);const L=[];let ok=true;
+ if(r==='h')L.push('💧 Humidity shows wet and dry weather, not ice ages. Say so on your model.');else L.push('🌡 Temperature: the best match for warm periods and ice ages.');
+ if(mv==='two'&&(m==='dial'||m==='sea'||m==='glacier')){ok=false;L.push('⚠ A dial, glacier or sea level should move smoothly. Use map().')}else if(mv==='map')L.push('✔ map() gives smooth movement.');
+ if(th==='1'&&mv==='two')L.push('💡 Add a second threshold so it does not shake near the limit.');if(m==='earth')L.push('🌍 The tilt only changes from about 22° to 24.5°, over about 41,000 years.');
+ msg('dChk',ok?'good':'bad',L.join('<br>'));ok?SFX.ok():SFX.bad()};
+try{$('dPlan').value=localStorage.getItem(KEY+'-plan')||''}catch(e){}
+$('dSave').onclick=()=>{try{localStorage.setItem(KEY+'-plan',$('dPlan').value)}catch(e){}SFX.ok();$('dSaved').textContent='✔ Saved on this device.'};
+
+/* ================== navigation ================== */
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();
+ hud('');dsg='seesaw';hist=null;clearInterval(demo);mode='temp';controlOn=false;env.tool='off';TOOLS.off=[24,45,.05];showParts();layout();drawCables();oled3([]);tag13.visible=tag2.visible=i===1;
+ if(i===0){bSel=null;drawBuild();K.view('iso')}
+ if(i===1){drawWires();K.view('board')}
+ if(i===2){drawCode();K.view('board')}
+ if(i===3){$('thr').value=st.thr;$('thrO').textContent=st.thr+' °C';controlOn=true;drawTasks();drawGraph();K.view('iso')}
+ if(i===4){drawHCode();drawHist(null);hqDraw();K.view('seesaw')}
+ if(i===5){drawTest();ang=tgtAng=0}
+ if(i===6){hud('<div class="h">Answer the 9 questions</div>');K.view('spin');controlOn=false;let k=0;demo=setInterval(()=>{tgtAng=(++k%2)*180},2000)}
+ if(i===7){if(st.finished)showFin();else K.view('fin')}
+ if(i===8){hud('<div class="h">Challenges</div>');drawStars();K.view('seesaw')}
+ if(i===9){hud('<div class="h">Other designs</div>');setDesign('seesaw')}
+ window.scrollTo(0,0)}
+drawBuild();drawQuiz();drawRub();
+go(st.finished?7:Math.min(...[0,1,2,3,4,5,6,7].filter(i=>!st.done.includes(i)),8));
+
+</script>
+</body>
+</html>

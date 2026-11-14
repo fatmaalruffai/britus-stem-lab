@@ -8,16 +8,29 @@ This project is made as a virtual lab for the **STEM Nexus Arabia curriculum**.
 
 ## Projects
 
-| Grade | Order | Project | Folder |
-|---|---|---|---|
-| 3 | 1 | Levers (Simple Machines, Project 6) | `labs/levers/` |
-| 3 | 2 | Little Lever Builder (homework) | `labs/little-lever-builder/` |
-| 4 | 1 | Power Up the Toys | `labs/power-toys/` |
-| 4 | 2 | Battery Builder (homework) | `labs/battery-builder/` |
-| 5 | 1 | Plants and Pollinators (Project 3) | `labs/pollinators/` |
-| 5 | 2 | Virtual Robotics Lab | `labs/robotics/` |
-| 9 | 1 | Joints (Project 1) | `labs/joints/` |
-| 9 | 2 | Build a Mixer (Project 8: Moments) | `labs/mixer/` |
+| Grade | Project | Folder |
+|---|---|---|
+| 3 | Levers (Simple Machines, Project 6) | `labs/levers/` |
+| 3 | Little Lever Builder (homework) | `labs/little-lever-builder/` |
+| 4 | Power Up the Toys | `labs/power-toys/` |
+| 4 | Battery Builder (homework) | `labs/battery-builder/` |
+| 5 | Plants and Pollinators (Project 3) | `labs/pollinators/` |
+| 5 | Cleaning the Ocean (Project 4, LEGO WeDo 2.0) | `labs/ocean/` |
+| 5 | Virtual Robotics Lab | `labs/robotics/` |
+| 7 | Touchless Hand Wash Timer | `labs/handwash/` |
+| 7 | Touchless Inventions | `labs/touchless/` |
+| 7 | Conductivity Meter | `labs/conductivity/` |
+| 9 | Joints (Project 1) | `labs/joints/` |
+| 9 | Weight Machine (Project 2) | `labs/weightmachine/` |
+| 9 | Energy Wheel (Project 3) | `labs/energywheel/` |
+| 9 | Gold Foil Experiment (Project 4) | `labs/goldfoil/` |
+| 9 | Chromatography | `labs/chromatography/` |
+| 9 | Build a Mixer (Project 8: Moments) | `labs/mixer/` |
+| 9 | Reflection (Project 10) | `labs/reflection/` |
+| 9 | Wind Turbines (Project 12) | `labs/windturbines/` |
+| 9 | Weather Seesaw (Project 13) | `labs/weatherseesaw/` |
+
+Students sign in with two names (first name and father's name), their school, grade and the school's student password.
 
 Other grades show "Coming soon". Projects and their order are set in the `PROJECTS` list in `index.html`.
 
@@ -54,6 +67,7 @@ In `index.html`, at the top of the script:
 
 - `SETTINGS.schools`: the school names students choose from
 - `SETTINGS.schools`: school names and each school's teacher password (temporary)
+- `SETTINGS.studentPassword`: the student login password (capitals and spaces do not matter)
 - `SETTINGS.adminPassword`: the Britus admin password that sees all schools (temporary)
 - `SETTINGS.apiUrl`: the server address (empty = this device only)
 - `PROJECTS`: which projects each grade has, in order
@@ -65,3 +79,7 @@ In `index.html`, at the top of the script:
 - **GoatCounter** for anonymous visit counts.
 
 © 2026 Britus Education · Fatma Alruffai
+
+## Credits
+
+LEGO® and WeDo are trademarks of the LEGO Group. The building step pictures in Cleaning the Ocean are © The LEGO Group, shown for classroom use.

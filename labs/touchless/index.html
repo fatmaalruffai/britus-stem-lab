@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Touchless Inventions</title>
+<style>
+/* Grade 7 · Touchless Inventions (IR sensor + servo). Same 3D layout as the hand wash lab */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#c46a12;--acc-d:#9a4f06;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #e0a43a}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#e0a43a,#c46a12);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+.pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}@media(max-width:560px){.pick{grid-template-columns:1fr}}
+.pick button{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:12px;padding:10px;font:700 14.5px inherit;font-family:inherit;cursor:pointer;text-align:left}
+.pick button span{display:block;font-size:26px}.pick button small{display:block;font-weight:500;color:var(--mute)}
+.pick button.on{border-color:var(--acc)}.pick button.won{border-color:var(--ok)}
+.phase{display:flex;gap:6px;margin:8px 0}.phase span{flex:1;text-align:center;padding:5px;border-radius:8px;background:var(--tray);font:700 13px inherit;font-family:inherit;color:var(--mute)}
+.phase span.on{background:var(--acc);color:var(--onacc)}.phase span.dn{background:var(--okbg);color:var(--ok)}
+.val{font:700 15px Consolas,monospace;color:var(--acc-d)}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">🤖</div><div><h1>Touchless Inventions</h1><p>Grade 7 · Build 3 inventions with an IR sensor and a servo motor</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Inventions"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D model of the invention. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="iso">3D</button><button class="btn" data-v="front">Front</button><button class="btn" data-v="side">Side</button><button class="btn" data-v="top">Top</button><button class="btn" data-v="close">Close-up</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+</div>
+<div>
+<section class="card panel" id="p0"></section>
+<section class="card panel" id="p1"></section>
+<section class="card panel" id="p2"></section>
+<section class="card panel" id="p3">
+ <div class="k">Invention 4 · Your turn</div>
+ <h2>Design your own touchless invention</h2>
+ <p style="margin-top:0">You used one idea three times: <b>a sensor sees → the Arduino decides → a servo moves</b>. Now plan your own invention for your school or home.</p>
+ <div class="ctrl">
+  <label for="dDev">What will you build?</label><select id="dDev" class="btn" style="text-align:left"><option value="">Choose…</option><option>Touchless door opener</option><option>Automatic plant shade</option><option>Pet feeder</option><option>Book page turner</option><option>Hand sanitizer dispenser</option><option>My own idea</option></select>
+  <label for="dSen">Which sensor sees it?</label><select id="dSen" class="btn" style="text-align:left"><option value="">Choose…</option><option>IR sensor</option><option>Ultrasonic distance sensor</option><option>Light sensor</option></select>
+  <label for="dAng">Servo angle when it acts: <span class="val" id="dAngV">90°</span></label><input type="range" id="dAng" min="0" max="180" value="90">
+  <label for="dHow">How does it help people? (2–3 sentences)</label><textarea id="dHow" class="btn" style="min-height:90px;text-align:left;font-weight:500" placeholder="When the sensor sees …, the servo …"></textarea>
+ </div>
+ <div class="msg" id="mD"></div>
+ <div class="next"><button class="btn pri" id="finish">Save and finish 🎉</button></div>
+ <div id="fin" hidden>
+  <h3>🎉 Touchless Inventions complete!</h3>
+  <p style="margin:0">You built a touchless trash can, a smart parking gate and a candy dispenser, and planned your own invention. You are a real touchless engineer!</p>
+  <img id="finImg" alt="Your inventions in 3D">
+ </div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+/* ================== Touchless Inventions · 3D lab (IR sensor + servo) ================== */
+const $=id=>document.getElementById(id);
+const S=['Trash can','Parking gate','Candy dispenser','My invention'];
+const KEY='britus-g7-touchless';
+const st=(()=>{const d={done:[],inv:{},design:{},finished:0};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);if(!e)return;e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off'};
+function hud(h){$('hud').innerHTML=h}
+function banner(t,col){const b=$('banner');b.textContent=t;b.style.background=col||'#1d7a4c';b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,4000)}
+
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[0,4,0],r:40,aspect:.68,views:{
+ iso:[0.62,1.12,40,[0,4,0]],front:[0,1.45,38,[0,4,0]],side:[1.5,1.4,38,[0,4,0]],top:[0,0.14,46,[0,2,0]],close:[0.3,1.2,22,[0,5,3]],fin:[0.25,1.12,74,[0,4,0]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+function wireUp(par,unoG,list){/* list: [fromVec, pinName, colour] */const g=grp(par);list.forEach(([a,p,c])=>K.cable(g,a,K.unoPin(unoG,p),c,3));return g}
+
+/* ============ Scene 1: touchless trash can ============ */
+const SC={};
+(()=>{const g=SC.trash=grp();g.visible=false;const P={};
+ P.bin=grp(g);const binM=M(0x4f8f7b,{roughness:.45,side:THREE.DoubleSide});
+ K.mesh(new THREE.CylinderGeometry(4,3.5,8,40,1,true),binM,P.bin,0,4,0);Cy(3.5,.2,0x3f7766,P.bin,0,.1,0);
+ K.mesh(new THREE.TorusGeometry(4,.15,10,40),M(0x3f7766),P.bin,0,8,0).rotation.x=Math.PI/2;
+ const lbl=tex(256,256,(x,w,h)=>{x.fillStyle='#4f8f7b';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 120px Arial';x.textAlign='center';x.fillText('♻',w/2,170)});
+ const lm=new THREE.Mesh(new THREE.CylinderGeometry(3.86,3.66,3,40,1,true,-.5,1),new THREE.MeshStandardMaterial({map:lbl,roughness:.5}));lm.position.y=4.2;P.bin.add(lm);
+ P.lid=grp(g);const piv=grp(P.lid);piv.position.set(0,8.1,-4);Cy(4.15,.35,0x3f7766,piv,0,.17,4);Bx(1.6,.3,.6,0x2f5a4d,piv,0,.5,6.6);P.piv=piv;
+ Bx(.6,.6,1,0x555555,P.lid,0,8.1,-4.3);
+ P.servo=grp(g);const sv=K.sg90(P.servo);P.servo.position.set(4.9,8.1,-4);P.servo.rotation.y=-Math.PI/2;Bx(1.2,3,1.2,0x999999,P.servo,0,-2.4,-.8);
+ const arm=grp(piv);Bx(.35,.3,3.4,0xe53935,arm,4.45,.2,1.5);P.arm=arm;arm.visible=false;
+ P.ir=grp(g);const ir=K.hw201(P.ir);P.ir.position.set(0,6.4,4.0+1.9);P.ir.rotation.y=Math.PI/2;Bx(.3,1.2,1.6,0x666666,P.ir,0,-.9,-1.2);P.irObj=ir;
+ P.uno=grp(g);const u=K.uno(P.uno);P.uno.position.set(10,0,3);P.uno.rotation.y=-.5;
+ P.wires=null;P.mkWires=()=>{if(P.wires)return;P.wires=wireUp(g,u,[[V3(5.6,6.4,-4.8),'9',0xf08a24],[V3(5.6,6.3,-4.6),'5V',0xe53935],[V3(5.6,6.2,-4.4),'GND',0x222222],[V3(.45,6.85,5.8),'7',0x2f6fe0],[V3(0,6.85,5.8),'GNDT',0x3aa655],[V3(-.45,6.85,5.8),'3.3V',0xe8c13a]])};
+ P.hand=K.hand(g,0xd9a47e,0x8e44ad);P.hand.rotation.y=Math.PI/2;P.hand.rotation.x=Math.PI;P.hand.visible=false;
+ P.paper=Sp(.7,M(0xf2f2ea,{roughness:.95}),g,0,10,10);P.paper.visible=false;
+ P.SZ=4+1.9+2.4;/* LED face z */P.place=d=>P.hand.position.set(0,7.2,P.SZ+d+3.4);
+ SC.trashP=P})();
+
+/* ============ Scene 2: smart parking gate ============ */
+(()=>{const g=SC.gate=grp();g.visible=false;const P={};
+ const road=tex(1024,256,(x,w,h)=>{x.fillStyle='#3b3f46';x.fillRect(0,0,w,h);x.fillStyle='#f5f5f5';for(let i=0;i<w;i+=90)x.fillRect(i,h/2-6,50,12);x.fillStyle='#e8c13a';x.fillRect(0,8,w,8);x.fillRect(0,h-16,w,8)});
+ P.road=grp(g);const rm=new THREE.Mesh(new THREE.PlaneGeometry(44,9),new THREE.MeshStandardMaterial({map:road,roughness:.8}));rm.rotation.x=-Math.PI/2;rm.position.y=.03;rm.receiveShadow=true;P.road.add(rm);
+ Bx(1,.12,9,0xffffff,P.road,2,.07,0);
+ P.post=grp(g);Bx(1.3,5.2,1.3,0x2b3d5c,P.post,2,2.6,-5.6);Bx(1.8,.3,1.8,0x22314a,P.post,2,.15,-5.6);
+ P.servo=grp(g);K.sg90(P.servo);P.servo.position.set(2,4.6,-4.85);P.servo.rotation.y=Math.PI/2;
+ P.bar=grp(g);const piv=grp(P.bar);piv.position.set(2,4.6,-4.4);P.piv=piv;
+ for(let i=0;i<8;i++)Bx(.35,.45,1.1,i%2?0xffffff:0xe53935,piv,0,0,.55+i*1.1);Cy(.35,.5,0xfafafa,piv,0,0,0,'x',16);
+ P.ir=grp(g);const ir=K.hw201(P.ir);P.ir.position.set(.2,1.9,-4.85);P.irObj=ir;Bx(1.4,1.9,.3,0x2b3d5c,P.ir,1.3,-.9,-.3);
+ P.uno=grp(g);const u=K.uno(P.uno);P.uno.position.set(9,0,-9);
+ P.mkWires=()=>{if(P.wires)return;P.wires=wireUp(g,u,[[V3(2,3.2,-5.4),'9',0xf08a24],[V3(2.1,3.2,-5.5),'5V',0xe53935],[V3(2.2,3.2,-5.6),'GND',0x222222],[V3(2.25,2.35,-4.8),'7',0x2f6fe0],[V3(2.25,1.9,-4.8),'GNDT',0x3aa655],[V3(2.25,1.45,-4.8),'3.3V',0xe8c13a]])};
+ P.car=grp(g);const body=M(0x1f6fd1,{roughness:.3,metalness:.2});K.RBox(5.4,1.4,2.8,.4,body,P.car,0,1.2,0);K.RBox(3,1.1,2.5,.4,M(0xbfe3ff,{opacity:.8,roughness:.05,depthWrite:true}),P.car,-.3,2.3,0);
+ [[-1.7,1.35],[1.7,1.35],[-1.7,-1.35],[1.7,-1.35]].forEach(([x,z])=>Cy(.55,.45,0x1b1b1b,P.car,x,.55,z,'z',18));Bx(.1,.35,.6,0xfff4b0,P.car,2.72,1.25,.8);Bx(.1,.35,.6,0xfff4b0,P.car,2.72,1.25,-.8);
+ P.car.visible=false;P.LX=.2-2.46;/* LED x */
+ SC.gateP=P})();
+
+/* ============ Scene 3: candy dispenser ============ */
+(()=>{const g=SC.candy=grp();g.visible=false;const P={};
+ P.base=grp(g);K.RBox(9,1,6,.4,0xf2c230,P.base,0,.5,0);Bx(1,10,1,0xf2c230,P.base,-3.6,5.5,-2);Bx(6,1,1,0xf2c230,P.base,-1,10.2,-2);
+ P.jar=grp(g);K.mesh(new THREE.CylinderGeometry(2.5,2.5,5,36,1,true),M(0xe8f6ff,{opacity:.35,roughness:.05,side:THREE.DoubleSide}),P.jar,0,12,0);Cy(2.6,.4,0xe53935,P.jar,0,14.7,0);
+ K.mesh(new THREE.CylinderGeometry(2.5,.55,2,36,1,true),M(0xe8f6ff,{opacity:.45,roughness:.05,side:THREE.DoubleSide}),P.jar,0,8.5,0);Cy(.55,1.2,M(0xe8f6ff,{opacity:.5,roughness:.05}),P.jar,0,6.9,0);
+ const cols=[0xe53935,0xf2c230,0x3aa655,0x2f6fe0,0xff7ac0,0xff9b3d];P.balls=[];for(let i=0;i<30;i++){const b=Sp(.42,M(cols[i%6],{roughness:.25}),P.jar,(Math.random()-.5)*3.6,9.9+Math.random()*4,(Math.random()-.5)*3.6,14);P.balls.push(b)}
+ P.servo=grp(g);K.sg90(P.servo);P.servo.position.set(1.6,6.05,.6);
+ P.flap=K.pointer(P.servo,2.6,0x2f6fe0);P.flap.rotation.z=Math.PI;P.flap.visible=false;
+ P.ir=grp(g);const ir=K.hw201(P.ir);P.ir.position.set(2.8,1.6,2.4);P.ir.rotation.y=Math.PI/2;P.irObj=ir;
+ P.uno=grp(g);const u=K.uno(P.uno);P.uno.position.set(10,0,0);P.uno.rotation.y=-.4;
+ P.mkWires=()=>{if(P.wires)return;P.wires=wireUp(g,u,[[V3(3.6,4.7,-2.2),'9',0xf08a24],[V3(3.6,4.6,-2.0),'5V',0xe53935],[V3(3.6,4.5,-1.8),'GND',0x222222],[V3(3.25,2.05,.3),'7',0x2f6fe0],[V3(2.8,2.05,.3),'GNDT',0x3aa655],[V3(2.35,2.05,.3),'3.3V',0xe8c13a]])};
+ P.hand=K.hand(g,0xc98e64,0xe0701f);P.hand.rotation.y=Math.PI/2;P.hand.visible=false;
+ P.SZ=2.4+2.2;P.place=d=>P.hand.position.set(.2,2.6,P.SZ+d+1.2);
+ P.drops=[];SC.candyP=P})();
+
+/* ============ Invention definitions ============ */
+const INV=[
+ {id:'trash',emoji:'🗑️',name:'Touchless trash can',story:'In the school canteen, everyone touches the trash can lid. Germs spread! Build a lid that <b>opens by itself</b> when it sees a hand, and closes again.',
+  parts:[['bin','Trash can (bin)','First you need the bin.'],['lid','Lid with a hinge','Now add the lid on its hinge.'],['servo','SG90 servo at the hinge','The servo will lift the lid.'],['arm','Servo arm to the lid','Connect the servo arm to the lid.'],['ir','HW-201 IR sensor at the front','The sensor at the front sees the hand.'],['uno','Arduino Uno + wires','Finally the Arduino and the wires.']],
+  extra:[['x1','DC motor','A DC motor keeps spinning. A servo stops at the exact angle we choose.'],['x2','Soil moisture sensor','This sensor measures water, not hands.']],
+  code:{a:{label:'Lid open angle',min:0,max:180,def:30,unit:'°'},t:{label:'Keep open for',min:500,max:6000,step:500,def:1000,unit:' ms'}},
+  check:(a,t)=>a<60?['bad','The lid only opens a little. A hand cannot get the trash in. Try a bigger angle (about 90°).']:a>120?['bad',`${a}° is too much: the lid crashes backwards. Try between 80° and 110°.`]:t<2000?['bad',`${t} ms is too short. The lid closes before the trash goes in! Try 2000 ms or more.`]:['good','']},
+ {id:'gate',emoji:'🚧',name:'Smart parking gate',story:'The school car park needs a gate that <b>lifts when a car arrives</b> and closes after it has passed, with no guard pressing a button.',
+  parts:[['road','Road','Start with the road.'],['post','Gate post','The post holds the gate.'],['servo','SG90 servo on the post','The servo lifts the barrier.'],['bar','Red and white barrier','Add the barrier arm on the servo.'],['ir','HW-201 IR sensor on the post','The sensor sees the car coming.'],['uno','Arduino Uno + wires','Finally the Arduino and the wires.']],
+  extra:[['x1','Light bulb','A light bulb cannot lift the barrier.'],['x2','Speaker','We do not need sound to lift the gate.']],
+  code:{a:{label:'Barrier up angle',min:0,max:180,def:45,unit:'°'},t:{label:'Keep up for',min:500,max:6000,step:500,def:1000,unit:' ms'}},
+  check:(a,t)=>a<80?['bad',`At ${a}° the barrier is not high enough. The car would hit it! Lift it to about 90° (straight up).`]:a>100?['bad',`${a}° goes past straight up and the barrier falls backwards. Use about 90°.`]:t<2500?['bad',`${t} ms is too short. The barrier comes down on the car! Keep it up for 3000 ms or more.`]:['good','']},
+ {id:'candy',emoji:'🍬',name:'Candy dispenser',story:'Make a reward machine for your class: when a hand comes under it, the flap opens for a <b>very short time</b> and <b>one</b> candy falls out.',
+  parts:[['base','Stand','Build the stand first.'],['jar','Candy jar with a chute','Now the jar full of candy.'],['servo','SG90 servo under the chute','The servo moves the flap.'],['flap','Blue flap on the servo','The flap closes the chute.'],['ir','HW-201 IR sensor at the bottom','The sensor sees the hand under the chute.'],['uno','Arduino Uno + wires','Finally the Arduino and the wires.']],
+  extra:[['x1','Ultrasonic sensor','This invention uses the IR sensor.'],['x2','RGB LED','No LED is needed for the candy.']],
+  code:{a:{label:'Flap open angle',min:0,max:180,def:20,unit:'°'},t:{label:'Keep open for',min:50,max:1500,step:50,def:1000,unit:' ms'}},
+  check:(a,t)=>a<40?['bad',`At ${a}° the flap hardly moves. No candy can fall. Try 60° to 90°.`]:t<150?['bad',`${t} ms is too quick. The flap closes before a candy can fall. Try about 250 ms.`]:t>=400?['many',`${t} ms is too long: ${Math.min(6,Math.floor(t/180))} candies fell out! Make it shorter so only one falls (about 200–350 ms).`]:['good','']}];
+
+/* ============ panel builder ============ */
+INV.forEach((v,i)=>{const p=$('p'+i);
+ p.innerHTML=`<div class="k">Invention ${i+1} of 3</div><h2>${v.emoji} ${v.name}</h2><p style="margin-top:0">${v.story}</p>
+ <div class="phase" id="ph${i}"><span>1 · Build</span><span>2 · Code</span><span>3 · Test</span></div>
+ <div id="bd${i}"><div class="tray" id="tr${i}"></div><div class="msg" id="mb${i}"></div></div>
+ <div id="cd${i}" hidden><p class="small" style="margin:0">Same idea as the hand wash timer: if pin 7 sees something → move the servo → wait → move it back. Choose the two numbers:</p>
+  <div class="ctrl"><label for="a${i}">${v.code.a.label}: <span class="val" id="av${i}">${v.code.a.def}°</span></label><input type="range" id="a${i}" min="${v.code.a.min}" max="${v.code.a.max}" value="${v.code.a.def}">
+  <label for="t${i}">${v.code.t.label}: <span class="val" id="tv${i}">${v.code.t.def} ms</span></label><input type="range" id="t${i}" min="${v.code.t.min}" max="${v.code.t.max}" step="${v.code.t.step}" value="${v.code.t.def}"></div>
+  <pre class="code" id="code${i}" style="min-height:0"></pre></div>
+ <div id="ts${i}" hidden><div class="row"><button class="btn pri" id="run${i}">${['✋ Hand near the sensor','🚗 Drive the car in','✋ Hand under the chute'][i]}</button><button class="btn" id="back${i}">✏️ Change my numbers</button></div></div>
+ <div class="msg" id="mt${i}" hidden></div>
+ <div class="next"><button class="btn" id="up${i}" hidden>⬆ Upload to Arduino and test</button><button class="btn pri" data-go="${i+1}" id="nx${i}" ${st.inv[v.id]&&st.inv[v.id].won?'':'disabled'}>${i<2?'Next invention ▶':'Next: my invention ▶'}</button></div>`;
+ ['a','t'].forEach(k=>$(k+i).addEventListener('input',()=>{$(k+'v'+i).textContent=$(k+i).value+(k==='a'?'°':' ms');codeText(i)}));
+ $('up'+i).onclick=()=>{phase(i,2);SFX.ok();msg('mt'+i,'',`Uploaded! Now test your ${v.name.toLowerCase()}.`);$('mt'+i).hidden=false;K.view('iso')};
+ $('back'+i).onclick=()=>{phase(i,1);reset(i)};
+ $('run'+i).onclick=()=>runTest(i);
+ $('tr'+i).addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)pickPart(i,b.dataset.p)})});
+function sI(i){const v=INV[i];return st.inv[v.id]||(st.inv[v.id]={placed:0,won:0})}
+function codeText(i){const a=+$('a'+i).value,t=+$('t'+i).value;$('code'+i).innerHTML=['#include &lt;Servo.h&gt;','Servo s;','void setup() {','  pinMode(7, INPUT);','  s.attach(9);','  s.write(0);         <span class="c">// closed</span>','}','void loop() {','  if (digitalRead(7) == HIGH) {',`    s.write(<b style="color:#ffd27a">${a}</b>);      <span class="c">// open</span>`,`    delay(<b style="color:#ffd27a">${t}</b>);`,'    s.write(0);       <span class="c">// close again</span>','  }','}'].join('\n')}
+function phase(i,n){const ph=$('ph'+i).children;[...ph].forEach((s,k)=>s.className=k<n?'dn':k===n?'on':'');$('bd'+i).hidden=n!==0;$('cd'+i).hidden=n!==1;$('ts'+i).hidden=n!==2;$('up'+i).hidden=n!==1;if(n===1)codeText(i);if(n!==2)$('mt'+i).hidden=true;sI(i).phase=n;save()}
+function drawTray(i){const v=INV[i],s=sI(i),all=[...v.parts.map(p=>({id:p[0],lab:p[1]})),...v.extra.map(p=>({id:p[0],lab:p[1]}))].sort((a,b)=>a.lab.localeCompare(b.lab));
+ $('tr'+i).innerHTML=all.map(p=>{const k=v.parts.findIndex(q=>q[0]===p.id);return`<button type="button" class="btn ${k>=0&&k<s.placed?'used':''}" data-p="${p.id}">${p.lab}</button>`}).join('');
+ if(s.placed>=v.parts.length){msg('mb'+i,'good','✔ Built! Now write the code.');phase(i,Math.max(1,s.phase||1))}else msg('mb'+i,'',`Part ${s.placed+1} of ${v.parts.length}: ${v.parts[s.placed][2]}`);
+ hud(`<div class="h">${v.emoji} ${v.name}</div><div class="h">Parts: <b>${Math.min(s.placed,v.parts.length)}</b> / ${v.parts.length}</div>`)}
+function showParts(i){const v=INV[i],s=sI(i),P=SC[v.id+'P'],g=SC[v.id];
+ v.parts.forEach(([id],k)=>{const on=k<s.placed;if(id==='uno'){P.uno.visible=on;if(on)P.mkWires()}else if(id==='arm'){P.arm.visible=on}else if(id==='flap'){P.flap.visible=on}else if(P[id])P[id].visible=on})}
+function pickPart(i,id){const v=INV[i],s=sI(i);if(s.placed>=v.parts.length)return;const want=v.parts[s.placed];
+ if(id===want[0]){s.placed++;save();SFX.ok();showParts(i);const P=SC[v.id+'P'];const obj=id==='arm'?P.arm:id==='flap'?P.flap:P[id];if(obj&&id!=='uno')dropIn(obj,K.hooks,id==='arm'||id==='flap'?0:5);if(id==='uno')dropIn(P.uno,K.hooks,4);drawTray(i)}
+ else{SFX.bad();const x=v.extra.find(p=>p[0]===id);msg('mb'+i,'bad',x?'Not needed: '+x[2]:'Not yet. '+want[2])}}
+
+/* ============ tests ============ */
+const RUN={i:-1,t:0,a:0,tm:0,kind:'',res:null};
+function reset(i){const v=INV[i],P=SC[v.id+'P'];RUN.i=-1;RUN.trig=0;RUN.stop=0;RUN.ended=0;RUN.drop=0;RUN.thrown=0;if($('run'+i))$('run'+i).disabled=false;
+ if(v.id==='trash'){P.piv.rotation.x=0;P.hand.visible=false;P.paper.visible=false;K.setLed(P.irObj,false)}
+ if(v.id==='gate'){P.piv.rotation.x=0;P.car.visible=false;K.setLed(P.irObj,false)}
+ if(v.id==='candy'){P.flap.rotation.z=Math.PI;P.hand.visible=false;P.drops.forEach(d=>g3.remove(d));P.drops=[];K.setLed(P.irObj,false)}}
+const g3=grp();
+function runTest(i){const v=INV[i],a=+$('a'+i).value,t=+$('t'+i).value;reset(i);RUN.i=i;RUN.t=0;RUN.a=a;RUN.tm=t;RUN.res=v.check(a,t);$('run'+i).disabled=true;
+ msg('mt'+i,'',v.id==='gate'?'The car drives toward the gate…':'The hand comes closer to the sensor…');
+ const P=SC[v.id+'P'];if(v.id==='trash'){P.hand.visible=true;P.place(16)}if(v.id==='gate'){P.car.visible=true;P.car.position.set(-20,0,0)}if(v.id==='candy'){P.hand.visible=true;P.place(16)}}
+function endTest(i,ok,text){const v=INV[i];$('run'+i).disabled=false;RUN.i=-1;
+ if(ok){SFX.done();sI(i).won=1;save();done(i);$('nx'+i).disabled=false;msg('mt'+i,'good','⭐ '+text);banner(`✔ ${v.name} works!`)}
+ else{SFX.bad();msg('mt'+i,'bad',text);banner('Try again: change your numbers','#b3261e')}}
+K.hooks.push(dt=>{if(RUN.i<0)return;const i=RUN.i,v=INV[i],P=SC[v.id+'P'];RUN.t+=dt;const t=RUN.t,A=RUN.a*Math.PI/180,hold=RUN.tm/1000;
+ if(v.id==='trash'){const d=Math.max(3,16-t*8);P.place(d);const seen=d<=8;K.setLed(P.irObj,seen);
+  const t0=1.6;const open=Math.min(A,2.1);
+  if(t>t0){const k=t-t0;const ang=k<.5?open*k/.5:k<.5+hold?open:Math.max(0,open*(1-(k-.5-hold)/.5));P.piv.rotation.x=-ang*.95;
+   if(k>.6&&!P.paper.visible&&!RUN.thrown){RUN.thrown=1;P.paper.visible=true;P.paper.position.set(0,9.6,P.SZ+5)}
+   if(P.paper.visible){const lidOpen=P.piv.rotation.x<-1.0;P.paper.position.z+=(1-P.paper.position.z)*Math.min(1,dt*3);
+    if(lidOpen||P.paper.position.z>4.5)P.paper.position.y=Math.max(lidOpen?1:9.2,P.paper.position.y-dt*(lidOpen?9:2));}
+   if(k>.5+hold+.8){RUN.thrown=0;const r=RUN.res;endTest(i,r[0]==='good',r[0]==='good'?`The lid opened to ${RUN.a}° for ${RUN.tm} ms and the trash went in, without touching anything!`:r[1])}}}
+ if(v.id==='gate'){const car=P.car,front=car.position.x+2.75,dist=P.LX-front,seen=dist<=6&&dist>-6;K.setLed(P.irObj,seen);
+  if(seen&&!RUN.trig){RUN.trig=t}
+  let ang=0;if(RUN.trig){const k=t-RUN.trig;ang=k<.6?A*k/.6:k<.6+hold?A:Math.max(0,A*(1-(k-.6-hold)/.6))}
+  P.piv.rotation.x=-Math.min(ang,1.9);
+  const lifted=P.piv.rotation.x<-1.3;const atGate=car.position.x+2.75>1.6&&car.position.x-2.75<2.4;
+  if(!RUN.stop){if(atGate&&!lifted){RUN.stop=1}else car.position.x+=dt*5.5}
+  if(RUN.stop&&!RUN.ended){RUN.ended=1;setTimeout(()=>{RUN.trig=0;RUN.stop=0;RUN.ended=0;endTest(i,false,RUN.res[0]==='good'?'The barrier came down on the car. Keep it up longer.':RUN.res[1])},900)}
+  if(car.position.x>16&&!RUN.ended){RUN.ended=1;const r=RUN.res;setTimeout(()=>{RUN.trig=0;RUN.ended=0;endTest(i,r[0]==='good',r[0]==='good'?`The barrier lifted to ${RUN.a}°, the car drove through, then the gate closed. A smart car park!`:r[1])},300)}}
+ if(v.id==='candy'){const d=Math.max(1.5,16-t*8);P.place(d);const seen=d<=6;K.setLed(P.irObj,seen);
+  const t0=1.8;if(t>t0){const k=t-t0;const ang=k<.15?A*k/.15:k<.15+hold?A:Math.max(0,A*(1-(k-.15-hold)/.15));P.flap.rotation.z=Math.PI+ang;
+   const n=RUN.res[0]==='good'?1:RUN.res[0]==='many'?Math.min(6,Math.floor(RUN.tm/180)):0;
+   if(k>.1&&!RUN.drop&&n){RUN.drop=1;for(let j=0;j<n;j++){const b=Sp(.42,M([0xe53935,0xf2c230,0x3aa655,0x2f6fe0,0xff7ac0,0xff9b3d][j%6],{roughness:.25}),g3,.1+(j%2)*.3,6.3+j*.9,j*.15);b.userData.v=0;P.drops.push(b)}}
+   P.drops.forEach(b=>{b.userData.v+=dt*20;b.position.y=Math.max(3.5+P.drops.indexOf(b)*.4,b.position.y-b.userData.v*dt)});
+   if(k>hold+1.4){RUN.drop=0;const r=RUN.res;endTest(i,r[0]==='good',r[0]==='good'?`The flap opened to ${RUN.a}° for ${RUN.tm} ms: exactly one candy! 🍬`:r[1])}}}});
+
+/* ============ my invention ============ */
+['dDev','dSen','dHow'].forEach(id=>{$(id).value=st.design[id]||'';$(id).addEventListener('input',e=>{st.design[id]=e.target.value;save()})});
+$('dAng').value=st.design.dAng||90;$('dAngV').textContent=$('dAng').value+'°';$('dAng').addEventListener('input',e=>{$('dAngV').textContent=e.target.value+'°';st.design.dAng=e.target.value;save()});
+$('finish').onclick=()=>{if(!$('dDev').value||!$('dSen').value){SFX.bad();msg('mD','bad','Choose what you will build and which sensor it uses.');return}
+ if(($('dHow').value||'').trim().split(/\s+/).length<8){SFX.bad();msg('mD','bad','Explain a little more how it helps people (one or two full sentences).');return}
+ const won=INV.filter(v=>sI(INV.indexOf(v)).won).length;if(won<3){SFX.bad();msg('mD','bad',`Finish all 3 inventions first (${won} of 3 done).`);return}
+ st.finished=1;save();done(3);SFX.done();msg('mD','good',`⭐ Saved: a <b>${$('dDev').value}</b> with a <b>${$('dSen').value}</b> and a servo that turns to <b>${$('dAng').value}°</b>. Build it with your kit!`);showFin()};
+function showFin(){Object.values(SC).forEach(x=>{if(x.isObject3D)x.visible=false});['trash','gate','candy'].forEach((id,k)=>{const g=SC[id];g.visible=true;g.position.x=(k-1)*26;const s=sI(k);s.placed=INV[k].parts.length;showParts(k)});
+ SC.gateP.car.visible=true;SC.gateP.car.position.set(-8,0,0);SC.gate.scale.setScalar(.8);
+ K.view('fin',true);setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false;$('fin').scrollIntoView({behavior:'smooth',block:'center'})},500)}
+
+/* ============ navigation ============ */
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();RUN.i=-1;
+ ['trash','gate','candy'].forEach((id,k)=>{const g=SC[id];g.position.x=0;g.scale.setScalar(1);g.visible=k===i});
+ if(i<3){const s=sI(i);showParts(i);reset(i);drawTray(i);phase(i,s.placed<INV[i].parts.length?0:(s.phase||1));if(sI(i).won)$('nx'+i).disabled=false;K.view('iso')}
+ else{hud('<div class="h">🛠️ Your own invention</div>');['trash','gate','candy'].forEach((id,k)=>{SC[id].visible=true;SC[id].position.x=(k-1)*26});K.view('fin');if(st.finished)$('fin').hidden=false}
+ window.scrollTo(0,0)}
+K.view('iso',true);
+(function(){const v=K.view;})();
+drawNav();go(Math.min(...[0,1,2].filter(i=>!(st.inv[INV[i].id]&&st.inv[INV[i].id].won)),3));
+
+</script>
+</body>
+</html>
