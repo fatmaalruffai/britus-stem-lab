@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Gold Foil Experiment</title>
+<style>
+/* Grade 9 · Project 4 · Gold Foil Experiment. Same 3D layout and kit as Joints; gold accent */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#9a6b00;--acc-d:#7a5200;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #e0b33a}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#f7d774,#b8860b);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+table.dt{width:100%;border-collapse:collapse;margin:8px 0}.dt th{background:#16233f;color:#fff;padding:7px;font-size:14px}.dt td{border:1px solid var(--line);height:34px;padding:5px 8px;font-weight:600;font-size:14px}
+.gsvg{width:100%;height:auto;display:block;background:var(--tray);border-radius:10px;margin:6px 0}
+.oled{background:#05070a;color:#e8f4ff;border-radius:8px;padding:8px 10px;font:600 13px Consolas,monospace;display:inline-block}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:15px}.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok)}
+.sl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.sl output{font:800 20px Consolas,monospace;min-width:64px;text-align:right}
+.gauge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.gauge div{background:var(--tray);border-radius:9px;padding:8px;text-align:center}.gauge b{display:block;font-size:24px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--surf)}
+.ex .tag{display:inline-block;background:var(--acc);color:var(--onacc);font:800 11.5px "Segoe UI",system-ui,sans-serif;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;margin-bottom:4px}
+.ex h3{margin-top:4px}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.pc div{background:var(--tray);border-radius:9px;padding:8px;font-size:14px}.pc b{display:block}
+@media(max-width:560px){.pc{grid-template-columns:1fr}}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}.cmp th,.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:left}.cmp th{background:var(--navy);color:#fff}
+.opt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.opt label{display:grid;gap:3px;font-weight:700;font-size:14px}
+.opt select,textarea{font:inherit;padding:7px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+textarea{width:100%;min-height:90px}
+@media(max-width:560px){.opt{grid-template-columns:1fr}}
+.tips{margin:6px 0;padding-left:22px}.tips li{margin:4px 0}
+.foil{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:360px;margin:8px auto;background:#b3261e;padding:10px;border-radius:10px}
+.foil button{aspect-ratio:1;border-radius:50%;border:3px solid #7a1712;cursor:pointer;font:700 12px inherit;color:#fff}
+.foil button.solid{border-radius:8px;background:#b3261e;border-color:#e57373}.foil button.hole{background:#fdf6e3;color:#7a1712}
+.heat{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:360px;margin:8px auto}.heat div{border-radius:6px;padding:6px 2px;text-align:center;font:700 12px/1.3 inherit;background:var(--tray)}
+svg.sim{width:100%;height:auto;display:block;background:#0f1626;border-radius:10px;margin:6px 0}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">⚛️</div><div><h1>Gold Foil Experiment</h1><p>Grade 9 · Project 4 · A slow-motion conveyor model of Rutherford's gold foil experiment</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Project steps"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D model of the gold foil conveyor. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="iso">3D</button><button class="btn" data-v="side">Side</button><button class="btn" data-v="foil">Foil</button><button class="btn" data-v="screen">Screen</button><button class="btn" data-v="board">Board</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+</div>
+<div>
+<!-- 1 Build -->
+<section class="card panel" id="p0">
+ <div class="k">Step 1 · Build</div>
+ <h2>Build the particle conveyor</h2>
+ <p style="margin-top:0">The book shows <b>one way</b> to build the conveyor and asks: will you follow it exactly, or innovate? First build the model. For each step, <b>find the right part</b> in the box (many parts are not needed!), then <b>show where and how it goes</b>. Every mistake is counted.</p>
+ <ol class="steps" id="bSteps"></ol>
+ <div class="small"><b>Parts box</b></div>
+ <div class="tray" id="tray"></div>
+ <div id="bQ" hidden></div>
+ <div class="msg" id="mB"></div>
+ <div class="next"><button class="btn pri" data-go="1" id="nB" disabled>Next: wire it ▶</button></div>
+</section>
+<!-- 2 Wire -->
+<section class="card panel" id="p1">
+ <div class="k">Step 2 · Wire</div>
+ <h2>Connect the ultrasonic sensor and the servo</h2>
+ <p style="margin-top:0">The book asks: <i>do you remember how you connected the servo before? Try it on your own.</i> No hints this time, unless you make two mistakes on the same wire.</p>
+ <div class="wires" id="wList"></div>
+ <h3>Goes to</h3><div class="pins" id="pins"></div>
+ <div class="msg" id="mW">Choose a cable first.</div>
+ <div class="next"><button class="btn pri" data-go="2" id="nW" disabled>Next: write the code ▶</button></div>
+</section>
+<!-- 3 Code -->
+<section class="card panel" id="p2">
+ <div class="k">Step 3 · Code</div>
+ <h2>Write the code from memory</h2>
+ <p style="margin-top:0">The book says: use the same servo-turning code from Project 3. We go one step further: the <b>ultrasonic sensor</b> sees when you load a particle, and the belt carries it for 3 seconds. Fill in every <b style="background:#ffd27a;color:#141a2b;padding:0 4px;border-radius:3px">?</b>.</p>
+ <pre class="code" id="gCode" style="min-height:0"></pre>
+ <div class="calc">Remember from Project 3: <code>writeMicroseconds(1500)</code> stops the 360° servo; further from 1500 is faster. The sensor gives the distance in cm.</div>
+ <div class="row"><button class="btn pri" id="gCheck">✔ Check and upload</button></div>
+ <div class="msg" id="mC"></div>
+ <div class="next"><button class="btn pri" data-go="3" id="nC" disabled>Next: make the gold foil ▶</button></div>
+</section>
+<!-- 4 Foil -->
+<section class="card panel" id="p3">
+ <div class="k">Step 4 · Design the gold foil (book build steps 2–3)</div>
+ <h2>Cut the holes in your "gold foil"</h2>
+ <p style="margin-top:0">Your red card is an atom. <b>Holes</b> are empty space. <b>Solid parts</b> are the nucleus (protons and neutrons). Tap a circle to cut it out, or tap it again to fill it. Your atom must follow Rutherford's rules below.</p>
+ <div class="foil" id="foil" role="group" aria-label="Gold foil grid: tap to cut a hole or fill it"></div>
+ <ol class="steps" id="fRules"><li>Most of the atom is <b>empty space</b> (at least 11 of 15 holes).</li><li>The nucleus is in the <b>centre</b> of the atom.</li><li>The nucleus is <b>one small clump</b> (solid parts touch each other).</li></ol>
+ <div class="msg" id="mF"></div>
+ <div class="next"><button class="btn pri" data-go="4" id="nF" disabled>Next: fire the particles ▶</button></div>
+</section>
+<!-- 5 Fire -->
+<section class="card panel" id="p4">
+ <div class="k">Step 5 · Fire alpha particles (book build step 4 + Discover)</div>
+ <h2>Send particles at different heights</h2>
+ <p style="margin-top:0">Each alpha particle (2 protons + 2 neutrons) sits on a riser that sets its <b>height</b>. Choose a lane and a height, then load it in front of the ultrasonic sensor.</p>
+ <div class="opt"><label>Lane (left → right)<select id="fLane"><option value="0">1</option><option value="1">2</option><option value="2" selected>3</option><option value="3">4</option><option value="4">5</option></select></label>
+  <label>Height<select id="fH"><option value="0">Low (no riser)</option><option value="1" selected>Middle (1 riser)</option><option value="2">High (2 risers)</option></select></label></div>
+ <div class="row"><button class="btn pri" id="fOne">⚛ Load one particle</button><button class="btn" id="fTen">⚛×10 Load 10 at random</button><button class="btn" id="fClear">↺ Clear results</button></div>
+ <div class="stats"><div><b id="fN">0</b><span>fired</span></div><div><b id="fP">0</b><span>passed through</span></div><div><b id="fD">0</b><span>bounced back</span></div></div>
+ <div class="small" style="text-align:center"><b>Results on your foil</b> (passed · bounced)</div>
+ <div class="heat" id="heat"></div>
+ <div id="fQ" hidden>
+  <div class="q">Discover: where do the alpha particles pass through the gold foil?</div><div class="choices"><button class="btn" data-fq1="hole">Through the holes: the empty space</button><button class="btn" data-fq1="solid">Through the solid parts</button><button class="btn" data-fq1="none">Nowhere</button></div><div class="fb" id="fQ1m"></div>
+  <div class="q">Where are they stopped?</div><div class="choices"><button class="btn" data-fq2="solid">At the solid centre: the nucleus</button><button class="btn" data-fq2="edge">At the edge of the card</button><button class="btn" data-fq2="hole">In the holes</button></div><div class="fb" id="fQ2m"></div>
+ </div>
+ <div class="msg" id="mFi">Fire at least 15 particles. Try every height.</div>
+ <div class="next"><button class="btn pri" data-go="5" id="nFi" disabled>Next: test ▶</button></div>
+</section>
+<!-- 6 Test -->
+<section class="card panel" id="p5">
+ <div class="k">Step 6 · Test</div>
+ <h2>Measure your success</h2>
+ <label class="chk"><input type="checkbox" data-ms="0"><span>We used a conveyor belt to model a particle accelerator.</span></label>
+ <label class="chk"><input type="checkbox" data-ms="1"><span>Objects on the belt either pass through or are deflected, like alpha particles.</span></label>
+ <label class="chk"><input type="checkbox" data-ms="2"><span>We used only the materials provided.</span></label>
+ <label class="chk"><input type="checkbox" data-ms="3"><span>We included design ideas from every team member.</span></label>
+ <div class="q">Your results: what fraction of your particles bounced back?</div><div class="choices" id="tFrac"></div><div class="fb" id="tFm"></div>
+ <div class="q">In the real experiment only about 1 in 8,000 alpha particles bounced back. What does that tell you?</div><div class="choices"><button class="btn" data-tq="small">The real nucleus is much, much smaller than our model's</button><button class="btn" data-tq="same">Our model is exactly like a real atom</button><button class="btn" data-tq="big">The real nucleus is bigger</button></div><div class="fb" id="tQm"></div>
+ <div class="next"><button class="btn pri" data-go="6" id="nT" disabled>Next: math and science ▶</button></div>
+</section>
+<!-- 7 Math -->
+<section class="card panel" id="p6">
+ <div class="k">Step 7 · Math and science connection</div>
+ <h2>Powers of ten and the tiny nucleus</h2>
+ <div id="quiz"></div>
+ <div class="next"><button class="btn pri" data-go="7" id="nQ" disabled>Next: reflect ▶</button></div>
+</section>
+<!-- 8 Reflect -->
+<section class="card panel" id="p7">
+ <div class="k">Step 8 · Reflect</div>
+ <h2>How did you do?</h2>
+ <p class="small" style="margin-top:0">Choose one box in each row that best describes your work.</p>
+ <div class="lvh" aria-hidden="true"><span>Beginner</span><span>Emerging</span><span>Accomplished</span><span>Expanding</span></div>
+ <div class="rub" id="rub"></div>
+ <div class="msg" id="mA"></div>
+ <div class="next"><button class="btn pri" id="finish" disabled>Finish my project 🎉</button></div>
+ <div id="fin" hidden>
+  <h3>🎉 Project complete: Gold Foil Experiment</h3>
+  <p style="margin:0">Your conveyor modelled a particle accelerator in slow motion. Most particles passed through the empty space, and a few bounced off the small, dense nucleus, just as Rutherford found. Science like this drives decent work and economic growth (SDG 8).</p>
+  <img id="finImg" alt="Your finished gold foil model in 3D">
+  <div class="row"><button class="btn pri" data-go="8">Try the challenges 🏆</button></div>
+ </div>
+</section>
+<!-- 9 Challenges -->
+<section class="card panel" id="p8">
+ <div class="k">Step 9 · Challenges</div>
+ <h2>Think like Rutherford</h2>
+ <p style="margin-top:0">Earn a star for each challenge: <b id="stars">0</b> / 4 ⭐</p>
+ <div class="ch"><div class="chh"><span class="star" data-st="c1">☆</span><h3 style="margin:0">🎯 1 in 10,000 (book challenge)</h3></div>
+  <p>Rutherford found the ratio of empty space to nucleus is about <b>10,000 : 1</b>. Make a foil with <b>100 small cells</b>. How big can the nucleus be so that only a <b>small chance</b> of particles (2% or less) bounce back?</p>
+  <div class="sl"><span>Nucleus</span><input type="range" id="c1k" min="1" max="6" value="4" aria-label="Nucleus size in cells across"><output id="c1kO">4 × 4</output></div>
+  <svg class="sim" viewBox="0 0 300 300" id="c1svg" role="img" aria-label="Foil with 100 cells and particle hits"></svg>
+  <div class="row"><button class="btn pri" id="c1run">⚛×200 Fire 200 particles</button><span class="small" id="c1res"></span></div>
+  <div class="msg" id="c1msg">Choose a size and fire.</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c2">☆</span><h3 style="margin:0">🍮 Plum pudding or nucleus?</h3></div>
+  <p>Before Rutherford, J. J. Thomson's <b>plum pudding</b> model said the positive charge is spread thinly everywhere. Fire 40 particles at each model and compare with what Rutherford saw.</p>
+  <div class="row"><span class="seg" role="group" aria-label="Atom model"><button data-c2m="plum" class="on">Plum pudding</button><button data-c2m="nuc">Nuclear (Rutherford)</button></span><button class="btn pri" id="c2run">⚛×40 Fire</button></div>
+  <svg class="sim" viewBox="0 0 400 220" id="c2svg" role="img" aria-label="Particle paths through the atom model"></svg>
+  <div class="small" id="c2res"></div>
+  <div id="c2q" hidden><div class="q">Rutherford saw a few particles bounce right back. Which model explains that?</div><div class="choices"><button class="btn" data-c2="nuc">The nuclear model: a tiny, dense, positive centre</button><button class="btn" data-c2="plum">The plum pudding model</button><button class="btn" data-c2="both">Both models</button></div></div>
+  <div class="msg" id="c2msg">Fire at both models.</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c3">☆</span><h3 style="margin:0">📐 Aim and angle</h3></div>
+  <p>The positive nucleus <b>pushes</b> the positive alpha particle away. Move the aim line and watch the path. Find an aim that bounces the particle <b>back</b> (more than 150°) and one that passes <b>almost straight</b> (less than 10°).</p>
+  <div class="sl"><span>Aim</span><input type="range" id="c3b" min="0" max="6" step="0.05" value="2" aria-label="Distance of the aim line from the nucleus"><output id="c3bO">2.00</output></div>
+  <svg class="sim" viewBox="0 0 400 240" id="c3svg" role="img" aria-label="Path of one alpha particle near the nucleus"></svg>
+  <ol class="steps" id="c3T"><li>Bounce it back (more than 150°).</li><li>Let it pass almost straight (less than 10°).</li></ol>
+  <div id="c3q" hidden><div class="q">What did you find?</div><div class="choices"><button class="btn" data-c3="close">The closer to the nucleus, the bigger the deflection</button><button class="btn" data-c3="far">The further away, the bigger the deflection</button><button class="btn" data-c3="none">The aim does not matter</button></div></div>
+  <div class="msg" id="c3msg">Move the slider.</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c4">☆</span><h3 style="margin:0">🏟 Scale it up</h3></div>
+  <p>Imagine the nucleus of your model is a <b>1 cm</b> bead, and the atom is <b>10,000 times</b> wider.</p>
+  <div class="q">How wide is the whole atom?</div><div class="choices"><button class="btn" data-c4a="100">100 m: about a football pitch</button><button class="btn" data-c4a="10">10 m: a classroom</button><button class="btn" data-c4a="1">1 m: a desk</button></div><div class="fb" id="c4am"></div>
+  <div class="q">Write it with powers of ten: 10⁴ × 10⁻² m = ?</div><div class="choices"><button class="btn" data-c4b="2">10² m</button><button class="btn" data-c4b="6">10⁶ m</button><button class="btn" data-c4b="-8">10⁻⁸ m</button></div><div class="fb" id="c4bm"></div>
+  <div class="msg" id="c4msg"></div></div>
+ <div class="next"><button class="btn pri" data-go="9">Next: build it another way ▶</button></div>
+</section>
+<!-- 10 Other designs -->
+<section class="card panel" id="p9">
+ <div class="k">Step 10 · Other designs</div>
+ <h2>Build it another way</h2>
+ <p style="margin-top:0">The book asks: <i>will you follow the image exactly, or innovate?</i> Look at five other ways to model the experiment, in 3D, then invent your own.</p>
+ <div class="ex"><span class="tag">Book design</span><h3>Conveyor belt + card foil</h3><p>A 360° servo drives the belt, which carries the particles to the red card.</p><div class="row"><button class="btn" data-ds="belt">👁 Show in 3D</button><button class="btn" data-df="belt">⚛ Fire</button></div></div>
+ <div class="ex"><span class="tag">Example 1</span><h3>Marble ramp (no motor)</h3>
+  <p>Roll marbles down a sloping beam. Gravity is the "accelerator". Change the starting height to change the speed.</p>
+  <div class="row"><button class="btn" data-ds="ramp">👁 Show in 3D</button><button class="btn" data-df="ramp">⚛ Fire</button></div>
+  <div class="pc"><div><b>✔ Good</b>Very cheap and quick, no electronics. Speed is easy to change.</div><div><b>✘ Watch out</b>Marbles do not always roll straight. Add rails on the sides.</div></div></div>
+ <div class="ex"><span class="tag">Example 2</span><h3>Magnet nucleus</h3>
+  <p>Real alpha particles are <b>pushed</b>, not blocked. Put a strong magnet in the middle and small magnets (same pole facing) on the particles. They curve away before they even touch!</p>
+  <div class="row"><button class="btn" data-ds="magnet">👁 Show in 3D</button><button class="btn" data-df="magnet">⚛ Fire</button></div>
+  <div class="pc"><div><b>✔ Good</b>Closest to the real science: repulsion between positive charges.</div><div><b>✘ Watch out</b>Strong magnets can pinch fingers and wipe cards and phones. Ask your teacher.</div></div></div>
+ <div class="ex"><span class="tag">Example 3</span><h3>Mystery box (hidden nucleus)</h3>
+  <p>Rutherford never <b>saw</b> the nucleus. Hide a shape inside a box, fire particles and mark where they bounce. Can your classmates guess the shape?</p>
+  <div class="row"><button class="btn" data-ds="box">👁 Show in 3D</button><button class="btn" data-df="box">⚛ Fire 10</button><button class="btn" id="boxReveal">🔍 Reveal</button></div>
+  <div class="pc"><div><b>✔ Good</b>It shows how scientists find things they cannot see.</div><div><b>✘ Watch out</b>You need many particles to get a clear picture.</div></div></div>
+ <div class="ex"><span class="tag">Example 4</span><h3>Detector ring</h3>
+  <p>In the real experiment, a glowing screen <b>all around</b> the foil showed where each particle went. Add a half-ring of paper to mark the angle of every bounce.</p>
+  <div class="row"><button class="btn" data-ds="ring">👁 Show in 3D</button><button class="btn" data-df="ring">⚛ Fire 10</button></div>
+  <div class="pc"><div><b>✔ Good</b>You can measure the angles, not just pass or bounce.</div><div><b>✘ Watch out</b>The ring must be the same distance from the foil all the way round.</div></div></div>
+ <div class="ex"><span class="tag">Example 5</span><h3>Servo flicker</h3>
+  <p>No belt: a 270° servo arm flicks each particle towards the foil, like a tiny tennis racket. You set the angle and speed in your code.</p>
+  <div class="row"><button class="btn" data-ds="flick">👁 Show in 3D</button><button class="btn" data-df="flick">⚛ Fire</button></div>
+  <div class="pc"><div><b>✔ Good</b>Fast particles, and you can aim them with code.</div><div><b>✘ Watch out</b>Too fast and the particles fly off the table. Start slow.</div></div></div>
+ <div class="ex"><h3>Compare the 6 designs</h3><div style="overflow-x:auto"><table class="cmp"><tr><th>Design</th><th>Accelerator</th><th>What it shows best</th><th>How hard</th></tr>
+  <tr><td>Book: conveyor</td><td>Belt + 360° servo</td><td>Slow motion, every particle</td><td>Medium</td></tr>
+  <tr><td>Marble ramp</td><td>Gravity</td><td>Speed and height</td><td>Easy</td></tr>
+  <tr><td>Magnet nucleus</td><td>Belt</td><td>Repulsion: curved paths</td><td>Medium</td></tr>
+  <tr><td>Mystery box</td><td>Belt</td><td>Finding what you cannot see</td><td>Medium</td></tr>
+  <tr><td>Detector ring</td><td>Belt</td><td>Angles of deflection</td><td>Hard</td></tr>
+  <tr><td>Servo flicker</td><td>270° servo arm</td><td>Aiming with code</td><td>Medium</td></tr></table></div></div>
+ <div class="ex" id="dz"><span class="tag">Your turn</span><h3>Design your own experiment</h3>
+  <p>Choose your ideas, press <b>Try my design</b> and read the engineer's check.</p>
+  <div class="opt">
+   <label>Accelerator<select id="dAcc"><option value="belt">Conveyor belt</option><option value="ramp">Marble ramp</option><option value="flick">Servo flicker</option></select></label>
+   <label>Target<select id="dTgt"><option value="card">Card with holes</option><option value="magnet">Magnet nucleus</option><option value="box">Mystery box</option></select></label>
+   <label>Empty space<select id="dEmpty"><option value="50">50%</option><option value="75" selected>75%</option><option value="90">90%</option><option value="99">99%</option></select></label>
+   <label>Particles to fire<select id="dN"><option>10</option><option selected>50</option><option>200</option></select></label>
+  </div>
+  <div class="row"><button class="btn pri" id="dTry">▶ Try my design</button></div>
+  <div class="msg" id="dChk">Choose your ideas and press Try my design.</div>
+  <h3>Tips and hints</h3>
+  <ul class="tips">
+   <li><b>More particles = better results.</b> 10 particles can fool you; 100 give a clear pattern.</li>
+   <li><b>Make the nucleus tiny.</b> The emptier your foil, the closer you get to a real atom.</li>
+   <li><b>Use the ultrasonic sensor as a counter:</b> count every particle that passes, and show it on the OLED.</li>
+   <li><b>Slow motion helps:</b> a slow belt lets the class see each particle hit or pass.</li>
+   <li><b>Mark the results:</b> put paper behind the foil and mark where each particle lands.</li>
+  </ul>
+  <h3>Your team's plan</h3>
+  <p class="small" style="margin-top:0">Write what you will build, the parts you need, and one idea from every team member.</p>
+  <textarea id="dPlan" aria-label="Your team's plan" placeholder="Our accelerator is … Our gold foil is … We will fire … particles and count … Ideas from each member: …"></textarea>
+  <div class="row"><button class="btn" id="dSave">💾 Save our plan</button><span class="small" id="dSaved"></span></div>
+ </div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+/* ================== Gold Foil Experiment · Grade 9 Project 4 · 3D lab ================== */
+const $=id=>document.getElementById(id);
+const S=['Build','Wire','Code','Gold foil','Fire','Test','Math','Reflect','Challenges','Other designs'];
+const KEY='britus-g9-goldfoil';
+const st=(()=>{const d={done:[],placed:0,wires:{},code:0,foil:Array(15).fill(0),res:Array(15).fill(0).map(()=>[0,0]),fq1:null,fq2:null,meas:{},tq:null,tf:null,quiz:{},rub:{},finished:0,ch:{},c2:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off'};
+function hud(h){$('hud').innerHTML=h}
+function banner(t){const b=$('banner');b.textContent=t;b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,4000)}
+
+/* ================== 3D scene ================== */
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[-1,4,0],r:44,aspect:.7,views:{
+ iso:[0.62,1.08,38,[0,4,1]],side:[0.02,1.38,40,[0,4,0]],foil:[-0.95,1.25,22,[7.6,4.4,0]],screen:[0.9,1.2,24,[9.5,4.2,0]],board:[0.35,0.85,18,[-11.5,1.5,4.5]],fin:[0.6,1.1,38,[0,4,1]],load:[0.3,1.15,20,[-6,3.4,1]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const YEL=0xf5c400,YH=0x9c7a00,GRN=0x2f7d3b,RED=0xd8322f,GRY=0x9aa0a6,ORG=0xf08a24;
+const parts={};const BUILD_N=11;
+/* ===== Lego kit parts (same kit and colours as the Joints lab): Technic beams with holes, bricks with studs ===== */
+const LG=c=>M(c,{roughness:.32,metalness:0});
+const BLU=0x2457c5;
+const holeM=M(0x1c1c1c,{roughness:.8});
+function hole(par,x,y,z,ax,depth,col){/* round Technic hole: dark hole + raised rim ring on both faces */
+ const h=Cy(0.2,depth+0.02,holeM,par,x,y,z,ax,14);h.castShadow=false;
+ [-1,1].forEach(s=>{const r=new THREE.Mesh(new THREE.TorusGeometry(0.25,0.055,6,16),LG(col));r.position.set(x,y,z);if(ax==='z')r.position.z+=s*depth/2;if(ax==='x'){r.position.x+=s*depth/2;r.rotation.y=Math.PI/2}par.add(r)})}
+/* Technic beam: dir 'y' upright or 'x' along x. Holes go through z (the face you see). */
+function tbeam(par,x,y,z,len,dir,col,rim){const w=dir==='y'?[0.72,len,0.8]:[len,0.72,0.8];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8;hole(par,dir==='x'?x+t:x,dir==='y'?y+t:y,z,'z',0.8,rim||col)}}
+/* Lego brick with studs on top; dir 'x' or 'z'. Optional Technic holes on the side */
+function brick(par,x,y,z,len,dir,col,holes){const w=dir==='x'?[len,0.96,0.8]:[0.8,0.96,len];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8,sx=dir==='x'?x+t:x,sz=dir==='z'?z+t:z;Cy(0.24,0.18,LG(col),par,sx,y+0.57,sz,'y',16);
+  if(holes&&i<n-1){const hx=dir==='x'?sx+0.4:x,hz=dir==='z'?sz+0.4:z;hole(par,hx,y-0.05,hz,dir==='x'?'z':'x',0.8,col)}}}
+/* base plate */
+parts.plate=grp();(()=>{Bx(30,0.5,16,M(0x7c8186,{roughness:.45}),parts.plate,-1,0.25,0);for(let i=0;i<15;i++)for(let k=0;k<8;k++)Cy(0.3,0.22,M(0x8d9297,{roughness:.4}),parts.plate,-15+i*2,0.6,-7+k*2,'y',14)})();
+
+const AX=M(0x8a949b,{metalness:.6,roughness:.3});
+/* ===== conveyor (book build step 1) ===== */
+const BX0=-6,BX1=6,BY=1.9,SR=1.05,BW=5.4,TOP=BY+SR;
+const LZ=[-2.2,-1.1,0,1.1,2.2],RY=[3.3,4.26,5.22],FX=7.6;
+parts.frame=grp();[-3.1,3.1].forEach(z=>{tbeam(parts.frame,0,BY,z,14.4,'x',GRN);[BX0-0.6,BX1+0.6].forEach(x=>brick(parts.frame,x,0.98,z,1.6,'x',GRN))});
+parts.axles=grp();[BX0,BX1].forEach(x=>Cy(0.13,7.4,AX,parts.axles,x,BY,0.4,'z',10));
+function gear24(par,r){const g=grp(par);Cy(r-0.12,0.32,M(0xa9b0b5,{roughness:.4}),g,0,0,0,'z',30);for(let i=0;i<24;i++){const a=i/24*Math.PI*2,t=Bx(0.2,0.24,0.32,M(0x9199a0),g,r*Math.cos(a),r*Math.sin(a),0);t.rotation.z=a}
+ Cy(0.32,0.36,M(0x7f898f),g,0,0,0,'z',12);return g}
+parts.sprockets=grp();const sprk=[];[BX0,BX1].forEach(x=>[-2.0,0,2.0].forEach(z=>{const g=gear24(parts.sprockets,SR-0.12);g.position.set(x,BY,z);sprk.push(g)}));
+/* track: black links around the loop */
+const LOOP=2*(BX1-BX0)+2*Math.PI*SR;function loopPt(s){s=((s%LOOP)+LOOP)%LOOP;const L1=BX1-BX0,Lc=Math.PI*SR;
+ if(s<L1)return[BX0+s,BY+SR,0];s-=L1;if(s<Lc){const a=Math.PI/2-s/SR;return[BX1+SR*Math.cos(a),BY+SR*Math.sin(a),-s/SR]}s-=Lc;if(s<L1)return[BX1-s,BY-SR,Math.PI];s-=L1;const a=-Math.PI/2-s/SR;return[BX0+SR*Math.cos(a),BY+SR*Math.sin(a),Math.PI-s/SR]}
+parts.track=grp();const links=[];const NL=46;for(let i=0;i<NL;i++){const l=grp(parts.track);Bx(0.58,0.16,BW,M(0x1d1f22,{roughness:.7}),l,0,0,0);[-1.8,0,1.8].forEach(z=>Bx(0.2,0.12,0.5,M(0x2d3035),l,0,0.12,z));links.push(l)}
+let sOff=0;function placeTrack(){links.forEach((l,i)=>{const [x,y,r]=loopPt(i*LOOP/NL+sOff);l.position.set(x,y,0);l.rotation.z=r})}placeTrack();
+/* 360° servo on the front of the first axle */
+parts.servo=grp();(()=>{const g=grp(parts.servo),sm=M(ORG,{roughness:.4});g.position.set(BX0,BY,4.35);g.rotation.y=Math.PI;K.RBox(2.5,2.1,1.3,0.12,sm,g,0,-0.35,0);Bx(3.6,0.18,1.3,M(0xd9771a),g,0,0.1,0);
+ const l=tex(256,128,(x,w,h)=>{x.fillStyle='#f08a24';x.fillRect(0,0,w,h);x.fillStyle='#2b1a08';x.font='bold 30px Arial';x.textAlign='center';x.fillText('360° SERVO',w/2,56);x.font='22px Arial';x.fillText('continuous · 5V',w/2,92)});
+ const lb=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.1),new THREE.MeshStandardMaterial({map:l,roughness:.5}));lb.position.set(0,-0.55,-0.66);lb.rotation.y=Math.PI;g.add(lb);Cy(0.45,0.3,M(0xd9dcde),g,0,0,0.75,'z',18);Cy(0.2,0.8,M(0x5b6168),g,0,0,1.1,'z',12)})();
+/* ultrasonic sensor (HC-SR04) on a post at the start, looking along the belt */
+parts.usens=grp();(()=>{const g=parts.usens;tbeam(g,BX0-1.9,2.2,0,3.2,'y',GRN);const s=grp(g);s.position.set(BX0-1.5,3.6,0);
+ const t=tex(256,128,(x,w,h)=>{x.fillStyle='#1f5fbf';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 20px Arial';x.textAlign='center';x.fillText('HC-SR04',w/2,70);x.font='14px Arial';x.fillText('VCC Trig Echo GND',w/2,118)});
+ const side=M(0x1f5fbf);const p=Bx(0.12,1.1,2.4,side,s,0,0,0);p.material=[new THREE.MeshStandardMaterial({map:t,roughness:.5}),side,side,side,side,side];p.material[0].map.center.set(.5,.5);p.material[0].map.rotation=Math.PI/2;
+ [-0.65,0.65].forEach(z=>{Cy(0.42,0.5,M(0xd9dcde,{metalness:.7,roughness:.25}),s,0.3,0.05,z,'x',22);Cy(0.3,0.52,M(0x2b2b2b,{roughness:.9}),s,0.32,0.05,z,'x',18)});
+ [-0.45,-0.15,0.15,0.45].forEach(z=>Cy(0.035,0.5,M(0xc9a227,{metalness:.8}),s,-0.1,-0.75,z,null,6));
+ const ad=grp(g);ad.position.set(BX0-3.2,0.62,1.6);const at=tex(128,96,(x,w,h)=>{x.fillStyle='#151515';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 14px Arial';x.fillText('ADAPTER',22,52)});const as=M(0x151515);Bx(1.4,0.16,1.0,as,ad,0,0,0).material=[as,as,new THREE.MeshStandardMaterial({map:at}),as,as,as];
+ [[-0.45,0xe03a3a],[-0.15,0xf2c230],[0.15,0x3aa655],[0.45,0x7a4a2b]].forEach(([x,c])=>Bx(0.16,0.25,0.16,M(c),ad,x,0.18,-0.35))})();
+const SENS=V3(BX0-1.2,3.65,0);
+/* gold foil card with holes (book build steps 2-3) */
+parts.posts=grp();[-3.4,3.4].forEach(z=>{tbeam(parts.posts,FX,3.5,z,6.0,'y',GRN);brick(parts.posts,FX,0.98,z,1.6,'z',GRN)});
+const foilC=document.createElement('canvas');foilC.width=600;foilC.height=380;const foilT=new THREE.CanvasTexture(foilC);foilT.encoding=THREE.sRGBEncoding;
+function drawFoil(cells){const x=foilC.getContext('2d');x.globalCompositeOperation='source-over';x.clearRect(0,0,600,380);const g=x.createLinearGradient(0,0,600,380);g.addColorStop(0,'#d32f2f');g.addColorStop(1,'#a31f1f');x.fillStyle=g;x.fillRect(0,0,600,380);
+ x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=3;for(let i=0;i<8;i++){x.beginPath();x.moveTo(0,i*55);x.lineTo(600,i*55+20);x.stroke()}
+ x.globalCompositeOperation='destination-out';cells.forEach((h,i)=>{if(!h)return;const r=Math.floor(i/5),c=i%5;x.beginPath();x.arc((LZ[c]+3)*100,(6.3-RY[r])*100,40,0,7);x.fill()});x.globalCompositeOperation='source-over';foilT.needsUpdate=true}
+parts.foil=grp();const foilMesh=new THREE.Mesh(new THREE.PlaneGeometry(6,3.8),new THREE.MeshStandardMaterial({map:foilT,transparent:true,alphaTest:0.5,side:THREE.DoubleSide,roughness:.7}));foilMesh.rotation.y=-Math.PI/2;foilMesh.position.set(FX,4.4,0);foilMesh.castShadow=true;parts.foil.add(foilMesh);
+/* detector screen (like Rutherford's zinc sulfide screen) */
+const SX=11.8;parts.screen=grp();(()=>{const t=tex(256,256,(x,w,h)=>{x.fillStyle='#f4f7f2';x.fillRect(0,0,w,h);x.strokeStyle='#cfd8cc';x.lineWidth=2;for(let i=0;i<=8;i++){x.beginPath();x.moveTo(i*32,0);x.lineTo(i*32,h);x.stroke();x.beginPath();x.moveTo(0,i*32);x.lineTo(w,i*32);x.stroke()}x.fillStyle='#16233f';x.font='bold 16px Arial';x.fillText('DETECTOR SCREEN',52,248)});
+ const p=new THREE.Mesh(new THREE.BoxGeometry(0.2,4.6,6.8),[new THREE.MeshStandardMaterial({map:t}),new THREE.MeshStandardMaterial({map:t}),M(0xdfe5dc),M(0xdfe5dc),M(0xdfe5dc),M(0xdfe5dc)]);p.position.set(SX,4.3,0);p.castShadow=true;parts.screen.add(p);
+ [-3.5,3.5].forEach(z=>brick(parts.screen,SX,0.98,z,1.6,'x',0x2457c5))})();
+/* Kidsuno mainboard: the same board as the Joints lab (clear case, coloured ports 1-9, yellow screen frame) + live OLED */
+const BX=-12.5,BZ=4.2;
+parts.board=grp();const board=grp(parts.board);board.position.set(BX,0.5,BZ);
+const oc=document.createElement('canvas');oc.width=220;oc.height=240;const octx=oc.getContext('2d');const oT=new THREE.CanvasTexture(oc);oT.encoding=THREE.sRGBEncoding;
+function oled(lines,circ){octx.fillStyle='#050505';octx.fillRect(0,0,220,240);if(!lines)return oT.needsUpdate=true;octx.fillStyle='#e8f4ff';octx.strokeStyle='#e8f4ff';octx.lineWidth=3;const big=!circ;octx.textAlign='left';octx.font=(big?'bold 44px':'bold 23px')+' Consolas,monospace';
+ lines.forEach((l,i)=>octx.fillText(l,8,(big?100:34)+i*(big?56:28)));if(circ){[[60,140],[160,140]].forEach(([x,y])=>{octx.beginPath();octx.arc(x,y,44,0,7);octx.stroke()});octx.beginPath();octx.moveTo(104,140);octx.lineTo(116,140);octx.stroke()}oT.needsUpdate=true}
+oled(null);
+function boardTex(){const c=document.createElement('canvas');c.width=640;c.height=460;const x=c.getContext('2d');x.fillStyle='#141618';x.fillRect(0,0,640,460);
+ const P2=[['#2a7de1','#e2382f','#f2c230','#2e9e4f'],['#2a7de1','#e2382f','#f2c230','#2e9e4f'],['#2a7de1','#e2382f','#2e9e4f','#2e9e4f'],['#2a7de1','#f2c230','#ffffff','#f2c230']];
+ const port=(cx,cy,n,cols)=>{const s=44;[[0,0],[1,0],[0,1],[1,1]].forEach(([i,k],j)=>{x.fillStyle=cols[j];x.fillRect(cx-s+i*s,cy-s+k*s,s-3,s-3)});x.fillStyle='#111';x.font='bold 46px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(n,cx,cy)};
+ [6,7,8,9].forEach((n,i)=>port(110+i*140,70,n,P2[i]));[4,3,2,1].forEach((n,i)=>port(110+i*140,390,n,[P2[i][2],P2[i][3],P2[i][1],P2[i][0]]));port(48,230,5,['#f08a24','#2e9e4f','#2a7de1','#f2c230']);
+ x.fillStyle='#f2c230';x.fillRect(120,150,190,160);x.fillStyle='#050505';x.fillRect(140,170,110,120);x.save();x.translate(282,230);x.rotate(Math.PI/2);x.fillStyle='#111';x.font='bold 26px sans-serif';x.textAlign='center';x.fillText('kidsuno',0,8);x.restore();
+ ['#f5d76e','#f5d76e','#f5d76e','#e53935'].forEach((cl,i)=>{x.fillStyle=cl;x.fillRect(430,160+i*34,26,22)});x.fillStyle='#c9ccd0';x.fillRect(560,300,60,40);x.fillStyle='#3a3d42';x.fillRect(360,190,50,50);
+ x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=3;for(let i=0;i<7;i++)for(let k=0;k<5;k++){x.beginPath();x.arc(46+i*91,46+k*92,20,0,7);x.stroke()}
+ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+(()=>{const side=M(0x1a1c1e),pcb=new THREE.Mesh(new THREE.BoxGeometry(6.4,0.5,4.6),[side,side,new THREE.MeshStandardMaterial({map:boardTex(),roughness:.55}),side,side,side]);pcb.position.y=0.55;pcb.castShadow=true;board.add(pcb);
+ Bx(6.8,1.3,5.0,M(0xdfeaf2,{opacity:.28,roughness:.08}),board,0,0.65,0);for(let i=0;i<7;i++)for(let k=0;k<5;k++)Cy(0.28,0.25,M(0xe8f0f6,{opacity:.35,roughness:.08}),board,-2.9+i*0.97,1.42,-2.0+k*1.0,'y',14);
+ const scr=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.2),new THREE.MeshBasicMaterial({map:oT}));scr.rotation.x=-Math.PI/2;scr.position.set(-1.25,0.815,0);board.add(scr);
+ Bx(0.6,0.4,0.9,M(0xc7cbcf,{metalness:.7,roughness:.25}),board,2.8,0.55,-2.4)})();
+/* servo cable plugs into the side port, like the Joints lab */
+function pinPos(port,k){const v=V3(-3.45,1.0,[-0.12,0,0.12][k]);board.updateMatrixWorld();return board.localToWorld(v)}
+function tagSprite(text,col){const t=tex(200,80,(x,w,h)=>{x.fillStyle=col;x.beginPath();x.moveTo(12,4);x.lineTo(w-12,4);x.quadraticCurveTo(w-4,4,w-4,12);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,12);x.quadraticCurveTo(4,4,12,4);x.fill();x.fillStyle='#fff';x.font='bold 34px Arial';x.textAlign='center';x.fillText(text,w/2,44)});
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(2.2,.88,1);return s}
+const tag13=tagSprite('D13','#c4501a');tag13.position.copy(pinPos('13',1)).add(V3(-0.3,1.6,0));K.sc.add(tag13);tag13.visible=false;
+
+/* laptop */
+parts.laptop=grp(parts.board);(()=>{const g=parts.laptop;g.position.set(-14.5,0.5,-3.8);Bx(5.2,0.25,3.4,M(0xb7bcc2,{metalness:.5,roughness:.35}),g,0,0.13,0);Bx(4.6,0.04,2.0,M(0x2b2e33),g,0,0.27,0.3);
+ const sT=tex(320,200,(x,w,h)=>{x.fillStyle='#0e2a33';x.fillRect(0,0,w,h);x.fillStyle='#00979c';x.fillRect(0,0,w,26);x.fillStyle='#fff';x.font='bold 16px Arial';x.fillText('Project_4_Gold_Foil',8,18);x.font='14px Consolas';x.fillStyle='#cfe';['#include <Servo.h>','long d = readCM();','if (d < 5) {','  writeMicroseconds(1400);','  delay(3000);'].forEach((l,i)=>x.fillText(l,10,52+i*24))});
+ const sc=grp(g);sc.position.set(0,0.25,-1.7);sc.rotation.x=-0.25;const bz=Bx(5.2,3.4,0.15,M(0x9aa0a6,{metalness:.5,roughness:.35}),sc,0,1.7,0);const s=new THREE.Mesh(new THREE.PlaneGeometry(4.8,3.0),new THREE.MeshBasicMaterial({map:sT}));s.position.set(0,1.75,0.08);sc.add(s)})();
+
+
+/* ===== other designs ===== */
+const rampG=grp();(()=>{const a=Math.atan2(8.0-RY[1],12.2);const g=grp(rampG);g.position.set(0,(8.0+RY[1])/2-0.5,0);g.rotation.z=-a;Bx(12.6,0.25,BW,LG(YEL),g,0,0,0);[-2.85,2.85].forEach(z=>Bx(12.6,0.7,0.2,LG(YEL),g,0,0.3,z));
+ [[-5.5,7.4],[0,5.4],[5.2,3.6]].forEach(([x,h])=>tbeam(rampG,x,h/2+0.5,-3.1,h,'y',GRN))})();
+const magG=grp();(()=>{tbeam(magG,FX,2.0,0,3.0,'y',GRN);Bx(0.8,0.9,1.0,LG(0xd32f2f),magG,FX,RY[1]+0.45,0);Bx(0.8,0.9,1.0,LG(0x1e5bc6),magG,FX,RY[1]-0.45,0);const t=tex(128,64,(x,w,h)=>{x.fillStyle='#fff';x.font='bold 40px Arial';x.fillText('N',46,48)});const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false}));s.position.set(FX-0.5,RY[1]+0.45,0);s.scale.set(1,.5,1);magG.add(s)})();
+const boxG=grp();const boxShell=new THREE.Mesh(new THREE.BoxGeometry(1.6,4.0,6.4),M(0x6b7076,{roughness:.6,opacity:1}));boxShell.position.set(FX+0.5,4.3,0);boxG.add(boxShell);
+const SHAPES={square:[6,7,11,12],line:[5,6,7,8],L:[1,6,11,12]};let boxShape='L';const boxCells=grp(boxG);
+function buildBox(){while(boxCells.children.length)boxCells.remove(boxCells.children[0]);SHAPES[boxShape].forEach(i=>{const r=Math.floor(i/5),c=i%5;Bx(0.5,0.9,1.0,LG(0xd32f2f),boxCells,FX+0.5,RY[r],LZ[c])})}
+const ringG=grp();(()=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(4.6,4.6,4.4,48,1,true,Math.PI,Math.PI),new THREE.MeshStandardMaterial({color:0xf4f7f2,side:THREE.DoubleSide,roughness:.8}));m.position.set(FX,4.2,0);ringG.add(m)})();
+const flickG=grp();const flickArm=grp(flickG);(()=>{K.RBox(2.5,2.1,1.3,0.12,M(GRY,{roughness:.45}),flickG,2.6,1.55,-1.6);flickArm.position.set(2.6,2.4,-0.9);tbeam(flickArm,0,0,0,3.6,'y',RED)})();
+[rampG,magG,boxG,ringG,flickG].forEach(g=>g.visible=false);
+let dsg='belt';
+function layout(){const built=st.placed>=BUILD_N,noBelt=dsg==='ramp'||dsg==='flick';
+ if(built){[parts.frame,parts.axles,parts.sprockets,parts.track,parts.servo,parts.usens].forEach(g=>g.visible=!noBelt);parts.foil.visible=parts.posts.visible=!(dsg==='magnet'||dsg==='box');parts.posts.visible=dsg!=='magnet'}
+ rampG.visible=dsg==='ramp'&&built;magG.visible=dsg==='magnet'&&built;boxG.visible=dsg==='box'&&built;ringG.visible=dsg==='ring'&&built;flickG.visible=dsg==='flick'&&built;
+ drawFoil(dsg==='belt'||dsg==='ring'||dsg==='ramp'||dsg==='flick'?st.foil:st.foil)}
+
+/* ================== particles ================== */
+const PG=grp();let parts3=[];const flashes=[];
+function alpha(){const g=grp(PG);[[0.24,0.24,0,0xd32f2f],[-0.24,-0.24,0,0xd32f2f],[0.24,-0.24,0,0x9aa0a6],[-0.24,0.24,0,0x9aa0a6]].forEach(([x,y,z,c])=>Sp(0.29,M(c,{roughness:.35}),g,x,y,z,14));return g}
+function riser(h){const g=grp(PG);for(let k=0;k<h;k++)brick(g,0,0.48+k*0.96,0,0.8,'x',YEL);return g}
+let beltT=0,beltV=0;
+function launch(lane,h){const a=alpha(),r=riser(h);const p={a,r,lane,h,s:0,state:'belt',v:V3(0,0,0),t:0};
+ if(dsg==='ramp'){p.state='ramp';p.h=1}else if(dsg==='flick'){p.state='fly';p.v.set(6,0,0);a.position.set(3.4,RY[h],LZ[lane]);flickT=0.35}
+ parts3.push(p);place3(p);return p}
+let flickT=0;
+function place3(p){if(p.state==='belt'){const x=BX0+0.6+p.s;p.r.position.set(x,TOP,LZ[p.lane]);p.a.position.set(x,RY[p.h],LZ[p.lane])}
+ else if(p.state==='ramp'){const a=Math.atan2(8.0-RY[1],12.2),x=-6.1+p.s*Math.cos(a);p.a.position.set(x,8.0-p.s*Math.sin(a)+0.15,LZ[p.lane]);p.r.visible=false}}
+function cellOf(p){const y=p.a.position.y,z=p.a.position.z;let r=0,c=0,bd=9;RY.forEach((ry,i)=>LZ.forEach((lz,j)=>{const d=Math.hypot(ry-y,lz-z);if(d<bd){bd=d;r=i;c=j}}));return r*5+c}
+function flash(pos,col){const m=Sp(0.22,new THREE.MeshBasicMaterial({color:col||0x7dff8a,transparent:true,opacity:1}),K.sc,pos.x,pos.y,pos.z,12);m.castShadow=false;flashes.push({m,t:0})}
+function decide(p){const ci=cellOf(p);let pass;
+ if(dsg==='magnet'){const d=Math.hypot(p.a.position.y-RY[1],p.a.position.z);if(d<0.55)pass=false;else{pass=true;const k=1.6/Math.max(d,0.6);p.v.y+=Math.sign(p.a.position.y-RY[1]||1)*k*(Math.abs(p.a.position.y-RY[1])/d);p.v.z+=Math.sign(p.a.position.z||1)*k*(Math.abs(p.a.position.z)/d)}}
+ else if(dsg==='box')pass=!SHAPES[boxShape].includes(ci);
+ else pass=!!st.foil[ci];
+ p.decided=true;p.cell=ci;
+ if(pass){SFX.click()}else{SFX.bad();p.state='back';p.v.set(-3.2,2.6,(Math.random()-.5)*2.4);if(dsg==='ring'){const ang=Math.PI*(0.55+Math.random()*0.9);p.v.set(4.2*Math.cos(ang),0.3,4.2*Math.sin(ang))}}
+ onResult(p,pass)}
+K.hooks.push(dt=>{
+ /* loader: ultrasonic sees a particle at the start → belt runs for 3 s */
+ const near=parts3.some(p=>p.state==='belt'&&p.s<1.2);if(st.code&&near&&dsg!=='ramp'&&dsg!=='flick')beltT=3;if(beltT>0)beltT-=dt;
+ const run=(beltT>0)||demoBelt;beltV+=((run?4:0)-beltV)*Math.min(1,dt*6);if(beltV>0.01){sOff+=beltV*dt;placeTrack();sprk.forEach(g=>g.rotation.z=-sOff/SR)}
+ if(flickT>0){flickT-=dt;flickArm.rotation.z=-Math.sin((0.35-flickT)/0.35*Math.PI)*1.2}else flickArm.rotation.z=0;
+ parts3.forEach(p=>{
+  if(p.state==='belt'){p.s+=beltV*dt;place3(p);if(BX0+0.6+p.s>=BX1+0.4){p.state='fly';p.v.set(4.5,0,0);p.r.visible=false}}
+  else if(p.state==='ramp'){p.t+=dt;p.s+=dt*(1+p.t*6);place3(p);if(p.s>=12.6){p.state='fly';p.v.set(5.5,0,0)}}
+  else if(p.state==='fly'){p.a.position.addScaledVector(p.v,dt);if(!p.decided&&p.a.position.x>=FX-0.35)decide(p);if(p.a.position.x>=SX-0.2){flash(V3(SX-0.15,p.a.position.y,THREE.MathUtils.clamp(p.a.position.z,-3.3,3.3)));p.dead=true}}
+  else if(p.state==='back'){p.a.position.addScaledVector(p.v,dt);if(dsg==='ring'){const d=Math.hypot(p.a.position.x-FX,p.a.position.z);if(d>=4.5){flash(p.a.position.clone(),0xff7a7a);p.dead=true}}else{p.v.y-=9*dt;if(p.a.position.y<=0.75){p.a.position.y=0.75;p.state='rest';p.t=0}}}
+  else if(p.state==='rest'){p.t+=dt;if(p.t>2.5)p.dead=true}});
+ parts3=parts3.filter(p=>{if(p.dead){PG.remove(p.a);PG.remove(p.r);return false}return true});
+ flashes.forEach(f=>{f.t+=dt;f.m.material.opacity=Math.max(0,1-f.t/1.6);f.m.scale.setScalar(1+f.t)});for(let i=flashes.length-1;i>=0;i--)if(flashes[i].t>1.6){K.sc.remove(flashes[i].m);flashes.splice(i,1)}
+ if(cur===4||cur===9)hud(`<div class="h">Ultrasonic: <b>${parts3.some(p=>p.state==='belt'&&p.s<1.2)?'particle 3 cm':'nothing'}</b> · belt <b>${beltV>0.5?'running':'stopped'}</b></div>`)});
+let demoBelt=false;
+
+/* cables */
+const cab=grp();const WCOL={b:0x7a4a2b,r:0xe03a3a,o:0xf08a24};
+function port1(k){const v=V3(2.1+[-0.12,0,0.12][k],1.0,2.6);board.updateMatrixWorld();return board.localToWorld(v)}
+function tube(pts,col,r){K.mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),60,r||0.07,6,false),M(col,{roughness:.45}),cab)}
+function drawCables(){while(cab.children.length){const m=cab.children.pop();m.geometry&&m.geometry.dispose()}
+ if(st.placed<BUILD_N||dsg==='ramp'||dsg==='flick')return;
+ [['b',0,-0.14],['r',1,0],['o',2,0.14]].forEach(([k,pin,o])=>{const on=!!st.wires['s'+k];const a=V3(BX0-0.6+o,BY-1.0,4.35);const end=on?pinPos('13',pin):V3(-8,0.62,4.4+o*3);
+  const pts=[a,V3(a.x-0.4,0.8,4.9)];if(on)pts.push(V3(-9,0.8+o,2.8),V3(-17.0,0.8,2.6+o),V3(end.x-1.0,0.95,end.z));else pts.push(V3(-7.2,0.75,4.6+o*2));pts.push(end);tube(pts,WCOL[k])});
+ if(['sb','sr','so'].some(id=>st.wires[id])){const e=pinPos('13',1);Bx(0.5,0.32,0.5,0x111111,cab,e.x-0.2,e.y,e.z)}
+ const AD=V3(BX0-3.2,0.8,1.25);
+ [['uv',-0.45,0xe03a3a],['ut',-0.15,0xf2c230],['ue',0.15,0x3aa655],['ug',0.45,0x7a4a2b]].forEach(([id,zz,c],i)=>{if(!st.wires[id])return;const a=V3(SENS.x-0.4,SENS.y-1.0,zz);tube([a,V3(a.x-0.3,2.4,zz+0.4),V3(AD.x+0.3,1.4,AD.z-0.6),V3(AD.x+[-0.45,-0.15,0.15,0.45][i],0.85,AD.z)],c,0.05)});
+ if(st.wires.ua){const e=port1(1);tube([V3(AD.x-0.7,0.7,AD.z+0.3),V3(AD.x-1.5,0.7,AD.z+1.6),V3(e.x+0.6,0.9,e.z+1.2),V3(e.x,1.1,e.z+0.5),e],0x2b2b2b,0.1)}
+ if(st.wires.usb){const a=V3(BX+2.8,1.05,BZ-2.85),b=V3(-11.9,0.7,-3.8);tube([a,V3(a.x,0.7,a.z-1.0),V3(-10.6,0.65,-2.6),V3(-11.4,0.7,-3.6),b],0x2b2b2b,0.12)}}
+const tag1=tagSprite('Port 1','#9a6b00');tag1.position.copy(port1(1)).add(V3(0,1.5,0.4));K.sc.add(tag1);tag1.visible=false;tag13.material.map=tagSprite('Port 13','#c4501a').material.map;
+
+/* ================== 1. Build ================== */
+const BUILD=[
+ {id:'plate',tray:'Grey base plate',task:'Start with a strong, flat base.',q:'Why does the conveyor need the big base plate?',o:['So the belt, the foil and the screen stay lined up','To make the belt faster','To power the servo'],a:0,ok:'Everything must stay in a straight line.',view:'iso'},
+ {id:'frame',tray:'Long green beams (×2) + green bricks',task:'Book build step 1 · Make the two side rails.',q:'Where do the long green beams go?',o:['One on each side, parallel, raised on bricks','Crossed in an X','Standing straight up'],a:0,ok:'Two rails hold the axles at both ends.',why:{1:'An X cannot hold the belt.',2:'The belt is long and low.'},view:'iso'},
+ {id:'axles',tray:'Long axles (×2)',task:'Book build step 1 · Add what the belt turns around.',q:'Where do the two long axles go?',o:['Across the rails, one at each end','Both in the middle','Standing up on the plate'],a:0,ok:'The belt loops around one axle at each end.',why:{1:'The belt needs two ends.',2:'Axles go across, through the rail holes.'},view:'side'},
+ {id:'sprockets',tray:'Grey gears, 24 teeth (×6)',task:'Book build step 1 · Give the belt teeth to grip.',q:'Why use gears instead of smooth wheels?',o:['The teeth grip the track links, so the belt does not slip','Gears are lighter','Gears make it quieter'],a:0,ok:'Teeth + links = no slipping, like a bicycle chain.',why:{1:'Weight is not the reason.',2:'Gears are not quieter.'},view:'side'},
+ {id:'track',tray:'Black track links (×46)',task:'Book build step 1 · Make the moving belt.',q:'How do the track links go?',o:['In a closed loop around both sets of gears','In one straight line on top','Only around one end'],a:0,ok:'A closed loop keeps moving forever.',why:{1:'A straight line falls off the end.',2:'It must wrap both ends.'},view:'side'},
+ {id:'servo',tray:'Orange 360° servo',task:'Add the motor that drives the belt.',q:'Why the 360° servo and not the 270° one?',o:['The belt must keep turning, not stop at an angle','It is stronger','It is cheaper'],a:0,ok:'Same as the Energy Wheel: continuous turning.',why:{1:'Strength is not the reason.',2:'Price is not the reason.'},view:'load'},
+ {id:'usens',tray:'Ultrasonic sensor + adapter',task:'Add the "eyes" that see a new particle.',q:'Where does the ultrasonic sensor go?',o:['At the start of the belt, looking along it','Behind the foil','Under the plate'],a:0,ok:'It sees each particle you load.',why:{1:'It must see the particles before they go.',2:'It cannot see through the plate.'},view:'load'},
+ {id:'posts',tray:'Tall green beams (×2) + bricks',task:'Book build step 3 · Make a stand for the gold foil.',q:'Where does the stand go?',o:['Just after the end of the belt','At the start of the belt','On top of the servo'],a:0,ok:'Particles fly off the belt straight into the foil.',why:{1:'The foil must be after the belt.',2:'The servo must stay free.'},view:'foil'},
+ {id:'foil',tray:'Red card (the "gold foil")',task:'Book build steps 2–3 · Add the atom.',q:'What do the holes and the solid parts of the card stand for?',o:['Holes = empty space; solid = the nucleus','Holes = protons; solid = electrons','Holes = gold; solid = air'],a:0,ok:'Now design your holes in Step 4!',why:{1:'Electrons are tiny and spread out; they do not stop alpha particles.',2:'Think about what Rutherford discovered.'},view:'foil'},
+ {id:'screen',tray:'White detector screen',task:'Innovate · Catch the particles that pass through.',q:'Why add a screen behind the foil?',o:['To see and count where the particles land, like Rutherford\'s glowing screen','To stop the belt','To hold the foil'],a:0,ok:'Rutherford used a screen that glowed where each particle hit.',why:{1:'The belt stops by code.',2:'The foil has its own stand.'},view:'screen'},
+ {id:'board',tray:'Kidsuno controller',task:'Add the brain of the project.',q:'Where is the best place for the controller?',o:['Beside the conveyor, away from the moving belt','On the belt','Behind the foil'],a:0,ok:'Safe from the moving parts.',why:{1:'It would ride away!',2:'Particles would hit it.'},view:'board'}];
+const EXTRA=[['x1','Grey 270° servo','The belt must keep turning: we need the 360° servo.'],['x2','Button module','The book uses the ultrasonic sensor here.'],['x3','Real gold leaf','We use a macroscopic model: a red card.'],['x4','Weight and cord','That was the Weight Machine.'],['x5','Bins (buckets)','That was the Energy Wheel.'],['x6','Soil moisture sensor','No water in this project.'],['x7','Short yellow beams (3 holes)','Too short for the rails.'],['x8','Wheels with tyres','Smooth tyres slip; the belt needs gear teeth.']];
+/* the first step is the plate */
+parts.plate=parts.plate;
+/* ===== Build (harder): find the right part for each book step, then show where and how it goes ===== */
+let bSel=null,bStrike=0;
+const TRAY=[...BUILD.map(b=>({id:b.id,lab:b.tray})),...EXTRA.map(b=>({id:b[0],lab:b[1]}))].sort((a,b)=>a.lab.localeCompare(b.lab));
+function showParts(){BUILD.forEach((b,i)=>parts[b.id].visible=i<st.placed);if(typeof layout==='function')layout()}
+function bOpts(i){const b=BUILD[i];const idx=b.o.map((x,j)=>j);const r=i%idx.length;return idx.slice(r).concat(idx.slice(0,r))}
+function drawBuild(){const n=BUILD.length,c=st.placed;
+ $('bSteps').innerHTML=BUILD.map((b,i)=>`<li class="${i<c?'dn':i===c?'cur':''}">${i<c?`${b.task} <span class="small">(${b.tray})</span>`:i===c?b.task:'<span class="small">…</span>'}</li>`).join('');
+ $('tray').innerHTML=TRAY.map(p=>{const k=BUILD.findIndex(b=>b.id===p.id);return`<button type="button" class="btn ${k>=0&&k<c?'used':''} ${bSel===p.id?'sel':''}" data-part="${p.id}">${p.lab}</button>`}).join('');
+ const q=$('bQ');if(bSel&&c<n){const b=BUILD[c];q.hidden=false;q.innerHTML=`<div class="q">${b.q}</div><div class="choices">${bOpts(c).map(j=>`<button type="button" class="btn" data-bo="${j}">${b.o[j]}</button>`).join('')}</div>`}else q.hidden=true;
+ const man=$('bMan');if(man){const st0=BUILD[c];man.innerHTML=(c<n&&st0.pg&&typeof MAN!=='undefined')?st0.pg.map(k=>`<figure style="margin:6px 0"><img src="${MAN[k]}" alt="Kit installation steps, page ${k}" style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff"><figcaption class="small">Kit installation steps · page ${k}</figcaption></figure>`).join(''):''}
+ hud(`<div class="h">Step <b>${Math.min(c+1,n)}</b> of ${n} · mistakes <b>${st.bMist||0}</b></div>`);
+ if(c>=n){msg('mB','good',`✔ Built in ${n} steps with ${st.bMist||0} mistake${st.bMist===1?'':'s'}! Turn the model with your finger to check it.`);$('nB').disabled=false;done(0)}}
+function bMiss(t){bStrike++;st.bMist=(st.bMist||0)+1;save();SFX.bad();const b=BUILD[st.placed];msg('mB','bad',t+(bStrike>=3?`<br>💡 Hint: you need the <b>${b.tray}</b>.`:''));drawBuild()}
+$('tray').addEventListener('click',e=>{const el=e.target.closest('[data-part]');if(!el||st.placed>=BUILD.length)return;const id=el.dataset.part,want=BUILD[st.placed];
+ if(id===want.id){bSel=id;SFX.click();msg('mB','',`Right part: <b>${want.tray}</b>. Now answer the question below.`);drawBuild();return}
+ bSel=null;const x=EXTRA.find(p=>p[0]===id);bMiss(x?'Not in this project: '+x[2]:'Not this part for this step. Read the step again and look at the book picture.')});
+$('bQ').addEventListener('click',e=>{const el=e.target.closest('[data-bo]');if(!el)return;const want=BUILD[st.placed],j=+el.dataset.bo;
+ if(j===want.a){st.placed++;save();SFX.ok();bSel=null;bStrike=0;parts[want.id].visible=true;if(typeof placeBins==='function')placeBins();dropIn(parts[want.id],K.hooks,4);if(want.view)K.view(want.view);msg('mB','good','✔ '+want.ok);drawBuild();if(st.placed>=BUILD.length&&typeof onBuilt==='function')onBuilt()}
+ else bMiss((want.why&&want.why[j])||'Not quite. Look at the 3D model and the book picture.')});
+
+function onBuilt(){layout();drawCables()}
+
+/* ================== 2. Wire ================== */
+const WIRES=[
+ {id:'usb',name:'USB cable',sub:'controller → computer',hex:'#2b2b2b',to:'Computer',hint:'The USB cable connects the controller to your device.'},
+ {id:'uv',name:'Sensor VCC wire',sub:'ultrasonic VCC',hex:'#e03a3a',to:'Adapter red',hint:'Book: VCC → red.'},
+ {id:'ug',name:'Sensor GND wire',sub:'ultrasonic GND',hex:'#7a4a2b',to:'Adapter brown',hint:'Book: GND → brown.'},
+ {id:'ut',name:'Sensor Trig wire',sub:'ultrasonic Trig (sends the sound)',hex:'#f2c230',to:'Adapter Trig',hint:'Trig goes to the Trig pin of the adapter.'},
+ {id:'ue',name:'Sensor Echo wire',sub:'ultrasonic Echo (hears it come back)',hex:'#3aa655',to:'Adapter Echo',hint:'Echo goes to the Echo pin of the adapter.'},
+ {id:'ua',name:'Adapter cable',sub:'adapter → controller',hex:'#2b2b2b',to:'Port 1',hint:'Book: plug the ultrasonic sensor into Port 1.'},
+ {id:'sb',name:'Servo brown wire',sub:'360° servo',hex:'#7a4a2b',to:'13 GND',hint:'Like Projects 1–3: brown is ground, port 13.'},
+ {id:'sr',name:'Servo red wire',sub:'360° servo',hex:'#e03a3a',to:'13 V',hint:'Red is power: V on port 13.'},
+ {id:'so',name:'Servo orange wire',sub:'360° servo',hex:'#f08a24',to:'D13',hint:'The signal goes to D13.'}];
+const TGT=['Adapter red','Adapter brown','Adapter Trig','Adapter Echo','Port 1','Port 2','13 GND','13 V','D13','A0','Computer'];let wSel=null;const wStrike={};
+function drawWires(){$('wList').innerHTML=WIRES.map(w=>`<button type="button" class="wire ${st.wires[w.id]?'ok':''} ${wSel===w.id?'sel':''}" data-w="${w.id}"><i style="background:${w.hex}"></i><span>${w.name}<small>${w.sub}${st.wires[w.id]?' → '+w.to+' ✔':''}</small></span></button>`).join('');
+ $('pins').innerHTML=TGT.map(p=>`<button type="button" class="btn" data-pin="${p}">${p.replace(/^13 /,'Port 13 · ').replace(/^D13$/,'Port 13 · D13')}</button>`).join('');
+ const n=Object.keys(st.wires).length;hud(`<div class="h">Connections: <b>${n}</b> / ${WIRES.length}</div>`);
+ if(n===WIRES.length){msg('mW','good','✔ All connected: the ultrasonic sensor through the adapter to Port 1, the 360° servo on port 13, and USB.');$('nW').disabled=false;done(1)}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-w]');if(b){wSel=b.dataset.w;SFX.click();const w=WIRES.find(x=>x.id===wSel);msg('mW','',`${w.name} selected. Where does it go?`);drawWires();K.view(w.id[0]==='u'&&w.id!=='usb'?'load':'board');return}
+ const p=e.target.closest('[data-pin]');if(!p)return;if(!wSel){SFX.bad();msg('mW','bad','Choose a cable first.');return}
+ const w=WIRES.find(x=>x.id===wSel);if(p.dataset.pin===w.to){st.wires[w.id]=1;save();wSel=null;SFX.ok();drawCables();msg('mW','good',`✔ ${w.name} → ${w.to}.`);drawWires()}else{SFX.bad();wStrike[w.id]=(wStrike[w.id]||0)+1;msg('mW','bad',`Not ${p.dataset.pin}.`+(wStrike[w.id]>=2?' 💡 '+w.hint:' Think again.'))}});
+
+/* ================== 3. Code (fill in from memory) ================== */
+const CB={e1:['Servo.h','Wire.h','Ultrasonic.h'],e2:['13','1','2'],e3:['OUTPUT','INPUT'],e4:['INPUT','OUTPUT'],e5:['<','>'],e6:['5','50','500'],e7:['1400','1500','700'],e8:['3000','3','300'],e9:['1500','1400','0']};
+const CBW={e1:'The servo library is Servo.h.',e2:'Your servo is on port 13.',e3:'Trig SENDS the sound: it is an OUTPUT.',e4:'Echo LISTENS: it is an INPUT.',e5:'A particle is loaded when it is CLOSE: the distance is LESS than…',e6:'The particle sits a few cm in front of the sensor: 5 cm.',e7:'700 is outside 1000–2000 and makes the servo spin at full speed. For slow motion, pick a value a little below 1500.',e8:'delay uses milliseconds: 3 seconds = 3000.',e9:'After the 3 seconds, stop the belt: 1500.'};
+const cv={};const sel=(k,opts,cls)=>`<select data-cb="${k}" style="font:inherit;background:#ffd27a;color:#141a2b;border:0;border-radius:4px"><option value="">?</option>${[...opts].sort().map(x=>`<option ${cv[k]===x?'selected':''}>${x}</option>`).join('')}</select>`;
+function drawCode(){$('gCode').innerHTML=[`#include &lt;${sel('e1',CB.e1)}&gt;`,'Servo myservo;','const int trigPin = TRIG_PIN;   // the 2 pins of Port 1:','const int echoPin = ECHO_PIN;   // see your controller\'s pin map','','long readCM() {                 // distance in cm','  digitalWrite(trigPin, LOW);  delayMicroseconds(2);','  digitalWrite(trigPin, HIGH); delayMicroseconds(10);','  digitalWrite(trigPin, LOW);','  return pulseIn(echoPin, HIGH) / 58;','}','','void setup() {',`  myservo.attach(${sel('e2',CB.e2)});`,`  pinMode(trigPin, ${sel('e3',CB.e3)});`,`  pinMode(echoPin, ${sel('e4',CB.e4)});`,'}','','void loop() {','  long d = readCM();',`  if (d ${sel('e5',CB.e5)} ${sel('e6',CB.e6)}) {             // a particle is loaded`,`    myservo.writeMicroseconds(${sel('e7',CB.e7)});   // belt: slow motion`,`    delay(${sel('e8',CB.e8)});                    // carry it for 3 seconds`,'  }',`  myservo.writeMicroseconds(${sel('e9',CB.e9)});     // stop and wait`,'}'].join('\n');
+ if(st.code){msg('mC','good','✔ Uploaded! Now the belt runs for 3 seconds each time the sensor sees a particle.');$('nC').disabled=false;done(2)}}
+$('gCode').addEventListener('change',e=>{const k=e.target.dataset.cb;if(k)cv[k]=e.target.value});
+let cTries=0;
+$('gCheck').onclick=()=>{const bad=Object.keys(CB).filter(k=>cv[k]!==CB[k][0]);cTries++;if(bad.length){SFX.bad();const empty=bad.filter(k=>!cv[k]).length;msg('mC','bad',`${Object.keys(CB).length-bad.length} of ${Object.keys(CB).length} correct.`+(empty?` ${empty} still empty.`:'')+' '+(cTries>=2?'💡 '+CBW[bad[0]]:'Check your code and try again.'));return}
+ st.code=1;save();SFX.done();banner('⬆ Upload complete');drawCode()};
+
+/* ================== 4. Gold foil design ================== */
+function foilRules(){const f=st.foil,holes=f.filter(Boolean).length;const solid=f.map((h,i)=>h?-1:i).filter(i=>i>=0);
+ const r1=holes>=11,r2=!f[7];let r3=solid.length>0;if(r3){const seen=new Set([solid[0]]),q=[solid[0]];while(q.length){const i=q.pop(),r=Math.floor(i/5),c=i%5;[[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([a,b])=>{if(a>=0&&a<3&&b>=0&&b<5){const j=a*5+b;if(!f[j]&&!seen.has(j)){seen.add(j);q.push(j)}}})}r3=seen.size===solid.length}
+ return[r1,r2,r3,holes]}
+function drawFoilUI(){$('foil').innerHTML=st.foil.map((h,i)=>`<button type="button" class="${h?'hole':'solid'}" data-fc="${i}" aria-label="Cell ${i+1}: ${h?'hole':'solid'}">${h?'':'+'}</button>`).join('');drawFoil(st.foil);
+ const [r1,r2,r3,holes]=foilRules(),li=$('fRules').children;[r1,r2,r3].forEach((ok,i)=>li[i].className=ok?'dn':'');
+ hud(`<div class="h">Holes: <b>${holes}</b> / 15 · solid: <b>${15-holes}</b></div>`);
+ if(r1&&r2&&r3){msg('mF','good',`✔ A good atom: ${holes} of 15 are empty space and the nucleus is one small clump in the centre.`);$('nF').disabled=false;done(3)}else{msg('mF','',holes<11?`Cut more holes: ${11-holes} more.`:!r2?'The nucleus must be in the centre: fill the middle circle.':'Your solid parts are in more than one place. The nucleus is one clump.');$('nF').disabled=true}}
+$('foil').addEventListener('click',e=>{const b=e.target.closest('[data-fc]');if(!b)return;const i=+b.dataset.fc;st.foil[i]=st.foil[i]?0:1;save();SFX.click();drawFoilUI()});
+
+/* ================== 5. Fire ================== */
+function onResult(p,pass){if(cur!==4&&cur!==5)return;const r=st.res[p.cell];r[pass?0:1]++;save();drawHeat()}
+function totals(){let P=0,D=0;st.res.forEach(([a,b])=>{P+=a;D+=b});return[P,D]}
+function drawHeat(){const [P,D]=totals();$('fN').textContent=P+D;$('fP').textContent=P;$('fD').textContent=D;
+ $('heat').innerHTML=st.res.map(([a,b],i)=>`<div style="background:${st.foil[i]?'#fdf6e3':'#f3c4c0'};color:#2b2418">${a} · ${b}</div>`).join('');
+ const hs=new Set();st.res.forEach(([a,b],i)=>{if(a+b)hs.add(Math.floor(i/5))});
+ const ok=P+D>=15&&P>0&&D>0&&hs.size===3;$('fQ').hidden=!ok;if(!ok)msg('mFi','',`Fired ${P+D}. ${P+D<15?'Fire at least 15. ':''}${hs.size<3?'Try all 3 heights. ':''}${D===0&&P+D>=5?'Aim some at the centre!':''}`);
+ if(ok&&!(st.fq1==='hole'&&st.fq2==='solid'))msg('mFi','',`Fired ${P+D}: ${P} passed, ${D} bounced. Now answer the Discover questions.`);if(ok&&st.fq1==='hole'&&st.fq2==='solid'){msg('mFi','good',`✔ ${P} passed through the empty space and ${D} bounced off the nucleus. Just like Rutherford!`);$('nFi').disabled=false;done(4)}}
+$('fOne').onclick=()=>{if(!st.code){msg('mFi','bad','Upload your code first (Step 3).');return}launch(+$('fLane').value,+$('fH').value);SFX.click();K.view('iso')};
+let tenT=null;$('fTen').onclick=()=>{if(!st.code){msg('mFi','bad','Upload your code first (Step 3).');return}let n=0;clearInterval(tenT);tenT=setInterval(()=>{launch(Math.floor(Math.random()*5),Math.floor(Math.random()*3));if(++n>=10)clearInterval(tenT)},650);K.view('iso')};
+$('fClear').onclick=()=>{st.res=Array(15).fill(0).map(()=>[0,0]);save();drawHeat()};
+document.querySelectorAll('[data-fq1]').forEach(b=>b.onclick=()=>{st.fq1=b.dataset.fq1;save();const ok=st.fq1==='hole';ok?SFX.ok():SFX.bad();$('fQ1m').style.color=ok?'var(--ok)':'var(--warn)';$('fQ1m').textContent=ok?'✔ Through the empty space. Most of the atom is empty!':'Look at your results grid: which circles let particles through?';drawHeat()});
+document.querySelectorAll('[data-fq2]').forEach(b=>b.onclick=()=>{st.fq2=b.dataset.fq2;save();const ok=st.fq2==='solid';ok?SFX.ok():SFX.bad();$('fQ2m').style.color=ok?'var(--ok)':'var(--warn)';$('fQ2m').textContent=ok?'✔ At the small, solid centre: the nucleus.':'Look where the bounces are on your results grid.';drawHeat()});
+
+/* ================== 6. Test ================== */
+function drawTest(){document.querySelectorAll('[data-ms]').forEach(c=>c.checked=!!st.meas[c.dataset.ms]);const [P,D]=totals(),N=P+D||1,pct=Math.round(D/N*100);
+ const opts=[pct,Math.min(100,pct+35),Math.max(0,pct>=40?pct-30:pct+15)].map(v=>`About ${v}%`);const order=[1,0,2];
+ $('tFrac').innerHTML=order.map(i=>`<button class="btn" data-tf="${i}">${opts[i]}</button>`).join('');
+ if(st.tf!=null){const ok=st.tf==0;$('tFm').style.color=ok?'var(--ok)':'var(--warn)';$('tFm').textContent=ok?`✔ ${D} of ${P+D} bounced back: about ${pct}%.`:`Count again: ${D} bounced out of ${P+D}.`}
+ if(st.tq){const ok=st.tq==='small';$('tQm').style.color=ok?'var(--ok)':'var(--warn)';$('tQm').textContent=ok?'✔ Right. Our nucleus is huge compared with a real one. A real atom is almost completely empty.':'Compare: our model bounces many more than 1 in 8,000.'}
+ if([0,1,2,3].every(i=>st.meas[i])&&st.tf==0&&st.tq==='small'){$('nT').disabled=false;done(5)}}
+document.addEventListener('change',e=>{const c=e.target.closest('[data-ms]');if(c){st.meas[c.dataset.ms]=c.checked?1:0;save();SFX.click();drawTest()}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-tf]');if(b){st.tf=+b.dataset.tf;save();st.tf==0?SFX.ok():SFX.bad();drawTest()}const q=e.target.closest('[data-tq]');if(q){st.tq=q.dataset.tq;save();st.tq==='small'?SFX.ok():SFX.bad();drawTest()}});
+
+/* ================== 7. Math ================== */
+const Q=[{q:'1a. Rutherford: empty space to nucleus is 10,000 : 1. In 10ᵃ : 1ᵇ = 10,000 : 1, what is a?',o:['4','3','10,000'],a:0,e:'10⁴ = 10 × 10 × 10 × 10 = 10,000.'},
+ {q:'1b. What can b be?',o:['Any number: 1 to any power is still 1','Only 0','Only 4'],a:0,e:'1ᵇ = 1 for every b.'},
+ {q:'1c. (1/10,000)ᶜ = 10,000. What is c?',o:['−1','1','4'],a:0,e:'A power of −1 flips the fraction: (1/10,000)⁻¹ = 10,000.'},
+ {q:'1d. Using c = −1, dᶜ = 10,000. What is d?',o:['0.0001 = 10⁻⁴','10,000','−10,000'],a:0,e:'d⁻¹ = 1/d = 10,000, so d = 1/10,000 = 10⁻⁴.'},
+ {q:'2a. A model atom is 10 cm, so the nucleus should be 0.001 cm. In 10ᵉ cm = 0.001 cm, what is e?',o:['−3','3','−2'],a:0,e:'0.001 = 1/1,000 = 10⁻³.'},
+ {q:'2b. (1/f) mm = 0.001 cm. What is f?',o:['100','1,000','10'],a:0,e:'0.001 cm = 0.01 mm = 1/100 mm.'},
+ {q:'2c. g m = 0.001 cm. What is g?',o:['10⁻⁵','10⁻³','10⁻²'],a:0,e:'0.001 cm = 0.00001 m = 10⁻⁵ m.'},
+ {q:'3. Alpha particles are positive. Why did a few bounce right back from the gold foil?',o:['They came close to the tiny, dense, positive nucleus and were pushed back','They hit electrons','The foil was too thick'],a:0,e:'Like charges repel. Only a direct, close approach to the nucleus turns them back.'},
+ {q:'4. How can a slow-motion model of the gold foil experiment help SDG 8: Decent Work and Economic Growth?',o:['It trains future scientists and engineers, whose discoveries drive new industries and jobs','It makes gold cheaper','It replaces factory workers'],a:0,e:'Science and innovation drive most productivity growth (OECD).'}];
+function drawQuiz(){$('quiz').innerHTML=Q.map((x,i)=>{const c=st.quiz[i];return`<div class="q">${x.q}</div><div class="choices">${x.o.map((o,j)=>`<button type="button" class="btn ${c==null?'':j===x.a&&c===x.a?'right':j===c?'wrong':''}" data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div><div class="fb" style="color:${c===x.a?'var(--ok)':'var(--warn)'}">${c==null?'':c===x.a?'✔ '+x.e:'Try again.'}</div>`}).join('');
+ const ok=Q.every((x,i)=>st.quiz[i]===x.a);$('nQ').disabled=!ok;if(ok)done(6)}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('[data-o]');if(!b)return;const i=+b.dataset.q,o=+b.dataset.o;st.quiz[i]=o;save();o===Q[i].a?SFX.ok():SFX.bad();drawQuiz()});
+
+/* ================== 8. Reflect ================== */
+const LV=['Not yet, even with help.','With some help.','Yes, on my own.','Yes, and I can help a classmate.'];
+const RUB=[['I can identify key parts of a problem to solve it effectively.',LV],['I can construct a prototype with wired electronic components.',LV],['I can program my prototype to accomplish the challenge.',LV],['I can work well with my team to accomplish our goals.',LV],['How I feel about this project',['☹️','😐','🙂','😄']]];
+function drawRub(){$('rub').innerHTML=RUB.map((r,i)=>`<div><div class="rq">${i+1}. ${r[0]}</div><div class="lv" role="radiogroup" aria-label="${r[0]}">${r[1].map((t,j)=>`<button type="button" role="radio" aria-checked="${st.rub[i]===j}" class="${st.rub[i]===j?'on':''}" data-r="${i}" data-l="${j}">${t}</button>`).join('')}</div></div>`).join('');
+ const n=Object.keys(st.rub).length;$('finish').disabled=n<RUB.length;msg('mA','',n<RUB.length?`${n} of ${RUB.length} rows done.`:'All rows done. Press Finish!')}
+$('rub').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;st.rub[b.dataset.r]=+b.dataset.l;save();SFX.click();drawRub()});
+function showFin(){st.placed=BUILD_N;if(!foilRules().slice(0,3).every(Boolean)){st.foil=[1,1,1,1,1,1,1,0,1,1,1,1,1,1,1]}WIRES.forEach(w=>st.wires[w.id]=1);showParts();drawCables();drawFoil(st.foil);
+ [[2,1],[1,0],[3,2]].forEach(([l,h],k)=>{const p=launch(l,h);p.s=2+k*3;place3(p)});K.view('fin',true);setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false},500)}
+$('finish').onclick=()=>{st.finished=1;save();done(7);SFX.done();showFin();setTimeout(()=>$('fin').scrollIntoView({behavior:'smooth',block:'center'}),600)};
+
+/* ================== 9. Challenges ================== */
+function star(k,id,h){msg(id,'good',h);if(!st.ch[k]){st.ch[k]=1;save()}SFX.done();drawStars();banner('⭐ Challenge complete!')}
+function drawStars(){const n=['c1','c2','c3','c4'].filter(k=>st.ch[k]).length;$('stars').textContent=n;document.querySelectorAll('[data-st]').forEach(e=>{const on=!!st.ch[e.dataset.st];e.textContent=on?'★':'☆';e.closest('.ch').classList.toggle('won',on)})}
+/* c1: 100-cell foil */
+function c1draw(dots){const k=+$('c1k').value,s0=Math.floor((10-k)/2);$('c1kO').textContent=`${k} × ${k}`;let h='';
+ for(let i=0;i<10;i++)for(let j=0;j<10;j++){const n=i>=s0&&i<s0+k&&j>=s0&&j<s0+k;h+=`<rect x="${j*30+1}" y="${i*30+1}" width="28" height="28" rx="${n?3:14}" fill="${n?'#d32f2f':'#22304d'}" stroke="#3a4a6b"/>`}
+ (dots||[]).forEach(([x,y,hit])=>h+=`<circle cx="${x}" cy="${y}" r="${hit?5:2.2}" fill="${hit?'#ffeb3b':'#7dff8a'}" opacity="${hit?1:.8}"/>`);$('c1svg').innerHTML=h}
+$('c1k').oninput=()=>c1draw();
+$('c1run').onclick=()=>{const k=+$('c1k').value,s0=Math.floor((10-k)/2)*30,s1=s0+k*30;const d=[];let hits=0;for(let i=0;i<200;i++){const x=Math.random()*300,y=Math.random()*300,hit=x>=s0&&x<s1&&y>=s0&&y<s1;if(hit)hits++;d.push([x,y,hit])}
+ c1draw(d);const pct=hits/2;$('c1res').textContent=`${hits} of 200 bounced = ${pct}% (expected ${k*k}%)`;
+ if(k===1&&pct<=3)star('c1','c1msg','⭐ A 1-cell nucleus in 100 cells: about 1% bounce back. To show Rutherford\'s 10,000 : 1, the foil would need 10,000 cells (100 × 100) for one nucleus cell. The real atom is even emptier than your best model!');
+ else{SFX.click();msg('c1msg','',`${pct}% bounced back. ${k*k>2?'Still too many: make the nucleus smaller.':'Close! Fire again.'}`)}};
+/* c2: plum pudding vs nuclear */
+let c2m='plum';const c2r={};
+document.querySelectorAll('[data-c2m]').forEach(b=>b.onclick=()=>{c2m=b.dataset.c2m;document.querySelectorAll('[data-c2m]').forEach(x=>x.classList.toggle('on',x===b));SFX.click();c2draw([])});
+function c2draw(paths){let h='';if(c2m==='plum'){h+=`<circle cx="230" cy="110" r="90" fill="#7a2f45" opacity=".55"/>`;for(let i=0;i<14;i++){const a=i*2.4,r=20+(i*29)%70;h+=`<circle cx="${230+r*Math.cos(a)}" cy="${110+r*Math.sin(a)}" r="4" fill="#64b5f6"/>`}}
+ else{h+=`<circle cx="230" cy="110" r="90" fill="none" stroke="#3a4a6b" stroke-dasharray="4 4"/><circle cx="230" cy="110" r="4" fill="#ff5252"/>`;[0,1,2,3].forEach(i=>{const a=i*1.6+.4;h+=`<circle cx="${230+80*Math.cos(a)}" cy="${110+80*Math.sin(a)}" r="3" fill="#64b5f6"/>`})}
+ paths.forEach(p=>h+=`<polyline points="${p.map(q=>q.join(',')).join(' ')}" fill="none" stroke="${p.big?'#ffeb3b':'#7dff8a'}" stroke-width="${p.big?2.2:1.2}" opacity=".9"/>`);$('c2svg').innerHTML=h}
+$('c2run').onclick=()=>{const P=[];let big=0;for(let i=0;i<40;i++){const y=12+Math.random()*196,b=Math.abs(y-110),sgn=y<110?-1:1;let th;
+  if(c2m==='plum')th=(Math.random()-.5)*0.04;else th=sgn*2*Math.atan(1.6/Math.max(b,0.3));
+  const p=[[0,y],[230,y],[230+170*Math.cos(th),y+170*Math.sin(th)]];p.big=Math.abs(th)>Math.PI/2;if(p.big)big++;P.push(p)}
+ if(c2m==='nuc'&&big===0){const y=110.6,th=-2*Math.atan(1.6/0.6);const p=[[0,y],[230,y],[230+170*Math.cos(th),y+170*Math.sin(th)]];p.big=true;big=1;P[0]=p}
+ c2draw(P);c2r[c2m]=big;SFX.click();$('c2res').textContent=`${c2m==='plum'?'Plum pudding':'Nuclear'} model: ${40-big} went (almost) straight, ${big} bounced back.`;$('c2q').hidden=!(c2r.plum!=null&&c2r.nuc!=null);if(!$('c2q').hidden)msg('c2msg','','Now answer the question.')};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c2]');if(!b)return;if(b.dataset.c2==='nuc')star('c2','c2msg','⭐ The plum pudding spreads the charge thinly, so nothing can push a particle back. Only a tiny, dense, positive nucleus can. Rutherford said it was like firing a cannon shell at tissue paper and having it bounce back!');else{SFX.bad();msg('c2msg','bad','Look at your two experiments: which one had bounces?')}});
+/* c3: Coulomb path */
+const c3t={};
+function c3draw(){const b=+$('c3b').value;$('c3bO').textContent=b.toFixed(2);const U=20,Kc=0.4*U,cx=260,cy=130;let x=0,y=cy-b*U,vx=4,vy=0;const pts=[[x,y]];
+ for(let i=0;i<3000;i++){const dx=x-cx,dy=y-cy,r2=dx*dx+dy*dy,r=Math.sqrt(r2)||0.001,f=Kc*16/r2;vx+=f*dx/r*0.5;vy+=f*dy/r*0.5;x+=vx*0.5;y+=vy*0.5;if(i%4===0)pts.push([x,y]);if(x<-10||x>410||y<-10||y>250)break}
+ const ang=Math.atan2(Math.abs(vy),vx)*180/Math.PI;
+ let h=`<line x1="0" y1="${cy-b*U}" x2="400" y2="${cy-b*U}" stroke="#3a4a6b" stroke-dasharray="4 4"/><circle cx="${cx}" cy="${cy}" r="6" fill="#ff5252"/><text x="${cx+10}" y="${cy+18}" fill="#ff8a80" font-size="12">nucleus (+)</text>`;
+ h+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#7dff8a" stroke-width="2.5"/><text x="10" y="20" fill="#e6e9f2" font-size="14" font-weight="700">Deflection: ${ang.toFixed(0)}°</text>`;$('c3svg').innerHTML=h;
+ if(ang>150)c3t.a=1;if(ang<10)c3t.b=1;const li=$('c3T').children;li[0].className=c3t.a?'dn':'';li[1].className=c3t.b?'dn':'';$('c3q').hidden=!(c3t.a&&c3t.b);if(!$('c3q').hidden&&!st.ch.c3)msg('c3msg','','Both found! Now answer the question.')}
+$('c3b').oninput=c3draw;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c3]');if(!b)return;if(b.dataset.c3==='close')star('c3','c3msg','⭐ The closer the aim, the stronger the push, and the bigger the angle. Only a head-on hit bounces straight back, which is why so few particles did.');else{SFX.bad();msg('c3msg','bad','Look again: when was the angle biggest?')}});
+/* c4: scale */
+const c4={};
+document.addEventListener('click',e=>{const a=e.target.closest('[data-c4a]'),b=e.target.closest('[data-c4b]');if(!a&&!b)return;
+ if(a){c4.a=a.dataset.c4a;const ok=c4.a==='100';ok?SFX.ok():SFX.bad();$('c4am').style.color=ok?'var(--ok)':'var(--warn)';$('c4am').textContent=ok?'✔ 10,000 × 1 cm = 10,000 cm = 100 m: a bead in the middle of a football pitch!':'10,000 × 1 cm = 10,000 cm. How many metres is that?'}
+ if(b){c4.b=b.dataset.c4b;const ok=c4.b==='2';ok?SFX.ok():SFX.bad();$('c4bm').style.color=ok?'var(--ok)':'var(--warn)';$('c4bm').textContent=ok?'✔ Add the powers: 4 + (−2) = 2, so 10² m = 100 m.':'When you multiply powers of ten, add the indices: 4 + (−2) = ?'}
+ if(c4.a==='100'&&c4.b==='2')star('c4','c4msg','⭐ If the nucleus were a bead, the atom would be a football pitch, and the electrons would be tiny specks near the edge. Everything else is empty space!')});
+
+/* ================== 10. Other designs ================== */
+function setDesign(d){dsg=d;parts3.forEach(p=>p.dead=true);layout();drawCables();if(d==='box')buildBox();K.view(d==='ring'?'iso':d==='box'||d==='magnet'?'foil':'iso');document.querySelectorAll('[data-ds]').forEach(b=>b.classList.toggle('sel',b.dataset.ds===d))}
+document.querySelectorAll('[data-ds]').forEach(b=>b.onclick=()=>{SFX.click();setDesign(b.dataset.ds)});
+function fireN(n){let k=0;clearInterval(tenT);tenT=setInterval(()=>{launch(Math.floor(Math.random()*5),dsg==='ramp'?1:Math.floor(Math.random()*3));if(++k>=n)clearInterval(tenT)},dsg==='flick'?500:650)}
+document.querySelectorAll('[data-df]').forEach(b=>b.onclick=()=>{if(dsg!==b.dataset.df)setDesign(b.dataset.df);fireN(b.dataset.df==='box'||b.dataset.df==='ring'?10:5)});
+$('boxReveal').onclick=()=>{if(dsg!=='box')setDesign('box');const t=boxShell.material.opacity===1;boxShell.material=M(0x6b7076,{roughness:.6,opacity:t?0.25:1});SFX.click();banner(t?`The hidden nucleus was ${boxShape==='L'?'an L shape':boxShape==='line'?'a line':'a square'}!`:'Hidden again')};
+$('dTry').onclick=()=>{const acc=$('dAcc').value,tgt=$('dTgt').value,emp=+$('dEmpty').value,n=+$('dN').value;
+ setDesign(tgt==='card'?(acc==='belt'?'belt':acc):tgt);const L=[];let ok=true;
+ const exp=Math.round(n*(100-emp)/100);L.push(`With ${emp}% empty space, expect about <b>${exp} of ${n}</b> particles to bounce back (${100-emp}%).`);
+ if(n<50){ok=false;L.push('⚠ 10 particles are too few: chance can fool you. Fire 50 or more.')}
+ if(emp<75){ok=false;L.push('⚠ Too much nucleus! A real atom is more than 99.99% empty space.')}else if(emp>=99)L.push('✔ Very close to a real atom. You will need many particles to see even one bounce!');
+ if(tgt==='magnet')L.push('🧲 Magnets push before contact, so you will see curved paths, like real repulsion.');if(tgt==='box')L.push('📦 Do not peek: guess the shape from the bounces first.');
+ if(acc==='ramp')L.push('🛝 A higher start makes faster marbles. Keep it the same for every run (fair test).');if(acc==='flick')L.push('🎾 Program the arm speed and angle the same every time.');
+ msg('dChk',ok?'good':'bad',L.join('<br>'));ok?SFX.ok():SFX.bad();fireN(5)};
+try{$('dPlan').value=localStorage.getItem(KEY+'-plan')||''}catch(e){}
+$('dSave').onclick=()=>{try{localStorage.setItem(KEY+'-plan',$('dPlan').value)}catch(e){}SFX.ok();$('dSaved').textContent='✔ Saved on this device.'};
+
+/* ================== navigation ================== */
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();
+ dsg='belt';parts3.forEach(p=>p.dead=true);clearInterval(tenT);demoBelt=false;showParts();drawCables();drawFoil(st.foil);tag13.visible=tag1.visible=i===1;
+ if(i===0){bSel=null;drawBuild();K.view('iso')}
+ if(i===1){drawWires();K.view('board')}
+ if(i===2){drawCode();hud('<div class="h">Fill in the code</div>');K.view('board')}
+ if(i===3){drawFoilUI();K.view('foil')}
+ if(i===4){drawHeat();K.view('iso')}
+ if(i===5){drawTest();hud('');K.view('iso')}
+ if(i===6){hud('<div class="h">Answer the 9 questions</div>');demoBelt=true;K.view('spin')}
+ if(i===7){hud('');if(st.finished)showFin();else K.view('fin')}
+ if(i===8){hud('<div class="h">Challenges</div>');c1draw();c2draw([]);c3draw();drawStars();K.view('foil')}
+ if(i===9){hud('<div class="h">Other designs</div>');setDesign('belt')}
+ window.scrollTo(0,0)}
+boxShape=['L','line','square'][Math.floor(Math.random()*3)];buildBox();
+drawBuild();drawWires();drawCode();drawQuiz();drawRub();drawFoil(st.foil);
+go(st.finished?7:Math.min(...[0,1,2,3,4,5,6,7].filter(i=>!st.done.includes(i)),8));
+
+</script>
+</body>
+</html>

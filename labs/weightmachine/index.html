@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Weight Machine</title>
+<style>
+/* Grade 9 · Project 2 · Weight Machine. Same 3D layout as the Grade 7 labs; orange book accent */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#c4501a;--acc-d:#9c3d12;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #f07a2a}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#f6a04d,#c4501a);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+table.dt{width:100%;border-collapse:collapse;margin:8px 0}.dt th{background:#16233f;color:#fff;padding:7px;font-size:14px}.dt td{border:1px solid var(--line);height:34px;padding:5px 8px;font-weight:600;font-size:14px}
+.gsvg{width:100%;height:auto;display:block;background:var(--tray);border-radius:10px;margin:6px 0}
+.oled{background:#05070a;color:#e8f4ff;border-radius:8px;padding:8px 10px;font:600 13px Consolas,monospace;display:inline-block}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:15px}.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok)}
+.sl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.sl output{font:800 20px Consolas,monospace;min-width:64px;text-align:right}
+.gauge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.gauge div{background:var(--tray);border-radius:9px;padding:8px;text-align:center}.gauge b{display:block;font-size:24px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--surf)}
+.ex .tag{display:inline-block;background:var(--acc);color:var(--onacc);font:800 11.5px "Segoe UI",system-ui,sans-serif;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;margin-bottom:4px}
+.ex h3{margin-top:4px}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.pc div{background:var(--tray);border-radius:9px;padding:8px;font-size:14px}.pc b{display:block}
+@media(max-width:560px){.pc{grid-template-columns:1fr}}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}.cmp th,.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:left}.cmp th{background:var(--navy);color:#fff}
+.opt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.opt label{display:grid;gap:3px;font-weight:700;font-size:14px}
+.opt select,textarea{font:inherit;padding:7px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+textarea{width:100%;min-height:90px}
+@media(max-width:560px){.opt{grid-template-columns:1fr}}
+.tips{margin:6px 0;padding-left:22px}.tips li{margin:4px 0}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">🏋️</div><div><h1>Weight Machine</h1><p>Grade 9 · Project 2 · A pulley machine that helps older adults build muscle</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Project steps"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D model of the pulley weight machine. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="iso">3D</button><button class="btn" data-v="front">Front</button><button class="btn" data-v="pulley">Pulley</button><button class="btn" data-v="weight">Weight</button><button class="btn" data-v="board">Board</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+</div>
+<div>
+<!-- 1 Build -->
+<section class="card panel" id="p0">
+ <div class="k">Step 1 · Build</div>
+ <h2>Build the pulley tower</h2>
+ <p style="margin-top:0">A physical therapist needs a machine that lifts a weight slowly and safely. Follow the book's steps: for each step, <b>find the right part</b> in the box (many parts are not needed!), then <b>show where and how it goes</b>. Every mistake is counted, so think first.</p>
+ <ol class="steps" id="bSteps"></ol>
+ <div class="small"><b>Parts box</b></div>
+ <div class="tray" id="tray"></div>
+ <div id="bQ" hidden></div>
+ <div class="msg" id="mB"></div>
+ <div class="next"><button class="btn pri" data-go="1" id="nB" disabled>Next: wire it ▶</button></div>
+</section>
+<!-- 2 Wire -->
+<section class="card panel" id="p1">
+ <div class="k">Step 2 · Wire</div>
+ <h2>Connect the controller and the servo</h2>
+ <p style="margin-top:0">Choose a cable, then choose where it goes. The 270° servo plugs into <b>port 13</b>.</p>
+ <div class="wires" id="wList"></div>
+ <h3>Goes to</h3><div class="pins" id="pins"></div>
+ <div class="msg" id="mW">Choose a cable first.</div>
+ <div class="next"><button class="btn pri" data-go="2" id="nW" disabled>Next: try the pulley ▶</button></div>
+</section>
+<!-- 3 Pulley -->
+<section class="card panel" id="p2">
+ <div class="k">Step 3 · Pulley science</div>
+ <h2>Turn the servo, move the weight</h2>
+ <p style="margin-top:0">The cord wraps around the white <b>spool</b> on the servo, runs over the grey <b>pulley</b> and holds the weight. Move the slider and watch the ruler.</p>
+ <div class="sl"><span>0°</span><input type="range" id="ang" min="0" max="270" value="0" aria-label="Servo angle"><output id="angO">0°</output></div>
+ <div class="stats"><div><b id="liftO">0.0</b><span>cm lifted</span></div><div><b id="cordO">0.0</b><span>cm of cord wound</span></div><div><b>1.3</b><span>cm spool radius</span></div></div>
+ <ol class="steps" id="pTasks"><li>Lift the weight with the servo at <b>180°</b>.</li><li>Lower it back to the floor (<b>0°</b>).</li><li>Find the angle that lifts the weight exactly <b>2 cm</b> (±0.2 cm).</li></ol>
+ <div class="calc"><b>Spool math:</b> cord wound = radius × angle in radians. 180° = π radians, so 1.3 × π ≈ 4.1 cm.</div>
+ <div class="msg" id="mPu">Move the slider to 180°.</div>
+ <div id="puQ" hidden><div class="q">What does the fixed pulley at the end of the arm do?</div><div class="choices"><button class="btn" data-pq="dir">It changes the direction of the pull</button><button class="btn" data-pq="half">It halves the force needed</button><button class="btn" data-pq="speed">It makes the servo faster</button></div><div class="fb" id="puQm"></div></div>
+ <div class="next"><button class="btn pri" data-go="3" id="nPu" disabled>Next: program it ▶</button></div>
+</section>
+<!-- 4 Program -->
+<section class="card panel" id="p3">
+ <div class="k">Step 4 · Code</div>
+ <h2>Program the servo and the OLED</h2>
+ <p style="margin-top:0">Install the <b>Adafruit SSD1306</b> OLED library first (book Code step 1). Then tap the blocks in order. Three blocks are not needed!</p>
+ <div class="palette" id="pal"></div>
+ <div class="split"><div><div class="small"><b>Your program</b></div><div class="script" id="script"></div></div><div><div class="small"><b>Arduino code</b></div><pre class="code" id="code"></pre></div></div>
+ <div class="msg" id="mP"></div>
+ <div class="row"><button class="btn" id="pReset">↺ Start again</button></div>
+ <div class="next"><button class="btn pri" data-go="4" id="nP" disabled>Next: test it ▶</button></div>
+</section>
+<!-- 5 Test -->
+<section class="card panel" id="p4">
+ <div class="k">Step 5 · Test</div>
+ <h2>Upload and watch it lift</h2>
+ <p style="margin-top:0">Press <b>Upload and run</b>. Watch the screen, the spool and the weight. Let it do at least <b>2 full lifts</b>.</p>
+ <div class="row"><button class="btn pri" id="tRun">⬆ Upload and run</button><button class="btn" id="tStop" disabled>■ Stop</button><span class="oled" id="tOled">(screen off)</span></div>
+ <div class="stats"><div><b id="tAng">0°</b><span>servo angle</span></div><div><b id="tH">0.0</b><span>cm lifted</span></div><div><b id="tReps">0</b><span>full lifts</span></div></div>
+ <div id="tMeas" hidden>
+  <h3>Measure your success (from the book)</h3>
+  <label class="chk"><input type="checkbox" data-ms="0"><span>The model is a pulley system with a gear and a cord holding a suspended object.</span></label>
+  <label class="chk"><input type="checkbox" data-ms="1"><span>The servo motor is programmed to lift and lower the object.</span></label>
+  <label class="chk"><input type="checkbox" data-ms="2"><span>We used only the provided materials.</span></label>
+  <div class="q">How high does the weight rise in one lift (0° → 180°)?</div><div class="choices"><button class="btn" data-th="2">About 2 cm</button><button class="btn" data-th="4">About 4 cm</button><button class="btn" data-th="8">About 8 cm</button></div><div class="fb" id="tQm"></div>
+ </div>
+ <div class="msg" id="mT">Press Upload and run.</div>
+ <div class="next"><button class="btn pri" data-go="5" id="nT" disabled>Next: math and science ▶</button></div>
+</section>
+<!-- 6 Questions -->
+<section class="card panel" id="p5">
+ <div class="k">Step 6 · Math and science connection</div>
+ <h2>Weights for the physical therapist</h2>
+ <div id="quiz"></div>
+ <div class="next"><button class="btn pri" data-go="6" id="nQ" disabled>Next: reflect ▶</button></div>
+</section>
+<!-- 7 Assess -->
+<section class="card panel" id="p6">
+ <div class="k">Step 7 · Reflect</div>
+ <h2>How did you do?</h2>
+ <p class="small" style="margin-top:0">Choose one box in each row that best describes your work.</p>
+ <div class="lvh" aria-hidden="true"><span>Beginner</span><span>Emerging</span><span>Accomplished</span><span>Expanding</span></div>
+ <div class="rub" id="rub"></div>
+ <div class="msg" id="mA"></div>
+ <div class="next"><button class="btn pri" id="finish" disabled>Finish my project 🎉</button></div>
+ <div id="fin" hidden>
+  <h3>🎉 Project complete: Weight Machine</h3>
+  <p style="margin:0">Your servo winds a cord over a pulley to lift a weight slowly and safely. Machines like this help young and older people build muscle: Good Health and Well-Being (SDG 3).</p>
+  <img id="finImg" alt="Your finished weight machine in 3D">
+  <div class="row"><button class="btn pri" data-go="7">Try the challenges 🏆</button></div>
+ </div>
+</section>
+<!-- 8 Challenges -->
+<section class="card panel" id="p7">
+ <div class="k">Step 8 · Challenges</div>
+ <h2>Be a fitness engineer</h2>
+ <p style="margin-top:0">Earn a star for each challenge: <b id="stars">0</b> / 3 ⭐</p>
+ <div class="ch"><div class="chh"><span class="star" data-st="c1">☆</span><h3 style="margin:0">⚙️ Two-pulley system (book challenge)</h3></div>
+  <p>Can you lift more weight with less force using more pulleys? Choose a load, then measure the force with one pulley and with two.</p>
+  <div class="row"><b>Load:</b><span class="seg" role="group" aria-label="Load"><button data-ld="10" class="on">10 N</button><button data-ld="20">20 N</button><button data-ld="40">40 N</button></span></div>
+  <div class="row"><b>System:</b><span class="seg" role="group" aria-label="Pulley system"><button data-ps="1" class="on">Fixed pulley</button><button data-ps="2">Two-pulley</button></span><button class="btn pri" id="c1m">📏 Lift and measure</button></div>
+  <div class="gauge"><div><b id="c1F">–</b><span class="small">effort force</span></div><div><b id="c1D">–</b><span class="small">cord pulled for a 4 cm lift</span></div></div>
+  <table class="dt" aria-label="Pulley results"><thead><tr><th>Load</th><th>Fixed pulley</th><th>Two-pulley</th></tr></thead><tbody id="c1T"></tbody></table>
+  <div id="c1q" hidden><div class="q">What did you find?</div><div class="choices"><button class="btn" data-c1="yes">Two pulleys: half the force, but twice the cord</button><button class="btn" data-c1="free">Two pulleys: less force and nothing else changes</button><button class="btn" data-c1="no">The force is the same</button></div></div>
+  <div class="msg" id="c1msg">Measure the same load with both systems (at least 2 loads).</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c2">☆</span><h3 style="margin:0">👵 Safe for grandma</h3></div>
+  <p>The physical therapist says: <b>10 lifts</b>, each lift slow, taking <b>at least 3 seconds</b>, and never past <b>180°</b> or the weight hits the pulley. Fix the code.</p>
+  <pre class="code" id="c2code" style="min-height:0"></pre>
+  <div class="row"><button class="btn pri" id="c2run">Check and run one lift</button></div><div class="msg" id="c2msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c3">☆</span><h3 style="margin:0">🔢 Rep counter on the screen</h3></div>
+  <p>A trainer wants to see how many lifts were done. Make the OLED show <b>Reps: 1</b>, <b>Reps: 2</b>, … after every lift.</p>
+  <pre class="code" id="c3code" style="min-height:0"></pre>
+  <div class="row"><button class="btn pri" id="c3run">Check and run 3 lifts</button></div><div class="msg" id="c3msg"></div></div>
+ <div class="next"><button class="btn pri" data-go="8">Next: build it another way ▶</button></div>
+</section>
+<!-- 9 Other designs -->
+<section class="card panel" id="p8">
+ <div class="k">Step 9 · Other designs</div>
+ <h2>Build it another way</h2>
+ <p style="margin-top:0">The book lifts the weight with a <b>cord and a pulley</b>. Engineers always ask: <i>is there another way?</i> Look at two other designs in 3D, then invent your own. There is no single right answer: use your kit, your ideas and your team.</p>
+ <div class="ex"><span class="tag">Book design</span><h3>Cord over a pulley</h3><p>The servo winds the cord on a spool. The pulley turns the pull around so the weight goes straight up.</p><div class="row"><button class="btn" data-ds="book">👁 Show in 3D</button><button class="btn" data-dl="book">▶ Lift</button></div></div>
+ <div class="ex"><span class="tag">Example 1</span><h3>Lever arm (like a biceps curl)</h3>
+  <p>No cord and no pulley. A long Technic beam is fixed to the servo horn. When the servo turns, the beam swings up like your forearm, and the weight hangs from its end. This is a <b>lever</b>: the servo is the pivot.</p>
+  <div class="row"><button class="btn" data-ds="lever">👁 Show in 3D</button><button class="btn" data-dl="lever">▶ Lift</button></div>
+  <div class="pc"><div><b>✔ Good</b>Very easy to build: one beam, one axle. It looks just like the Joints project!</div><div><b>✘ Watch out</b>A long arm needs a lot of turning force. Use a light weight or a shorter beam.</div></div>
+  <p class="small"><b>Parts:</b> 270° servo, one long Technic beam, axle, cord or hook, small weight.</p></div>
+ <div class="ex"><span class="tag">Example 2</span><h3>Weight stack with guide rails (like a real gym)</h3>
+  <p>The book design, plus two straight axles standing up on both sides of the weight. The weight slides up and down between them, so it cannot swing or spin. Real gym machines work this way!</p>
+  <div class="row"><button class="btn" data-ds="rails">👁 Show in 3D</button><button class="btn" data-dl="rails">▶ Lift</button></div>
+  <div class="pc"><div><b>✔ Good</b>Much safer: the weight always moves in a straight line, even if the user pulls quickly.</div><div><b>✘ Watch out</b>The rails must be straight and smooth, or the weight gets stuck.</div></div>
+  <p class="small"><b>Parts:</b> everything from the book design + 2 long axles, 2 bricks to hold them, a beam with holes on the weight.</p></div>
+ <div class="ex"><h3>Compare the designs</h3><div style="overflow-x:auto"><table class="cmp"><tr><th></th><th>Book: cord + pulley</th><th>Lever arm</th><th>Guide rails</th></tr>
+  <tr><td>Weight moves</td><td>Straight up</td><td>In a curve</td><td>Straight up, no swinging</td></tr><tr><td>Force on the servo</td><td>Small (small spool)</td><td>Big (long arm)</td><td>Small</td></tr>
+  <tr><td>Safety</td><td>Good</td><td>OK</td><td>Best</td></tr><tr><td>How hard to build</td><td>Medium</td><td>Easy</td><td>Hard</td></tr></table></div></div>
+ <div class="ex" id="dz"><span class="tag">Example 3 · Your turn</span><h3>Design your own weight machine</h3>
+  <p>Choose your ideas, press <b>Try my design</b> and read the engineer's check.</p>
+  <div class="opt">
+   <label>Who is it for?<select id="dWho"><option value="old">Older adults (slow and safe)</option><option value="kid">Young athletes</option><option value="rehab">Patients after an injury</option></select></label>
+   <label>How it lifts<select id="dHow"><option value="book">Cord + pulley</option><option value="rails">Cord + pulley + guide rails</option><option value="lever">Lever arm</option></select></label>
+   <label>Spool size<select id="dSp"><option value="0.8">Small (0.8 cm)</option><option value="1.3" selected>Medium (1.3 cm)</option><option value="2">Large (2 cm)</option></select></label>
+   <label>Pulleys<select id="dPu"><option value="1">1 fixed pulley</option><option value="2">2 pulleys (1 moving)</option></select></label>
+   <label>Weight<select id="dKg"><option value="0.5">0.5 kg</option><option value="1" selected>1 kg</option><option value="2">2 kg</option><option value="4">4 kg</option></select></label>
+  </div>
+  <div class="row"><button class="btn pri" id="dTry">▶ Try my design</button></div>
+  <div class="msg" id="dChk">Choose your ideas and press Try my design.</div>
+  <h3>Tips and hints</h3>
+  <ul class="tips">
+   <li><b>Small spool = less force, slower lift.</b> A big spool lifts faster but the servo works harder.</li>
+   <li><b>More pulleys = less force,</b> but you need more cord and the weight moves less.</li>
+   <li><b>Make it strong:</b> add cross beams in a triangle shape. Triangles do not bend.</li>
+   <li><b>Make it safe:</b> keep fingers away from the cord, move slowly, and never go past 180° in your code.</li>
+   <li><b>Show useful things on the OLED:</b> reps, time, or a smiley face when the set is done.</li>
+   <li><b>Add a sensor:</b> a button to start, or an ultrasonic sensor that stops the machine if a hand comes too close.</li>
+  </ul>
+  <h3>Your team's plan</h3>
+  <p class="small" style="margin-top:0">Write what you will build, the parts you need, and one idea from every team member.</p>
+  <textarea id="dPlan" aria-label="Your team's plan" placeholder="Our machine is for… It lifts the weight using… Parts: … Ideas from each member: …"></textarea>
+  <div class="row"><button class="btn" id="dSave">💾 Save our plan</button><span class="small" id="dSaved"></span></div>
+ </div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+/* ================== Weight Machine · Grade 9 Project 2 · 3D lab ================== */
+const $=id=>document.getElementById(id);
+const S=['Build','Wire','Pulley','Program','Test','Math','Reflect','Challenges','Other designs'];
+const KEY='britus-g9-weightmachine';
+const st=(()=>{const d={done:[],placed:0,wires:{},pu:{},blocks:0,meas:{},th:null,quiz:{},rub:{},finished:0,ch:{},c1:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off'};
+function hud(h){$('hud').innerHTML=h}
+function banner(t){const b=$('banner');b.textContent=t;b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,4000)}
+
+/* ================== 3D scene ================== */
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[-1,7,0],r:46,aspect:.7,views:{
+ iso:[0.5,1.12,48,[-1.5,7,0.5]],front:[0,1.45,46,[-1.5,7.5,0]],pulley:[0.4,1.25,21,[3.5,13,1]],weight:[0.25,1.4,22,[9.8,6.5,1]],
+ board:[0.35,0.85,17,[-13,1.5,3.5]],fin:[0.55,1.15,46,[-1.5,7,0.5]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const YEL=0xf5c400,YH=0x9c7a00,GRN=0x2f7d3b,RED=0xd8322f,GRY=0x9aa0a6;
+const parts={};
+/* ===== Lego kit parts (same kit and colours as the Joints lab): Technic beams with holes, bricks with studs ===== */
+const LG=c=>M(c,{roughness:.32,metalness:0});
+const BLU=0x2457c5;
+const holeM=M(0x1c1c1c,{roughness:.8});
+function hole(par,x,y,z,ax,depth,col){/* round Technic hole: dark hole + raised rim ring on both faces */
+ const h=Cy(0.2,depth+0.02,holeM,par,x,y,z,ax,14);h.castShadow=false;
+ [-1,1].forEach(s=>{const r=new THREE.Mesh(new THREE.TorusGeometry(0.25,0.055,6,16),LG(col));r.position.set(x,y,z);if(ax==='z')r.position.z+=s*depth/2;if(ax==='x'){r.position.x+=s*depth/2;r.rotation.y=Math.PI/2}par.add(r)})}
+/* Technic beam: dir 'y' upright or 'x' along x. Holes go through z (the face you see). */
+function tbeam(par,x,y,z,len,dir,col,rim){const w=dir==='y'?[0.72,len,0.8]:[len,0.72,0.8];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8;hole(par,dir==='x'?x+t:x,dir==='y'?y+t:y,z,'z',0.8,rim||col)}}
+/* Lego brick with studs on top; dir 'x' or 'z'. Optional Technic holes on the side */
+function brick(par,x,y,z,len,dir,col,holes){const w=dir==='x'?[len,0.96,0.8]:[0.8,0.96,len];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8,sx=dir==='x'?x+t:x,sz=dir==='z'?z+t:z;Cy(0.24,0.18,LG(col),par,sx,y+0.57,sz,'y',16);
+  if(holes&&i<n-1){const hx=dir==='x'?sx+0.4:x,hz=dir==='z'?sz+0.4:z;hole(par,hx,y-0.05,hz,dir==='x'?'z':'x',0.8,col)}}}
+/* base plate */
+parts.plate=grp();(()=>{Bx(30,0.5,16,M(0x7c8186,{roughness:.45}),parts.plate,-1,0.25,0);for(let i=0;i<15;i++)for(let k=0;k<8;k++)Cy(0.3,0.22,M(0x8d9297,{roughness:.4}),parts.plate,-15+i*2,0.6,-7+k*2,'y',14)})();
+/* tower: book steps 1-2 */
+const TX=-4,SY=14.4,SZ=1.15;
+parts.base=grp();parts.uprights=grp();parts.green=grp();parts.topframe=grp();
+/* base: blue bricks with red connectors (book step 1) */
+[-1.6,1.6].forEach(dz=>brick(parts.base,TX,0.98,dz,4.0,'x',BLU,true));[-1.6,1.6].forEach(dx=>brick(parts.base,TX+dx,1.94,0,2.4,'z',RED));
+/* four tall yellow Technic beams */
+[[-1.6,-1.6],[1.6,-1.6],[-1.6,1.6],[1.6,1.6]].forEach(([dx,dz])=>tbeam(parts.uprights,TX+dx,7.6,dz,11.2,'y',YEL));
+/* green Technic bricks across the front and back, side bricks (book step 2) */
+[3.6,7,10.4].forEach(y=>[-1.6,1.6].forEach(dz=>brick(parts.green,TX,y,dz+(dz>0?.8:-.8),4.0,'x',GRN,true)));
+[5.3,8.7].forEach(y=>[-1.6,1.6].forEach(dx=>brick(parts.green,TX+dx+(dx>0?.76:-.76),y,0,2.4,'z',GRN)));
+/* yellow top frame with studs (holds the servo) */
+[-1.6,1.6].forEach(dz=>brick(parts.topframe,TX,13.5,dz,4.0,'x',YEL));[-1.6,1.6].forEach(dx=>brick(parts.topframe,TX+dx,12.54,0,2.4,'z',YEL));
+/* grey 270° kit servo on top (book step 3) */
+parts.servo=grp();(()=>{const g=parts.servo,sm=M(GRY,{roughness:.45});K.RBox(2.5,2.1,1.3,0.12,sm,g,TX,14.15,0);Bx(3.6,0.18,1.3,M(0x8a9096),g,TX,14.6,0);
+ [-1.55,1.55].forEach(x=>Cy(0.14,0.22,M(0x5b6168),g,TX+x,14.6,0,'y',10));const l=tex(256,128,(x,w,h)=>{x.fillStyle='#9aa0a6';x.fillRect(0,0,w,h);x.fillStyle='#2b2f33';x.font='bold 30px Arial';x.textAlign='center';x.fillText('270° SERVO',w/2,56);x.font='22px Arial';x.fillText('DS-270 · 5V',w/2,92)});
+ const lb=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.1),new THREE.MeshStandardMaterial({map:l,roughness:.5}));lb.position.set(TX,13.75,0.66);g.add(lb);
+ Cy(0.5,0.25,M(0xd9dcde),g,TX,SY,0.75,'z',18);Bx(0.6,0.4,0.5,M(0x2b2b2b),g,TX-0.6,13.4,-0.75)})();
+/* spool (white wheel) on the servo shaft: the cord winds here */
+parts.spool=grp();const spool=grp(parts.spool);spool.position.set(TX,SY,SZ);
+(()=>{Cy(1.3,0.42,M(0xf4f4f0,{roughness:.4}),spool,0,0,0,'z',36);[-0.24,0.24].forEach(z=>Cy(1.65,0.08,M(0xd9dcde,{roughness:.4}),spool,0,0,z,'z',36));
+ Bx(0.25,1.0,0.1,M(0xe53935),spool,0,0.9,0.3);Cy(0.25,0.6,M(0x8a949b),spool,0,0,0,'z',12);const wound=Cy(1.34,0.3,M(0x30343b,{roughness:.8}),spool,0,0,0,'z',36);wound.userData.w=1;spool.userData.wound=wound})();
+/* boom arm (book step 4) and support */
+const PX=8.6,PR=1.2;
+parts.boom=grp();parts.brace=grp();parts.post=grp();
+tbeam(parts.boom,4.8,12.6,0,15.2,'x',YEL);tbeam(parts.boom,4.8,12.6,-0.8,8.0,'x',YEL);
+(()=>{const sup=grp(parts.brace);sup.position.set(-0.4,10.4,-0.8);sup.rotation.z=0.6;tbeam(sup,0,0,0,5.6,'x',YEL)})();
+tbeam(parts.post,PX,13.6,0,2.4,'y',YEL);Cy(0.12,1.9,M(0x8a949b),parts.post,PX,SY,0.6,'z',10);brick(parts.post,11.4,11.76,SZ,0.8,'x',RED);
+/* pulley gear (book steps 5-6) */
+parts.pulley=grp();const pulley=grp(parts.pulley);pulley.position.set(PX,SY,SZ);
+(()=>{const gm=M(0xa9b0b5,{roughness:.4,metalness:.1});Cy(PR,0.35,gm,pulley,0,0,0,'z',36);Cy(0.4,0.45,M(0x7f898f),pulley,0,0,0,'z',16);
+ for(let i=0;i<24;i++){const a=i/24*Math.PI*2,t=Bx(0.26,0.3,0.35,M(0x9199a0),pulley,(PR+.1)*Math.cos(a),(PR+.1)*Math.sin(a),0);t.rotation.z=a}
+ for(let i=0;i<4;i++){const a=i/4*Math.PI*2+Math.PI/4;Cy(0.16,0.38,M(0x4d555b),pulley,0.75*Math.cos(a),0.75*Math.sin(a),0,'z',10)}})();
+/* cord + weight + ruler (book steps 7-8) */
+parts.weight=grp();
+const cordM=M(0x2a2d33,{roughness:.8});
+function seg(){const m=Cy(0.07,1,cordM,parts.weight,0,0,0,null,6);return m}
+function setSeg(m,a,b){const d=b.clone().sub(a),L=d.length();m.visible=L>0.01;m.scale.set(1,Math.max(L,0.001),1);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(V3(0,1,0),d.normalize())}
+const cTop=seg(),cDown=seg(),cUp=seg();
+const wt=grp(parts.weight);wt.scale.setScalar(1.2);
+(()=>{const wT=tex(256,192,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#4a4e55');g.addColorStop(1,'#2c2f34');x.fillStyle=g;x.fillRect(0,0,w,h);x.strokeStyle='#5d636b';x.lineWidth=6;x.strokeRect(10,10,w-20,h-20);x.fillStyle='#f5f5f0';x.font='bold 64px Arial';x.textAlign='center';x.fillText('1 kg',w/2,118)});
+ const side=M(0x34373c,{roughness:.5,metalness:.3});const b=K.RBox(2.2,1.6,1.6,0.15,side,wt,0,-1.4,0);
+ const f=new THREE.Mesh(new THREE.PlaneGeometry(1.9,1.35),new THREE.MeshStandardMaterial({map:wT,roughness:.5,metalness:.2}));f.position.set(0,-1.4,0.86);wt.add(f);
+ const hk=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.07,8,20),M(0xb9bec4,{metalness:.8,roughness:.25}));hk.position.y=-0.3;wt.add(hk);Cy(0.06,0.3,M(0xb9bec4,{metalness:.8}),wt,0,-0.6,0,null,6);
+ Bx(3.3,0.05,0.05,M(0xe53935),wt,1.55,-2.2,0.5)})();
+/* movable pulley (two-pulley challenge) */
+const mp=grp(parts.weight);(()=>{Cy(0.8,0.3,M(0xa9b0b5,{roughness:.4}),mp,0,0,0,'z',30);Cy(0.25,0.4,M(0x5b6168),mp,0,0,0,'z',12);Bx(0.25,1.0,0.5,M(RED),mp,0,-0.7,0)})();mp.visible=false;
+const ruler=grp(parts.weight);(()=>{const rT=tex(96,1000,(x,w,h)=>{x.fillStyle='#f6f0d8';x.fillRect(0,0,w,h);x.fillStyle='#222';x.font='bold 30px Arial';x.textAlign='left';
+ for(let mm=0;mm<=100;mm+=2){const y=h-20-mm*9.6;x.fillRect(0,y-1,mm%10===0?44:mm%5===0?30:18,2);if(mm%10===0)x.fillText(String(mm/10),50,y+11)}x.font='bold 22px Arial';x.fillText('cm',46,24)});
+ const p=new THREE.Mesh(new THREE.BoxGeometry(1.0,10.4,0.12),[M(0xe9e1c4),M(0xe9e1c4),M(0xe9e1c4),M(0xe9e1c4),new THREE.MeshStandardMaterial({map:rT,roughness:.6}),M(0xe9e1c4)]);
+ p.position.set(12.9,0.6+5.2-0.19,SZ);p.castShadow=true;ruler.add(p);Bx(1.4,0.3,1,M(0x5b6168),ruler,12.9,0.65,SZ)})();
+/* Kidsuno mainboard: the same board as the Joints lab (clear case, coloured ports 1-9, yellow screen frame) + live OLED */
+const BX=-12.5,BZ=4.2;
+parts.board=grp();const board=grp(parts.board);board.position.set(BX,0.5,BZ);
+const oc=document.createElement('canvas');oc.width=220;oc.height=240;const octx=oc.getContext('2d');const oT=new THREE.CanvasTexture(oc);oT.encoding=THREE.sRGBEncoding;
+function oled(lines,circ){octx.fillStyle='#050505';octx.fillRect(0,0,220,240);if(!lines)return oT.needsUpdate=true;octx.fillStyle='#e8f4ff';octx.strokeStyle='#e8f4ff';octx.lineWidth=3;const big=!circ;octx.textAlign='left';octx.font=(big?'bold 44px':'bold 23px')+' Consolas,monospace';
+ lines.forEach((l,i)=>octx.fillText(l,8,(big?135:34)+i*28));if(circ){[[60,140],[160,140]].forEach(([x,y])=>{octx.beginPath();octx.arc(x,y,44,0,7);octx.stroke()});octx.beginPath();octx.moveTo(104,140);octx.lineTo(116,140);octx.stroke()}oT.needsUpdate=true}
+oled(null);
+function boardTex(){const c=document.createElement('canvas');c.width=640;c.height=460;const x=c.getContext('2d');x.fillStyle='#141618';x.fillRect(0,0,640,460);
+ const P2=[['#2a7de1','#e2382f','#f2c230','#2e9e4f'],['#2a7de1','#e2382f','#f2c230','#2e9e4f'],['#2a7de1','#e2382f','#2e9e4f','#2e9e4f'],['#2a7de1','#f2c230','#ffffff','#f2c230']];
+ const port=(cx,cy,n,cols)=>{const s=44;[[0,0],[1,0],[0,1],[1,1]].forEach(([i,k],j)=>{x.fillStyle=cols[j];x.fillRect(cx-s+i*s,cy-s+k*s,s-3,s-3)});x.fillStyle='#111';x.font='bold 46px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(n,cx,cy)};
+ [6,7,8,9].forEach((n,i)=>port(110+i*140,70,n,P2[i]));[4,3,2,1].forEach((n,i)=>port(110+i*140,390,n,[P2[i][2],P2[i][3],P2[i][1],P2[i][0]]));port(48,230,5,['#f08a24','#2e9e4f','#2a7de1','#f2c230']);
+ x.fillStyle='#f2c230';x.fillRect(120,150,190,160);x.fillStyle='#050505';x.fillRect(140,170,110,120);x.save();x.translate(282,230);x.rotate(Math.PI/2);x.fillStyle='#111';x.font='bold 26px sans-serif';x.textAlign='center';x.fillText('kidsuno',0,8);x.restore();
+ ['#f5d76e','#f5d76e','#f5d76e','#e53935'].forEach((cl,i)=>{x.fillStyle=cl;x.fillRect(430,160+i*34,26,22)});x.fillStyle='#c9ccd0';x.fillRect(560,300,60,40);x.fillStyle='#3a3d42';x.fillRect(360,190,50,50);
+ x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=3;for(let i=0;i<7;i++)for(let k=0;k<5;k++){x.beginPath();x.arc(46+i*91,46+k*92,20,0,7);x.stroke()}
+ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+(()=>{const side=M(0x1a1c1e),pcb=new THREE.Mesh(new THREE.BoxGeometry(6.4,0.5,4.6),[side,side,new THREE.MeshStandardMaterial({map:boardTex(),roughness:.55}),side,side,side]);pcb.position.y=0.55;pcb.castShadow=true;board.add(pcb);
+ Bx(6.8,1.3,5.0,M(0xdfeaf2,{opacity:.28,roughness:.08}),board,0,0.65,0);for(let i=0;i<7;i++)for(let k=0;k<5;k++)Cy(0.28,0.25,M(0xe8f0f6,{opacity:.35,roughness:.08}),board,-2.9+i*0.97,1.42,-2.0+k*1.0,'y',14);
+ const scr=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.2),new THREE.MeshBasicMaterial({map:oT}));scr.rotation.x=-Math.PI/2;scr.position.set(-1.25,0.815,0);board.add(scr);
+ Bx(0.6,0.4,0.9,M(0xc7cbcf,{metalness:.7,roughness:.25}),board,2.8,0.55,-2.4)})();
+/* servo cable plugs into the side port, like the Joints lab */
+function pinPos(port,k){const v=V3(-3.45,1.0,[-0.12,0,0.12][k]);board.updateMatrixWorld();return board.localToWorld(v)}
+function tagSprite(text,col){const t=tex(200,80,(x,w,h)=>{x.fillStyle=col;x.beginPath();x.moveTo(12,4);x.lineTo(w-12,4);x.quadraticCurveTo(w-4,4,w-4,12);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,12);x.quadraticCurveTo(4,4,12,4);x.fill();x.fillStyle='#fff';x.font='bold 34px Arial';x.textAlign='center';x.fillText(text,w/2,44)});
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(2.2,.88,1);return s}
+const tag13=tagSprite('D13','#c4501a');tag13.position.copy(pinPos('13',1)).add(V3(-0.3,1.6,0));K.sc.add(tag13);tag13.visible=false;
+/* laptop */
+parts.laptop=grp(parts.board);(()=>{const g=parts.laptop;g.position.set(-14.5,0.5,-3.8);Bx(5.2,0.25,3.4,M(0xb7bcc2,{metalness:.5,roughness:.35}),g,0,0.13,0);Bx(4.6,0.04,2.0,M(0x2b2e33),g,0,0.27,0.3);
+ const sT=tex(320,200,(x,w,h)=>{x.fillStyle='#0e2a33';x.fillRect(0,0,w,h);x.fillStyle='#00979c';x.fillRect(0,0,w,26);x.fillStyle='#fff';x.font='bold 16px Arial';x.fillText('Project_2_Weight_Machine',8,18);x.font='14px Consolas';x.fillStyle='#cfe';['#include <Servo.h>','myservo.attach(13);','display.println(','  "Weight machine!");','myservo.write(pos);'].forEach((l,i)=>x.fillText(l,10,52+i*24))});
+ const sc=grp(g);sc.position.set(0,0.25,-1.7);sc.rotation.x=-0.25;const bz=Bx(5.2,3.4,0.15,M(0x9aa0a6,{metalness:.5,roughness:.35}),sc,0,1.7,0);const s=new THREE.Mesh(new THREE.PlaneGeometry(4.8,3.0),new THREE.MeshBasicMaterial({map:sT}));s.position.set(0,1.75,0.08);sc.add(s)})();
+
+/* ================== other designs: lever arm, guide rails ================== */
+const lever=grp();lever.position.set(TX,SY,3.1);(()=>{Cy(0.6,0.5,M(0xd9dcde),lever,0,0,0,'z',20);Cy(0.14,2.4,M(0x8a949b),lever,0,0,-1.2,'z',10);tbeam(lever,4.4,0,0.2,9.6,'x',YEL)})();lever.visible=false;
+const rails=grp();(()=>{[-1.75,1.75].forEach(dx=>{Cy(0.1,10.6,M(0x8a949b,{metalness:.6,roughness:.3}),rails,PX+PR+dx,5.9,SZ,null,10);brick(rails,PX+PR+dx,1.08,SZ,0.8,'x',RED);brick(rails,PX+PR+dx,11.3,SZ,0.8,'x',RED)});
+ tbeam(rails,PX+PR,11.9,SZ,4.8,'x',YEL)})();rails.visible=false;
+/* ================== mechanism ================== */
+let ang=0,tgt=0,spd=120,mode=1,run=null,RS=1.3,dsg='book';/* spool radius (cm = scene units) */
+const HOOK0=2.8;
+const liftOf=a=>RS*a*Math.PI/180;
+function place(){const L=liftOf(ang);spool.rotation.z=ang*Math.PI/180;spool.scale.set(RS/1.3,RS/1.3,1);pulley.rotation.z=L/PR;
+ const lev=dsg==='lever',built=st.placed>=13;lever.visible=lev&&built;rails.visible=dsg==='rails'&&built;if(built){parts.boom.visible=parts.pulley.visible=parts.brace.visible=parts.post.visible=!lev;parts.spool.visible=!lev}
+ if(lev){const a=(-35+ang*0.45)*Math.PI/180;lever.rotation.z=a;const tip=V3(TX+9*Math.cos(a),SY+9*Math.sin(a),3.3);cTop.visible=false;cUp.visible=false;mp.visible=false;wt.position.set(tip.x,tip.y-1.2,tip.z);setSeg(cDown,tip,V3(tip.x,tip.y-1.2,tip.z));return}
+ const top0=V3(TX,SY+RS+0.04,SZ),top1=V3(PX,SY+PR+0.04,SZ);setSeg(cTop,top0,top1);
+ if(mode===1){const hy=HOOK0+L;wt.position.set(PX+PR,hy,SZ);mp.visible=false;setSeg(cDown,V3(PX+PR,SY,SZ),V3(PX+PR,hy,SZ));cUp.visible=false}
+ else{const my=HOOK0+1.0+L/2;mp.visible=true;mp.position.set(PX+PR+0.8,my,SZ);wt.position.set(PX+PR+0.8,my-1.2,SZ);setSeg(cDown,V3(PX+PR,SY,SZ),V3(PX+PR,my,SZ));setSeg(cUp,V3(PX+PR+1.6,my,SZ),V3(PX+PR+1.6,11.28,SZ))}}
+let tickT=0;
+K.hooks.push(dt=>{const d=tgt-ang;if(Math.abs(d)>0.01){const s=Math.min(Math.abs(d),spd*dt);ang+=Math.sign(d)*s;tickT+=dt;if(tickT>.09){tickT=0;SFX.tick()}place();onMove()}
+ else if(run)runStep()});
+place();
+/* servo cable: brown GND, red V, orange signal */
+const cab=grp();const WCOL={b:0x7a4a2b,r:0xe03a3a,o:0xf08a24};
+function drawCables(){while(cab.children.length){const m=cab.children.pop();m.geometry&&m.geometry.dispose()}
+ if(st.placed<BUILD.length)return;
+ [['b',0,-0.14],['r',1,0],['o',2,0.14]].forEach(([k,pin,o])=>{const a=V3(TX-0.6+o,13.2,-0.9);const w=WIRES.find(x=>x.k===k);const on=!!st.wires[w.id];const end=on?pinPos(w.port,w.pin):V3(-7.5,0.62,-1.2+o*3);
+  const pts=[a,V3(TX-0.6+o,12,-2.4),V3(TX-0.5+o,5,-2.5),V3(TX-1.3+o,1.1,-2.4)];if(on)pts.push(V3(-9,0.8+o,0.6),V3(-17.0,0.8,2.6+o),V3(end.x-1.0,0.95,end.z));else pts.push(V3(-6.5,0.75,-1.8+o*2));pts.push(end);
+  K.mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),80,0.075,6,false),M(WCOL[k],{roughness:.45}),cab)});
+ if(['wb','wr','wo'].some(id=>st.wires[id])){const e=pinPos('13',1);Bx(0.5,0.32,0.5,0x111111,cab,e.x-0.2,e.y,e.z)}
+ if(st.wires.usb){const a=V3(BX+2.8,1.05,BZ-2.85),b=V3(-11.9,0.7,-3.8);const cu=new THREE.CatmullRomCurve3([a,V3(a.x,0.7,a.z-1.0),V3(-10.6,0.65,-2.6),V3(-11.4,0.7,-3.6),b]);K.mesh(new THREE.TubeGeometry(cu,40,0.12,8,false),M(0x2b2b2b),cab)}}
+
+/* ================== 1. Build ================== */
+const BUILD=[
+ {id:'plate',tray:'Grey base plate',task:'Start with a strong, flat base.',q:'Why do we start with the big grey base plate?',o:['Everything clicks onto it, so the tall tower cannot tip over','It makes the servo stronger','It holds the code'],a:0,ok:'The base plate holds everything together.',view:'iso'},
+ {id:'base',tray:'Blue bricks + red bricks',task:'Book step 1 · Make a wide foot for the tower.',q:'Why does the tower need a wide foot?',o:['A wide base keeps a tall tower from falling over','It makes the weight lighter','It helps the cord turn'],a:0,ok:'Wide at the bottom = stable at the top.',why:{1:'The foot does not change the weight.',2:'The cord runs at the top.'},view:'iso'},
+ {id:'uprights',tray:'Long yellow beams (×4)',task:'Book step 1 · Make the tall tower.',q:'Where do the 4 long yellow beams go?',o:['Standing up, one at each corner of the foot','Lying flat in a row','All in the middle, side by side'],a:0,ok:'Four corners make a strong square tower.',why:{1:'Flat beams cannot make a tower.',2:'Beams in the middle would wobble.'},view:'iso'},
+ {id:'green',tray:'Green bricks (×10)',task:'Book step 2 · Join the tower so it does not wobble.',q:'What do the green bricks do?',o:['They join the yellow beams like the rungs of a ladder','They hold the weight','They carry the cord'],a:0,ok:'Like a ladder: the rungs make the tower stiff.',why:{1:'The weight hangs on the cord.',2:'The cord runs over the pulley.'},view:'iso'},
+ {id:'topframe',tray:'Yellow bricks with studs (×4)',task:'Book step 3 · Make a holder on top for the motor.',q:'How do the 4 yellow bricks sit on top?',o:['In a square frame, so the servo fits inside','In one long line','Under the tower'],a:0,ok:'The square frame holds the servo tight.',why:{1:'A line cannot hold the servo.',2:'The servo goes at the top.'},view:'pulley'},
+ {id:'servo',tray:'Grey 270° servo',task:'Book step 3 · Add the motor that lifts and lowers.',q:'Which way does the servo face?',o:['Its shaft points to the front, along the arm','Its shaft points down to the floor','Its shaft points up to the sky'],a:0,ok:'The shaft turns the spool in the same plane as the arm.',why:{1:'Pointing down, the cord would wind the wrong way.',2:'Pointing up, the spool would lie flat.'},view:'pulley'},
+ {id:'spool',tray:'White wheel (spool)',task:'Book build · Give the cord something to wrap around.',q:'Where does the white wheel go?',o:['On the servo shaft, so the cord winds around it','At the end of the arm','Under the weight'],a:0,ok:'When the servo turns, the cord winds on the spool.',why:{1:'The end of the arm gets the pulley.',2:'The weight hangs on the cord.'},view:'pulley'},
+ {id:'boom',tray:'Very long yellow beams (×2)',task:'Book step 4 · Reach out over the floor.',q:'Why does the arm need to stick far out from the tower?',o:['So the weight hangs away from the tower and does not hit it','To make the tower taller','To hold the controller'],a:0,ok:'The weight swings free, away from the tower.',why:{1:'The arm is sideways, not up.',2:'The controller sits on the base plate.'},view:'iso'},
+ {id:'brace',tray:'Short yellow beam (brace)',task:'Book step 4 · Stop the long arm from bending.',q:'Where does the short beam go?',o:['Diagonally from the tower to the arm, making a triangle','Flat on the base plate','On the weight'],a:0,ok:'The triangle stops the arm from bending under the weight.',why:{1:'On the plate it does nothing for the arm.',2:'The weight must hang free.'},view:'iso'},
+ {id:'post',tray:'Short upright beam + axle',task:'Book step 5 · Make a place for the pulley to spin.',q:'Where does the short upright beam with the axle go?',o:['At the far end of the arm','Next to the servo','On the base plate'],a:0,ok:'The pulley will spin on this axle at the end of the arm.',why:{1:'The pulley goes at the end of the arm.',2:'It needs to be high up.'},view:'pulley'},
+ {id:'pulley',tray:'Big grey gear (pulley)',task:'Book steps 5–6 · Add the wheel the cord runs over.',q:'What does the gear do in this machine?',o:['It is a pulley: the cord runs over it and changes direction','It speeds up the servo','It holds the controller'],a:0,ok:'A pulley turns a sideways pull into an upward lift.',why:{1:'There are no other gears here.',2:'The controller sits on the base.'},view:'pulley'},
+ {id:'weight',tray:'Cord + 1 kg weight',task:'Book steps 7–8 · Hang the load.',q:'How does the cord go?',o:['From the spool, over the top of the pulley, down to the weight','Straight from the servo down to the floor','Wrapped around the tower'],a:0,ok:'Spool → over the pulley → down to the weight.',why:{1:'Then the weight would hit the tower.',2:'The cord must be free to move.'},view:'weight'},
+ {id:'board',tray:'Kidsuno controller',task:'Add the brain of the project.',q:'Where is the best place for the controller?',o:['On the base plate, near the tower, away from the moving weight','Hanging on the cord','On top of the arm'],a:0,ok:'Safe from the moving weight, close enough for the wires.',why:{1:'It would move up and down!',2:'Too high, and the wires get pulled.'},view:'board'}];
+const EXTRA=[['x1','DC motor','A DC motor spins forever. The servo can stop at an exact angle, so it lifts and lowers safely.'],['x2','Wheels','The machine stands still. It does not drive anywhere.'],['x3','Ultrasonic sensor','No sensor is needed in this project.'],['x4','Soil moisture sensor','That is for water projects, not this one.'],['x5','Orange 360° servo','The 360° servo keeps spinning. We need to stop at exact angles: the grey 270° servo.'],['x6','Small grey gear (8 teeth)','Too small to be a good pulley.'],['x7','Button module','The book does not use a button here.'],['x8','Short grey axle','Too short to hold the pulley.']];
+/* ===== Build (harder): find the right part for each book step, then show where and how it goes ===== */
+let bSel=null,bStrike=0;
+const TRAY=[...BUILD.map(b=>({id:b.id,lab:b.tray})),...EXTRA.map(b=>({id:b[0],lab:b[1]}))].sort((a,b)=>a.lab.localeCompare(b.lab));
+function showParts(){BUILD.forEach((b,i)=>parts[b.id].visible=i<st.placed);if(typeof layout==='function')layout()}
+function bOpts(i){const b=BUILD[i];const idx=b.o.map((x,j)=>j);const r=i%idx.length;return idx.slice(r).concat(idx.slice(0,r))}
+function drawBuild(){const n=BUILD.length,c=st.placed;
+ $('bSteps').innerHTML=BUILD.map((b,i)=>`<li class="${i<c?'dn':i===c?'cur':''}">${i<c?`${b.task} <span class="small">(${b.tray})</span>`:i===c?b.task:'<span class="small">…</span>'}</li>`).join('');
+ $('tray').innerHTML=TRAY.map(p=>{const k=BUILD.findIndex(b=>b.id===p.id);return`<button type="button" class="btn ${k>=0&&k<c?'used':''} ${bSel===p.id?'sel':''}" data-part="${p.id}">${p.lab}</button>`}).join('');
+ const q=$('bQ');if(bSel&&c<n){const b=BUILD[c];q.hidden=false;q.innerHTML=`<div class="q">${b.q}</div><div class="choices">${bOpts(c).map(j=>`<button type="button" class="btn" data-bo="${j}">${b.o[j]}</button>`).join('')}</div>`}else q.hidden=true;
+ const man=$('bMan');if(man){const st0=BUILD[c];man.innerHTML=(c<n&&st0.pg&&typeof MAN!=='undefined')?st0.pg.map(k=>`<figure style="margin:6px 0"><img src="${MAN[k]}" alt="Kit installation steps, page ${k}" style="width:100%;border:1px solid var(--line);border-radius:10px;background:#fff"><figcaption class="small">Kit installation steps · page ${k}</figcaption></figure>`).join(''):''}
+ hud(`<div class="h">Step <b>${Math.min(c+1,n)}</b> of ${n} · mistakes <b>${st.bMist||0}</b></div>`);
+ if(c>=n){msg('mB','good',`✔ Built in ${n} steps with ${st.bMist||0} mistake${st.bMist===1?'':'s'}! Turn the model with your finger to check it.`);$('nB').disabled=false;done(0)}}
+function bMiss(t){bStrike++;st.bMist=(st.bMist||0)+1;save();SFX.bad();const b=BUILD[st.placed];msg('mB','bad',t+(bStrike>=3?`<br>💡 Hint: you need the <b>${b.tray}</b>.`:''));drawBuild()}
+$('tray').addEventListener('click',e=>{const el=e.target.closest('[data-part]');if(!el||st.placed>=BUILD.length)return;const id=el.dataset.part,want=BUILD[st.placed];
+ if(id===want.id){bSel=id;SFX.click();msg('mB','',`Right part: <b>${want.tray}</b>. Now answer the question below.`);drawBuild();return}
+ bSel=null;const x=EXTRA.find(p=>p[0]===id);bMiss(x?'Not in this project: '+x[2]:'Not this part for this step. Read the step again and look at the book picture.')});
+$('bQ').addEventListener('click',e=>{const el=e.target.closest('[data-bo]');if(!el)return;const want=BUILD[st.placed],j=+el.dataset.bo;
+ if(j===want.a){st.placed++;save();SFX.ok();bSel=null;bStrike=0;parts[want.id].visible=true;if(typeof placeBins==='function')placeBins();dropIn(parts[want.id],K.hooks,4);if(want.view)K.view(want.view);msg('mB','good','✔ '+want.ok);drawBuild();if(st.placed>=BUILD.length&&typeof onBuilt==='function')onBuilt()}
+ else bMiss((want.why&&want.why[j])||'Not quite. Look at the 3D model and the book picture.')});
+
+function onBuilt(){drawCables();place()}
+
+/* ================== 2. Wire ================== */
+const WIRES=[
+ {id:'usb',k:'u',name:'USB cable',sub:'controller → your computer',hex:'#2b2b2b',to:'Computer',hint:'Book step 1: the USB cable connects the controller to your device.'},
+ {id:'wb',k:'b',name:'Brown wire',sub:'servo ground',hex:'#7a4a2b',to:'GND',port:'13',pin:0,hint:'Brown is ground: GND.'},
+ {id:'wr',k:'r',name:'Red wire',sub:'servo power',hex:'#e03a3a',to:'V',port:'13',pin:1,hint:'Red is power: V.'},
+ {id:'wo',k:'o',name:'Orange wire',sub:'servo signal',hex:'#f08a24',to:'D13',port:'13',pin:2,hint:'Orange is the signal. The book uses port 13: D13.'}];
+const TGT=['GND','V','D13','D12','A0','Computer'];let wSel=null;
+function drawWires(){$('wList').innerHTML=WIRES.map(w=>`<button type="button" class="wire ${st.wires[w.id]?'ok':''} ${wSel===w.id?'sel':''}" data-w="${w.id}"><i style="background:${w.hex}"></i><span>${w.name}<small>${w.sub}${st.wires[w.id]?' → '+w.to+' ✔':''}</small></span></button>`).join('');
+ $('pins').innerHTML=TGT.map(p=>`<button type="button" class="btn" data-pin="${p}">${p==='GND'||p==='V'||p==='D13'?'Port 13 · '+p:p==='D12'?'Port 12 · D12':p}</button>`).join('');
+ const n=Object.keys(st.wires).length;hud(`<div class="h">Connections: <b>${n}</b> / ${WIRES.length}</div>`);
+ if(n===WIRES.length){msg('mW','good','✔ All connected: USB to the computer; brown → GND, red → V, orange → D13 on port 13.');$('nW').disabled=false;done(1)}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-w]');if(b){wSel=b.dataset.w;SFX.click();const w=WIRES.find(x=>x.id===wSel);msg('mW','',`${w.name} (${w.sub}) selected. Where does it go?`);drawWires();K.view('board');return}
+ const p=e.target.closest('[data-pin]');if(!p)return;if(!wSel){SFX.bad();msg('mW','bad','Choose a cable first.');return}
+ const w=WIRES.find(x=>x.id===wSel);if(p.dataset.pin===w.to){st.wires[w.id]=1;save();wSel=null;SFX.ok();drawCables();msg('mW','good',`✔ ${w.name} → ${w.to}.`);drawWires()}else{SFX.bad();msg('mW','bad',`Not ${p.dataset.pin}. ${w.hint}`)}});
+
+/* ================== 3. Pulley science ================== */
+function puDraw(){const p=st.pu,li=$('pTasks').children;li[0].className=p.a?'dn':'cur';li[1].className=p.b?'dn':p.a?'cur':'';li[2].className=p.c?'dn':p.b?'cur':'';$('puQ').hidden=!p.c;
+ if(p.q){$('puQm').style.color='var(--ok)';$('puQm').textContent='✔ A fixed pulley does not make the weight lighter. It turns the pull around: the servo winds sideways, the weight goes up.';$('nPu').disabled=false;done(2)}}
+function onMove(){const L=liftOf(ang);if(cur===2){$('angO').textContent=Math.round(ang)+'°';$('liftO').textContent=L.toFixed(1);$('cordO').textContent=L.toFixed(1);hud(`<div class="h">Servo <b>${Math.round(ang)}°</b> · weight up <b>${L.toFixed(1)} cm</b></div>`)}
+ if(cur===4){$('tAng').textContent=Math.round(ang)+'°';$('tH').textContent=L.toFixed(1);hud(`<div class="h" style="font-family:Consolas,monospace;background:rgba(4,6,10,.92)"><span style="color:#9fb0c4;font-size:11px">OLED</span><br>Weight machine! ◯─◯</div><div class="h">Servo <b>${Math.round(ang)}°</b> · up <b>${L.toFixed(1)} cm</b> · lifts <b>${reps}</b></div>`)}}
+let puT=null;
+$('ang').oninput=e=>{tgt=+e.target.value;spd=120;$('angO').textContent=tgt+'°';clearTimeout(puT);puT=setTimeout(puCheck,Math.abs(tgt-ang)/spd*1000+150)};
+function puCheck(){const p=st.pu,L=liftOf(tgt);
+ if(!p.a){if(tgt===180){p.a=1;SFX.ok();msg('mPu','good','✔ 180° lifts the weight about 4.1 cm. Now lower it to the floor (0°).')}else msg('mPu','',`At ${tgt}° the weight is up ${L.toFixed(1)} cm. Try exactly 180°.`)}
+ else if(!p.b){if(tgt===0){p.b=1;SFX.ok();msg('mPu','good','✔ Back on the floor. Now find the angle that lifts it exactly 2 cm.')}else msg('mPu','','Slide all the way back to 0°.')}
+ else if(!p.c){if(Math.abs(L-2)<=0.2){p.c=1;SFX.ok();msg('mPu','good',`✔ ${tgt}° lifts ${L.toFixed(1)} cm. Math check: 2 ÷ 1.3 = 1.54 radians ≈ 88°.`)}else msg('mPu','',`${tgt}° lifts ${L.toFixed(1)} cm. ${L<2?'A bit more.':'A bit less.'}`)}
+ save();puDraw()}
+document.querySelectorAll('[data-pq]').forEach(b=>b.onclick=()=>{if(b.dataset.pq==='dir'){st.pu.q=1;save();SFX.ok();puDraw()}else{SFX.bad();$('puQm').style.color='var(--warn)';$('puQm').textContent=b.dataset.pq==='half'?'One fixed pulley does not halve the force. You need a moving pulley for that (see the challenges!).':'The pulley does not change the servo speed. Look where the cord goes.'}});
+
+/* ================== 4. Program ================== */
+const BL=[
+ {t:'include the Servo + OLED libraries',c:'hat',code:['#include <Servo.h>','#include <Wire.h>','#include <Adafruit_GFX.h>','#include <Adafruit_SSD1306.h>','Adafruit_SSD1306 display(128, 64, &Wire, -1);','Servo myservo;','int pos = 0;',''],ind:0,hint:'Start with the libraries: the servo and the OLED screen.'},
+ {t:'when Arduino starts',c:'hat',code:['void setup() {'],ind:0,hint:'Next: the setup part that runs once.'},
+ {t:'attach the servo to pin 13',c:'mot',code:['  myservo.attach(13);'],ind:1,hint:'Tell the Arduino where the servo signal is: the orange wire on D13.'},
+ {t:'start the OLED screen (0x3C)',c:'oth',code:['  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);','  display.clearDisplay();','}'],ind:1,hint:'Switch the OLED screen on.'},
+ {t:'forever',c:'ctl',code:['','void loop() {'],ind:0,hint:'Now the part that repeats forever.'},
+ {t:'OLED: write "Weight machine!"',c:'oth',code:['  display.clearDisplay();','  display.setTextSize(1);','  display.setTextColor(WHITE);','  display.setCursor(0, 0);','  display.println("Weight machine!");'],ind:1,hint:'First the words on the screen.'},
+ {t:'OLED: draw two circles (a dumbbell)',c:'oth',code:['  display.drawCircle(20, 35, 20, WHITE);','  display.drawCircle(60, 35, 20, WHITE);','  display.display();'],ind:1,hint:'Then the dumbbell picture, and show it.'},
+ {t:'lift: servo 0° → 180°, 1° every 15 ms',c:'mot',code:['  for (pos = 0; pos <= 180; pos += 1) {','    myservo.write(pos);','    delay(15);','  }'],ind:1,hint:'Now lift the weight slowly.'},
+ {t:'lower: servo 180° → 0°, 1° every 15 ms',c:'mot',code:['  for (pos = 180; pos >= 0; pos -= 1) {','    myservo.write(pos);','    delay(15);','  }','}'],ind:1,hint:'Then lower it slowly.'}];
+const DIS=[{t:'attach the servo to pin 9',c:'mot',why:'The servo is on port 13. attach(9) sends the signal to an empty pin.'},{t:'spin the DC motor forward',c:'mot',why:'This machine uses the 270° servo, not a DC motor.'},{t:'read the sensor on A0',c:'sns',why:'There is no sensor in this project.'}];
+const PAL=[...BL.map((b,i)=>({...b,i})),...DIS.map((b,i)=>({...b,i:-1-i}))].sort((a,b)=>((a.t.length*7)%13)-((b.t.length*7)%13));
+function drawProg(){$('pal').innerHTML=PAL.map(b=>`<button type="button" class="blk ${b.c} ${b.i>=0&&b.i<st.blocks?'used':''}" data-b="${b.i}">${b.t}</button>`).join('');
+ $('script').innerHTML=st.blocks?BL.slice(0,st.blocks).map(b=>`<span class="blk ${b.c}" style="margin-left:${b.ind*18}px">${b.t}</span>`).join(''):'<span class="small">Tap the first block…</span>';
+ const L=[];BL.slice(0,st.blocks).forEach((b,i)=>b.code.forEach(l=>{const e=l.replace(/&/g,'&amp;').replace(/</g,'&lt;');L.push(i===st.blocks-1?`<span class="new">${e}</span>`:e)}));$('code').innerHTML=L.join('\n')||'<span class="c">// your code appears here</span>';
+ hud(`<div class="h">Blocks: <b>${st.blocks}</b> / ${BL.length}</div>`);if(st.blocks>=BL.length){msg('mP','good','✔ Your program is complete! Upload it to the controller.');$('nP').disabled=false;done(3)}}
+$('pal').addEventListener('click',e=>{const b=e.target.closest('[data-b]');if(!b||st.blocks>=BL.length)return;const i=+b.dataset.b;
+ if(i===st.blocks){st.blocks++;save();SFX.ok();msg('mP','','✔ '+BL[i].t);drawProg()}else if(i<0){SFX.bad();msg('mP','bad','Not needed: '+DIS[-1-i].why)}else{SFX.bad();msg('mP','bad','Not yet. '+BL[st.blocks].hint)}});
+$('pReset').onclick=()=>{st.blocks=0;save();$('nP').disabled=true;msg('mP','','');drawProg()};
+
+/* ================== 5. Test ================== */
+let reps=0;
+/* run = {hi, n, onRep, end} : sweeps 0 → hi → 0 */
+function startRun(o){run=Object.assign({hi:180,n:0},o);spd=o.spd||1000/15;tgt=run.hi;run.dir=1}
+function runStep(){if(!run)return;if(run.dir===1){run.dir=-1;tgt=0}else{run.k=(run.k||0)+1;run.onRep&&run.onRep(run.k);if(run.n&&run.k>=run.n){const e=run.end;run=null;e&&e();return}run.dir=1;tgt=run.hi}}
+function stopRun(){run=null;tgt=ang;spd=120}
+$('tRun').onclick=()=>{reps=0;$('tReps').textContent=0;oled(['Weight machine!'],true);$('tOled').textContent='Weight machine!  ◯ ◯';$('tRun').disabled=true;$('tStop').disabled=false;K.view('iso');SFX.ok();ang=0;place();
+ msg('mT','','Uploading… done. The servo lifts the weight 0° → 180° and lowers it again.');startRun({onRep:k=>{reps=k;$('tReps').textContent=k;if(k===2){$('tMeas').hidden=false;msg('mT','good','✔ 2 full lifts! Now check the boxes from the book.')}}})};
+$('tStop').onclick=()=>{stopRun();$('tRun').disabled=false;$('tStop').disabled=true};
+function testDraw(){document.querySelectorAll('[data-ms]').forEach(c=>c.checked=!!st.meas[c.dataset.ms]);if(st.done.includes(4)||reps>=2)$('tMeas').hidden=false;
+ const ok=[0,1,2].every(i=>st.meas[i])&&st.th==='4';if(st.th){const r=st.th==='4';$('tQm').style.color=r?'var(--ok)':'var(--warn)';$('tQm').textContent=r?'✔ About 4.1 cm: the cord wound = 1.3 cm × π. Look at the ruler!':'Look at the red line on the ruler when the servo is at 180°.'}
+ if(ok){$('nT').disabled=false;done(4)}}
+document.addEventListener('change',e=>{const c=e.target.closest('[data-ms]');if(c){st.meas[c.dataset.ms]=c.checked?1:0;save();SFX.click();testDraw()}});
+document.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{st.th=b.dataset.th;save();st.th==='4'?SFX.ok():SFX.bad();testDraw()});
+
+/* ================== 6. Math ================== */
+const Q=[{q:'1a. A cube weight with a handle weighs s³ + 2. What does the “2” likely represent?',o:['The weight of the handle','The side length','The number of clients'],a:0,e:'The handle adds the same 2 lb to every cube, whatever its size.'},
+ {q:'1b. What does “s” likely represent?',o:['The weight in kg','The side length of the cube','The number of lifts'],a:1,e:'s is the side length; s³ is the cube part of the weight.'},
+ {q:'1c. The physical therapist wants her client to lift 29 lb. What side length should she choose?',o:['s = 3','s = 9','s = 27'],a:0,e:'s³ + 2 = 29 → s³ = 27 → s = 3.'},
+ {q:'1d. Is that side length rational or irrational?',o:['Rational','Irrational'],a:0,e:'3 = 3/1, a ratio of two whole numbers.'},
+ {q:'2a. A cylinder weight (height 4, no handle) weighs 4πr². For a 1 kg weight, what radius r?',o:['r = 1/(2√π) ≈ 0.28','r = 1/(4π) ≈ 0.08','r = 2√π ≈ 3.54'],a:0,e:'4πr² = 1 → r² = 1/(4π) → r = 1/(2√π) ≈ 0.282.'},
+ {q:'2b. Is that radius rational or irrational?',o:['Rational','Irrational'],a:1,e:'π is irrational, so 1/(2√π) is irrational too.'},
+ {q:'3. How does a weight machine help SDG 3: Good Health and Well-Being?',o:['It helps young and older people build muscle safely','It saves electricity','It cleans river water'],a:0,e:'Strong muscles keep people healthy, independent and safe from falls.'},
+ {q:'4. Which professional would use your machine with patients after an injury?',o:['A physical therapist','A pilot','An architect'],a:0,e:'Physical therapists and personal trainers plan safe exercise.'}];
+function drawQuiz(){$('quiz').innerHTML=Q.map((x,i)=>{const c=st.quiz[i];return`<div class="q">${x.q}</div><div class="choices">${x.o.map((o,j)=>`<button type="button" class="btn ${c==null?'':j===x.a&&c===x.a?'right':j===c?'wrong':''}" data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div><div class="fb" style="color:${c===x.a?'var(--ok)':'var(--warn)'}">${c==null?'':c===x.a?'✔ '+x.e:'Try again.'}</div>`}).join('');
+ const ok=Q.every((x,i)=>st.quiz[i]===x.a);$('nQ').disabled=!ok;if(ok)done(5)}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('[data-o]');if(!b)return;const i=+b.dataset.q,o=+b.dataset.o;st.quiz[i]=o;save();o===Q[i].a?SFX.ok():SFX.bad();drawQuiz()});
+
+/* ================== 7. Reflect ================== */
+const LV=['Not yet, even with help.','With some help.','Yes, on my own.','Yes, and I can help a classmate.'];
+const RUB=[['I can identify key parts of a problem to solve it effectively.',LV],['I can construct a prototype with wired electronic components.',LV],['I can program my prototype to accomplish the challenge.',LV],['I can work well with my team to accomplish our goals.',LV],['How I feel about this project',['☹️','😐','🙂','😄']]];
+function drawRub(){$('rub').innerHTML=RUB.map((r,i)=>`<div><div class="rq">${i+1}. ${r[0]}</div><div class="lv" role="radiogroup" aria-label="${r[0]}">${r[1].map((t,j)=>`<button type="button" role="radio" aria-checked="${st.rub[i]===j}" class="${st.rub[i]===j?'on':''}" data-r="${i}" data-l="${j}">${t}</button>`).join('')}</div></div>`).join('');
+ const n=Object.keys(st.rub).length;$('finish').disabled=n<RUB.length;msg('mA','',n<RUB.length?`${n} of ${RUB.length} rows done.`:'All rows done. Press Finish!')}
+$('rub').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;st.rub[b.dataset.r]=+b.dataset.l;save();SFX.click();drawRub()});
+function showFin(){st.placed=BUILD.length;showParts();Object.assign(st.wires,{usb:1,wb:1,wr:1,wo:1});drawCables();mode=1;stopRun();ang=tgt=120;place();oled(['Weight machine!'],true);K.view('fin',true);
+ setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false},500)}
+$('finish').onclick=()=>{st.finished=1;save();done(6);SFX.done();showFin();setTimeout(()=>$('fin').scrollIntoView({behavior:'smooth',block:'center'}),600)};
+
+/* ================== 8. Challenges ================== */
+function star(k,id,h){msg(id,'good',h);if(!st.ch[k]){st.ch[k]=1;save()}SFX.done();drawStars();banner('⭐ Challenge complete!')}
+function drawStars(){const n=['c1','c2','c3'].filter(k=>st.ch[k]).length;$('stars').textContent=n;document.querySelectorAll('[data-st]').forEach(e=>{const on=!!st.ch[e.dataset.st];e.textContent=on?'★':'☆';e.closest('.ch').classList.toggle('won',on)})}
+/* c1 two-pulley */
+let ld=10;
+function c1draw(){document.querySelectorAll('[data-ld]').forEach(b=>b.classList.toggle('on',+b.dataset.ld===ld));document.querySelectorAll('[data-ps]').forEach(b=>b.classList.toggle('on',+b.dataset.ps===mode));
+ $('c1T').innerHTML=[10,20,40].map(l=>{const r=st.c1[l]||{};return`<tr><td>${l} N</td><td>${r[1]!=null?r[1]+' N':''}</td><td>${r[2]!=null?r[2]+' N':''}</td></tr>`}).join('');
+ const both=[10,20,40].filter(l=>st.c1[l]&&st.c1[l][1]!=null&&st.c1[l][2]!=null).length;$('c1q').hidden=both<2}
+document.querySelectorAll('[data-ld]').forEach(b=>b.onclick=()=>{ld=+b.dataset.ld;SFX.click();c1draw()});
+document.querySelectorAll('[data-ps]').forEach(b=>b.onclick=()=>{stopRun();mode=+b.dataset.ps;ang=tgt=0;place();SFX.click();K.view('weight');c1draw()});
+$('c1m').onclick=()=>{stopRun();ang=0;place();K.view('weight');const hi=mode===1?176:352;spd=140;run={hi:Math.min(270,hi),n:1,dir:1,end:null};tgt=run.hi;
+ /* two-pulley needs twice the cord for the same lift: show 4 cm lift = 8 cm cord (servo would need >270°, so we show cord for the lift) */
+ const F=mode===1?ld:ld/2;$('c1F').textContent=F+' N';$('c1D').textContent=(mode===1?4:8)+' cm';st.c1[ld]=Object.assign(st.c1[ld]||{},{[mode]:F});save();c1draw();
+ msg('c1msg','',mode===1?`Fixed pulley: you pull with the full ${ld} N, and 4 cm of cord lifts the weight 4 cm.`:`Two-pulley: two cords hold the weight, so each pulls only ${F} N. But you must pull 8 cm of cord to lift it 4 cm.`)};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c1]');if(!b)return;if(b.dataset.c1==='yes')star('c1','c1msg','⭐ Yes! Two pulleys halve the force, but you pull twice as much cord. You never get work for free: force × distance stays the same.');else{SFX.bad();msg('c1msg','bad',b.dataset.c1==='no'?'Look at your table: the two-pulley column is smaller.':'Something else changes too: look at how much cord you pulled.')}});
+/* c2 safe for grandma */
+const C2={e1:['10','5','20'],e2:['180','90','270'],e3:['20','5','15']};const c2v={};
+const sel=(o,k)=>`<select data-${o}="${k}" style="font:inherit;background:#ffd27a;color:#141a2b;border:0;border-radius:4px"><option value="">?</option>${[...(o==='c2'?C2:C3)[k]].sort((a,b)=>parseFloat(a)-parseFloat(b)||a.localeCompare(b)).map(x=>`<option>${x}</option>`).join('')}</select>`;
+$('c2code').innerHTML=['void loop() {',`  for (int rep = 0; rep &lt; ${sel('c2','e1')}; rep++) {`,`    for (pos = 0; pos &lt;= ${sel('c2','e2')}; pos += 1) {`,'      myservo.write(pos);',`      delay(${sel('c2','e3')});   // ms for each degree`,'    }','    for (pos = 180; pos &gt;= 0; pos -= 1) { myservo.write(pos); delay(20); }','  }','  while (true) {}   // rest after the set','}'].join('\n');
+$('c2code').addEventListener('change',e=>{const k=e.target.dataset.c2;if(k)c2v[k]=e.target.value});
+$('c2run').onclick=()=>{const v=c2v;if(!v.e1||!v.e2||!v.e3){SFX.bad();msg('c2msg','bad','Choose a value for every ? first.');return}
+ const t=(+v.e2)*(+v.e3)/1000;
+ if(v.e1!=='10'){SFX.bad();msg('c2msg','bad',`The therapist asked for 10 lifts, not ${v.e1}.`);return}
+ if(v.e2==='270'){SFX.bad();msg('c2msg','bad','270° winds 6.1 cm of cord: the weight would crash into the pulley! Stop at 180°.');stopRun();ang=0;place();startRun({hi:270,n:1,spd:120});return}
+ if(v.e2==='90'){SFX.bad();msg('c2msg','bad','90° lifts only 2 cm. That is too small a move for a good exercise. Use 180°.');return}
+ if(t<3){SFX.bad();msg('c2msg','bad',`${v.e2} × ${v.e3} ms = ${t.toFixed(1)} s per lift. Too fast for grandma! Make it at least 3 seconds.`);stopRun();ang=0;place();K.view('weight');startRun({hi:180,n:1,spd:1000/(+v.e3)});return}
+ stopRun();ang=0;place();K.view('weight');msg('c2msg','',`Running one slow lift: 180 × 20 ms = ${t.toFixed(1)} s…`);startRun({hi:180,n:1,spd:50,end:()=>star('c2','c2msg','⭐ 10 slow lifts, 3.6 seconds each, never past 180°. Safe and strong!')})};
+/* c3 rep counter */
+const C3={e1:['+ 1','- 1','* 2'],e2:['reps','pos','13']};const c3v={};
+$('c3code').innerHTML=['int reps = 0;','void loop() {','  // lift 0° → 180° and lower 180° → 0° (as before)','  ...',`  reps = reps ${sel('c3','e1')};`,'  display.clearDisplay();','  display.setCursor(0, 0);','  display.print("Reps: ");',`  display.println(${sel('c3','e2')});`,'  display.display();','}'].join('\n');
+$('c3code').addEventListener('change',e=>{const k=e.target.dataset.c3;if(k)c3v[k]=e.target.value});
+$('c3run').onclick=()=>{const bad=Object.keys(C3).filter(k=>c3v[k]!==C3[k][0]);if(bad.length){SFX.bad();msg('c3msg','bad',bad[0]==='e1'?'Each lift adds one: reps = reps + 1.':'Print the counter variable: reps.');return}
+ stopRun();mode=1;c1draw();ang=0;place();K.view('board');oled(['Reps: 0']);msg('c3msg','','Running 3 lifts… watch the screen.');
+ startRun({hi:180,n:3,spd:120,onRep:k=>oled(['Reps: '+k]),end:()=>star('c3','c3msg','⭐ The OLED counts every lift: Reps: 1, 2, 3. Now the trainer can track the workout!')})};
+
+/* ================== 9. Other designs ================== */
+function setDesign(d,keep){stopRun();dsg=d;if(!keep){RS=1.3;mode=1}ang=tgt=0;place();K.view(d==='lever'?'iso':'weight');document.querySelectorAll('[data-ds]').forEach(b=>b.classList.toggle('sel',b.dataset.ds===d))}
+document.querySelectorAll('[data-ds]').forEach(b=>b.onclick=()=>{SFX.click();setDesign(b.dataset.ds)});
+document.querySelectorAll('[data-dl]').forEach(b=>b.onclick=()=>{setDesign(b.dataset.dl);SFX.ok();startRun({hi:180,n:1,spd:90})});
+$('dTry').onclick=()=>{const who=$('dWho').value,how=$('dHow').value,r=+$('dSp').value,n=+$('dPu').value,kg=+$('dKg').value;
+ setDesign(how,true);RS=how==='lever'?1.3:r;mode=how==='lever'?1:n;place();
+ const lift=how==='lever'?9:(Math.PI*r/n),torque=how==='lever'?kg*9*0.8:kg*r/n,LIM=3;
+ const L=[];let ok=true;
+ if(how==='lever')L.push(`Lever arm: the weight swings up about ${lift} cm in a curve. Turning force ≈ ${kg} kg × 9 cm × 0.8 = <b>${torque.toFixed(1)} kg·cm</b>.`);
+ else L.push(`One lift (0° → 180°) raises the weight <b>${lift.toFixed(1)} cm</b>. Turning force on the servo ≈ ${kg} kg × ${r} cm${n>1?' ÷ 2':''} = <b>${torque.toFixed(1)} kg·cm</b>.`);
+ if(torque>LIM){ok=false;L.push(`⚠ Imagine our servo can hold about ${LIM} kg·cm: this is too heavy. Try a smaller spool, 2 pulleys, a shorter arm or a lighter weight.`)}else L.push('✔ The servo can lift this.');
+ if(who==='old'&&how!=='rails')L.push('💡 For older adults, guide rails stop the weight from swinging. Safer!');
+ if(who==='old'&&lift>5)L.push('💡 That is a big, fast move for an older adult. A smaller spool lifts more gently.');
+ if(who==='kid'&&lift<3)L.push('💡 Young athletes can do bigger moves: try a larger spool.');
+ if(who==='rehab')L.push('💡 After an injury, start with the lightest weight and show the reps on the OLED so the therapist can follow progress.');
+ msg('dChk',ok?'good':'bad',L.join('<br>'));ok?SFX.ok():SFX.bad();setTimeout(()=>startRun({hi:180,n:1,spd:90}),300)};
+try{$('dPlan').value=localStorage.getItem(KEY+'-plan')||''}catch(e){}
+$('dSave').onclick=()=>{try{localStorage.setItem(KEY+'-plan',$('dPlan').value)}catch(e){}SFX.ok();$('dSaved').textContent='✔ Saved on this device.'};
+/* ================== navigation ================== */
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();
+ showParts();tag13.visible=i===1;drawCables();stopRun();if(i!==7){mode=1}dsg='book';RS=1.3;ang=tgt=0;place();oled(i>=4&&st.blocks>=BL.length?['Weight machine!']:null,i>=4&&st.blocks>=BL.length);
+ $('tRun').disabled=false;$('tStop').disabled=true;
+ if(i===0){bSel=null;drawBuild();K.view('iso')}
+ if(i===1){drawWires();K.view('board')}
+ if(i===2){$('ang').value=0;$('angO').textContent='0°';puDraw();onMove();K.view('pulley')}
+ if(i===3){drawProg();K.view('board')}
+ if(i===4){testDraw();hud('<div class="h">Upload and run the program</div>');K.view('iso')}
+ if(i===5){hud('<div class="h">Answer the 8 questions</div>');K.view('spin')}
+ if(i===6){hud('');if(st.finished)showFin();else K.view('fin')}
+ if(i===7){hud('<div class="h">Challenges</div>');c1draw();drawStars();K.view('weight')}
+ if(i===8){hud('<div class="h">Other designs</div>');setDesign('book')}
+ window.scrollTo(0,0)}
+drawBuild();drawWires();drawProg();drawQuiz();drawRub();
+go(st.finished?6:Math.min(...[0,1,2,3,4,5,6].filter(i=>!st.done.includes(i)),7));
+
+</script>
+</body>
+</html>

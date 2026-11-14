@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Touchless Hand Wash Timer</title>
+<style>
+/* Grade 7 · Activity 3. 3D stage on the left (sticky), step panel on the right, like the Grade 9 Joints lab. Book gold + deep navy */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#c46a12;--acc-d:#9a4f06;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #e0a43a}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#e0a43a,#c46a12);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">🧼</div><div><h1>Touchless Hand Wash Timer</h1><p>Grade 7 · Activity 3 · Touchless Soap Dispenser · Healthy Living with Arduino</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Project steps"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D model of the hand wash timer. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="iso">3D</button><button class="btn" data-v="front">Front</button><button class="btn" data-v="side">Side</button><button class="btn" data-v="top">Top</button><button class="btn" data-v="sensor">Sensor</button><button class="btn" data-v="board">Arduino</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+</div>
+
+<div>
+<!-- 1 Build -->
+<section class="card panel" id="p0">
+ <div class="k">Step 1 · Construction</div>
+ <h2>Build the touchless timer</h2>
+ <p style="margin-top:0">Healthy hands need <b>20 seconds</b> of washing. Build a timer that starts by itself when it <b>sees your hand</b>. Follow the book: choose the right part for each step. Some parts in the tray are not needed!</p>
+ <ol class="steps" id="bSteps"></ol>
+ <div class="tray" id="tray"></div>
+ <div class="msg" id="mB"></div>
+ <div class="next"><button class="btn pri" data-go="1" id="nB" disabled>Next: wire it ▶</button></div>
+</section>
+
+<!-- 2 Wire -->
+<section class="card panel" id="p1">
+ <div class="k">Step 2 · Circuit</div>
+ <h2>Wire the servo and the IR sensor</h2>
+ <p style="margin-top:0">Choose a wire, then choose its Arduino pin. Watch the jumper cable appear in 3D.</p>
+ <h3>SG90 servo (male-to-male jumpers)</h3><div class="wires" id="wS"></div>
+ <h3>HW-201 IR sensor (male-to-female jumpers)</h3><div class="wires" id="wI"></div>
+ <h3>Arduino pin</h3><div class="pins" id="pins"></div>
+ <div class="msg" id="mW">Choose a wire first.</div>
+ <div class="next"><button class="btn pri" data-go="2" id="nW" disabled>Next: the IR sensor ▶</button></div>
+</section>
+
+<!-- 3 IR sensor -->
+<section class="card panel" id="p2">
+ <div class="k">Step 3 · How it sees</div>
+ <h2>How does the IR sensor see your hand?</h2>
+ <p style="margin-top:0">The <b>clear LED</b> (IR emitter) shines invisible <b>infrared light</b>. When a hand is close, the light <b>bounces back</b> into the <b>black LED</b> (IR receiver) and the green light on the board turns on. It does not measure heat!</p>
+ <div class="ctrl">
+  <label for="irD">Hand distance: <span id="irDv">20</span> cm</label><input type="range" id="irD" min="1" max="30" value="20">
+  <label for="irR">Sensitivity screw: sees up to <span id="irRv">8</span> cm</label><input type="range" id="irR" min="4" max="20" step="2" value="8">
+ </div>
+ <div class="msg" id="mI"></div>
+ <div class="next"><button class="btn pri" data-go="3" id="nI" disabled>Next: program it ▶</button></div>
+</section>
+
+<!-- 4 Program -->
+<section class="card panel" id="p3">
+ <div class="k">Step 4 · Code</div>
+ <h2>Program the timer</h2>
+ <p style="margin-top:0">Tap the blocks in the right order to build the program. The Arduino code is written for you on the right as you go. Three blocks are not needed!</p>
+ <div class="palette" id="pal"></div>
+ <div class="split"><div><div class="small"><b>Your program</b></div><div class="script" id="script"></div></div><div><div class="small"><b>Arduino code</b></div><pre class="code" id="code"></pre></div></div>
+ <div class="calc"><b>Why 111 ms?</b> The pointer moves 180 small steps (180° → 0°). 180 × 111 ms = 19 980 ms ≈ <b>20 seconds</b>.</div>
+ <div class="msg" id="mP"></div>
+ <div class="row"><button class="btn" id="pReset">↺ Start again</button></div>
+ <div class="next"><button class="btn pri" data-go="4" id="nP" disabled>Next: test it ▶</button></div>
+</section>
+
+<!-- 5 Test -->
+<section class="card panel" id="p4">
+ <div class="k">Step 5 · Test</div>
+ <h2>Wash your hands!</h2>
+ <div class="row"><button class="btn pri" id="tHand">✋ Hand under the dispenser</button><button class="btn" id="tAway">Take hand away</button>
+  <span class="seg" role="group" aria-label="Speed"><button class="on" data-sp="1">Real time</button><button data-sp="4">Fast ×4</button></span></div>
+ <div class="ctrl"><label for="tD">Hand distance: <span id="tDv">25</span> cm</label><input type="range" id="tD" min="1" max="30" value="25"></div>
+ <div class="stats"><div><b id="sS">0</b><span>seconds</span></div><div><b id="sW">0</b><span>hand washes</span></div><div><b id="sM">0</b><span>ml of soap</span></div></div>
+ <div class="msg" id="mT">Put your hand under the dispenser to start.</div>
+ <div class="trouble"><b>Troubleshooting</b> — the book says: <i>change HIGH to LOW if the motor rotates without detecting the hand.</i>
+  <div class="row"><label><input type="checkbox" id="tLow"> Try a sensor that sends LOW when it sees a hand</label></div>
+  <div class="row"><code>if (digitalRead(7) ==</code><span class="seg" role="group" aria-label="Line 12"><button class="on" data-lv="HIGH">HIGH</button><button data-lv="LOW">LOW</button></span><code>)</code></div></div>
+ <div class="next"><button class="btn pri" data-go="5" id="nT" disabled>Next: questions ▶</button></div>
+</section>
+
+<!-- 6 Questions -->
+<section class="card panel" id="p5">
+ <div class="k">Step 6 · Math, science and reflection</div>
+ <h2>Show what you know</h2>
+ <div id="quiz"></div>
+ <div class="next"><button class="btn pri" data-go="6" id="nQ" disabled>Next: self-assessment ▶</button></div>
+</section>
+
+<!-- 7 Assess -->
+<section class="card panel" id="p6">
+ <div class="k">Step 7 · Self-assessment</div>
+ <h2>How did you do?</h2>
+ <p class="small" style="margin-top:0">Choose one box in each row that best describes your work.</p>
+ <div class="lvh" aria-hidden="true"><span>Beginner</span><span>Emerging</span><span>Accomplished</span><span>Expanding</span></div>
+ <div class="rub" id="rub"></div>
+ <div class="msg" id="mA"></div>
+ <div class="next"><button class="btn pri" id="finish" disabled>Finish my project 🎉</button></div>
+ <div id="fin" hidden>
+  <h3>🎉 Project complete: Touchless Hand Wash Timer</h3>
+  <p style="margin:0">You built it, wired it, coded it and tested it. Your IR sensor sees a hand, and your servo counts 20 seconds of clean hands!</p>
+  <img id="finImg" alt="Your finished hand wash timer in 3D">
+  <div class="row"><button class="btn pri" data-go="7">Try the challenges 🏆</button><a class="btn" href="../touchless/index.html">Next project: Touchless Inventions ▶</a></div>
+ </div>
+</section>
+
+<!-- 8 Challenges -->
+<section class="card panel" id="p7">
+ <div class="k">Step 8 · Challenges</div>
+ <h2>Level up your timer</h2>
+ <p style="margin-top:0">Earn a star for each challenge: <b id="stars">0</b> / 2 ⭐</p>
+ <div class="ch" id="c1"><div class="chh"><span class="star" data-st="c1">☆</span><h3 style="margin:0">⏱️ A 30-second timer</h3></div>
+  <p>Some doctors say 30 seconds is even better. Change the wait so the pointer takes 30 seconds.</p>
+  <div class="calc">180 × <input type="number" id="c1d" value="111" min="1" max="1000" style="width:80px;font:inherit;padding:3px 6px;border:2px solid var(--acc);border-radius:6px" aria-label="Delay in ms"> ms = <b id="c1s">20.0</b> seconds</div>
+  <div class="row"><button class="btn pri" id="c1run">▶ Test in 3D</button></div><div class="msg" id="c1m">Tip: 30 seconds = 30 000 ms. Divide by 180.</div></div>
+ <div class="ch" id="c2"><div class="chh"><span class="star" data-st="c2">☆</span><h3 style="margin:0">💡 A “done” light</h3></div>
+  <p>Add a green LED on <b>pin 13</b>. It turns on for 2 seconds when washing is done. Choose the missing words:</p>
+  <pre class="code" id="c2code" style="min-height:0"></pre>
+  <div class="row"><button class="btn pri" id="c2run">Check and test in 3D</button></div><div class="msg" id="c2m"></div></div>
+ <div class="ch"><h3 style="margin:0 0 4px">🚀 Want to build more with the IR sensor and the servo?</h3>
+  <p style="margin:0 0 8px">Make a touchless trash can, a smart parking gate and a candy dispenser!</p>
+  <a class="btn pri" href="../touchless/index.html">Open: Touchless Inventions ▶</a></div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+/* ================== Touchless Hand Wash Timer · 3D lab ================== */
+const $=id=>document.getElementById(id);
+const S=['Build','Wire','IR sensor','Program','Test','Questions','Assess','Challenges'];
+const KEY='britus-g7-handwash3d';
+const st=(()=>{const d={done:[],placed:0,wires:{},blocks:0,tested:0,quiz:{},rub:{},finished:0,ch:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}" aria-current="${i===cur?'step':'false'}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off';$('snd').setAttribute('aria-pressed',SFX.on)};
+
+/* ================== 3D scene ================== */
+const Y0=1.3,PY=Y0+2.2,SY=Y0+5,SX=-8.6,HX=-14.6;
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[-3,7,1],r:46,aspect:.68,views:{
+ iso:[0.42,1.12,48,[-4,6,1]],front:[0,1.5,46,[-4,6,0]],side:[1.45,1.4,46,[-4,6,0]],top:[0,0.14,54,[-4,3,2]],
+ sensor:[-0.35,1.25,24,[-11,SY,0.5]],board:[0.62,0.85,22,[11,1,-6.5]],back:[2.6,1.15,40,[0,6,-2]],hero:[0.2,1.18,36,[-6.5,6,0.5]],dial:[0.05,1.42,28,[0,Y0+6,0]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;
+const parts={};
+/* stand (two wooden feet) */
+parts.stand=grp();[-6.2,6.2].forEach(x=>Bx(1.5,Y0,4,M(0xb98b55,{roughness:.7}),parts.stand,x,Y0/2,0));
+/* cardboard with the servo slot */
+function faceTex(drawn){return tex(1024,1024,(x,w,h)=>{x.fillStyle='#fbfbf6';x.fillRect(0,0,w,h);x.fillStyle='rgba(0,0,0,.025)';for(let i=0;i<500;i++)x.fillRect(Math.random()*w,Math.random()*h,2,2);
+ if(!drawn)return;const cx=512,cy=874,font='"Comic Sans MS","Segoe Print","Chalkboard SE",cursive';
+ x.fillStyle='#3346c4';x.font='bold 76px '+font;x.textAlign='center';x.fillText('HAND WASH TIMER',512,130);
+ x.strokeStyle='#2b2b2b';x.lineWidth=12;x.lineCap='round';
+ [180,135,90,45,0].forEach(a=>{const t=a*Math.PI/180;x.beginPath();x.moveTo(cx+300*Math.cos(t),cy-300*Math.sin(t));x.lineTo(cx+350*Math.cos(t),cy-350*Math.sin(t));x.stroke()});
+ const N=[['0',180,'#c2185b'],['5',135,'#e0701f'],['10',90,'#3346c4'],['15',45,'#c0661a'],['20',0,'#2f9c3f']];
+ x.font='bold 92px '+font;N.forEach(([v,a,c])=>{const t=a*Math.PI/180;x.fillStyle=c;x.fillText(v,cx+418*Math.cos(t),cy-418*Math.sin(t)+34)});
+ x.strokeStyle='#c2185b';x.lineWidth=7;x.beginPath();x.moveTo(60,cy+52);x.lineTo(130,cy+52);x.stroke();x.strokeStyle='#2f9c3f';x.beginPath();x.moveTo(894,cy+52);x.lineTo(964,cy+52);x.stroke();
+ x.save();x.translate(70,520);x.rotate(-Math.PI/2);x.fillStyle='#2f9c3f';x.font='bold 50px '+font;x.fillText('IR SENSOR',0,0);x.restore();
+ x.fillStyle='#8a8170';x.font='30px '+font;x.fillText('seconds',512,cy-150)})}
+const blankT=faceTex(false),drawnT=faceTex(true);[blankT,drawnT].forEach(t=>{t.repeat.set(1/15,1/15);t.offset.set(.5,0)});
+const cardFace=new THREE.MeshStandardMaterial({map:blankT,roughness:.9});
+(()=>{const s=new THREE.Shape();s.moveTo(-7.5,0);s.lineTo(-1.4,0);s.lineTo(-1.4,2.5);s.lineTo(1.4,2.5);s.lineTo(1.4,0);s.lineTo(7.5,0);s.lineTo(7.5,15);s.lineTo(-7.5,15);s.closePath();
+ const g=new THREE.ExtrudeGeometry(s,{depth:.3,bevelEnabled:false});g.translate(0,0,-.15);parts.card=grp();K.mesh(g,M(0xe9e4d6,{roughness:.9}),parts.card,0,Y0,0);
+ /* the drawing is only on the FRONT; the back is plain cardboard */ const f=K.mesh(new THREE.ShapeGeometry(s),cardFace,parts.card,0,Y0,.155);f.castShadow=false})();
+parts.face={visible:false};
+parts.tape=grp();[-1.85,1.85].forEach(x=>Bx(.85,2.3,.03,M(0xf08aa0,{opacity:.75,roughness:.3}),parts.tape,x,Y0+1.25,.17));
+parts.servo=grp();const servo=K.sg90(parts.servo);parts.servo.position.set(0,PY,.15);
+/* servo leads + connector behind the card */
+[[0xf08a24,-.22],[0xe53935,0],[0x6b3b22,.22]].forEach(([c,o])=>{const cu=new THREE.CatmullRomCurve3([new THREE.Vector3(o,-1.9,-.9),new THREE.Vector3(o,-2.6,-1.6),new THREE.Vector3(o+1.2,-2.0,-2.6),new THREE.Vector3(o+2.0,-1.4,-2.8)]);K.mesh(new THREE.TubeGeometry(cu,20,.07,6,false),M(c),parts.servo)});
+Bx(.9,.5,.35,0x151515,parts.servo,2.0,-1.35,-2.8);
+parts.pointer=K.pointer(parts.servo,5.4,0xe53935);
+parts.ir=grp();const ir=K.hw201(parts.ir);parts.ir.position.set(-6.1,SY,-.32);/* mounted on the BACK of the card; only the two LEDs stick out at the left edge */
+/* soap dispenser */
+parts.disp=grp();parts.disp.position.set(HX,0,.6-7.1);
+(()=>{const p=[[0,0],[2.0,0],[2.3,.35],[2.35,7.6],[2.1,8.7],[1.0,9.5],[.78,9.9],[.78,10.6],[0,10.6]].map(([r,y])=>new THREE.Vector2(r,y));
+ K.mesh(new THREE.LatheGeometry(p,40),M(0xe8f6ff,{opacity:.45,roughness:.05,metalness:.1}),parts.disp);
+ const q=[[0,.15],[2.12,.15],[2.2,.4],[2.2,6.2],[0,6.2]].map(([r,y])=>new THREE.Vector2(r,y));K.mesh(new THREE.LatheGeometry(q,40),M(0x3d9be0,{opacity:.85,roughness:.15}),parts.disp);
+ const lbl=tex(256,128,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);x.fillStyle='#2f86c9';x.font='bold 64px Arial';x.textAlign='center';x.fillText('SOAP',w/2,86)});
+ const lm=new THREE.Mesh(new THREE.CylinderGeometry(2.37,2.37,2.2,40,1,true,-.7,1.4),new THREE.MeshStandardMaterial({map:lbl,roughness:.5,side:THREE.DoubleSide}));lm.position.y=4.2;parts.disp.add(lm);
+ Cy(.8,.7,0xf4f4f4,parts.disp,0,10.9);})();
+const pump=grp(parts.disp);pump.rotation.y=-Math.PI/2;Cy(.17,1.5,0xf4f4f4,pump,0,11.8);K.RBox(2.6,.65,1.1,.25,0xfafafa,pump,.55,12.75,0);Bx(5.6,.42,.5,0xf4f4f4,pump,4.4,12.85,0);Cy(.17,.6,0xf4f4f4,pump,7.1,12.45,0);
+const TIP=new THREE.Vector3(HX,12.1,.6);
+const drop=Sp(.24,M(0x3d9be0,{opacity:.9,roughness:.1}),K.sc,TIP.x,TIP.y,TIP.z);drop.visible=false;
+const basin=K.mesh(new THREE.LatheGeometry([[0,.05],[2.4,.05],[3.4,1.2],[3.6,1.35],[3.45,1.4]].map(([r,y])=>new THREE.Vector2(r,y)),40),M(0xf3f6f8,{roughness:.25}),K.sc,HX,0,1.4);
+/* hand */
+const hand=K.hand(K.sc,0xe7b08a,0x2a6fd1);hand.visible=false;
+let handD=30;function placeHand(d){handD=d;hand.position.set(SX-d-3.45,SY-.42,.6)}placeHand(30);
+const bub=grp(hand);for(let i=0;i<18;i++){const b=Sp(.14+Math.random()*.22,M(0xffffff,{opacity:.78,roughness:.05}),bub,(Math.random()-.4)*4.2,.45+Math.random()*.9,(Math.random()-.5)*2.6);b.userData.p=Math.random()*6}
+bub.visible=false;
+/* IR beams */
+const beamM=new THREE.MeshBasicMaterial({color:0xff4a3d,transparent:true,opacity:.28,depthWrite:false}),backM=new THREE.MeshBasicMaterial({color:0xffb03c,transparent:true,opacity:.32,depthWrite:false});
+const beam=new THREE.Mesh(new THREE.ConeGeometry(.9,1,24,1,true),beamM);beam.rotation.z=-Math.PI/2;K.sc.add(beam);beam.visible=false;
+const back=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,1,10),backM);back.rotation.z=Math.PI/2;K.sc.add(back);back.visible=false;
+const rangeM=new THREE.Mesh(new THREE.PlaneGeometry(.02,5.5),new THREE.MeshBasicMaterial({color:0xe0701f}));K.sc.add(rangeM);rangeM.visible=false;
+const rangeRing=new THREE.Mesh(new THREE.RingGeometry(2.3,2.5,40),new THREE.MeshBasicMaterial({color:0xe0701f,transparent:true,opacity:.6,side:THREE.DoubleSide}));rangeRing.rotation.y=Math.PI/2;K.sc.add(rangeRing);rangeRing.visible=false;
+function beams(d,range,show){const on=show&&d<=30;beam.visible=rangeRing.visible=on;back.visible=on&&d<=range;
+ const ex=SX+.05,len=Math.max(.5,d);beam.scale.set(1+d*.04,len,1+d*.04);beam.position.set(ex-len/2,SY+.36,.42);
+ back.scale.set(1,Math.max(.5,d),1);back.position.set(ex-d/2,SY-.1,.42);rangeRing.position.set(SX-range,SY,.42)}
+/* Arduino Uno */
+parts.uno=grp();const uno=K.uno(parts.uno);parts.uno.position.set(11,0,-6.5);parts.uno.rotation.y=-.35;parts.uno.scale.setScalar(1.45);
+const TAGS=K.unoTags(uno,['13','9','7','2','5V','3.3V','GNDT','GND','A0']);{const lift={'13':0,'GNDT':.8,'9':0,'7':.8,'2':0,'3.3V':0,'5V':.8,'GND':1.6,'A0':0};Object.entries(TAGS).forEach(([k,t])=>{t.position.y+=lift[k]-.2;t.scale.set(1,.5,1)})}Object.values(TAGS).forEach(t=>t.visible=false);
+/* the extra green LED for challenge 2 (pin 13) */
+const led13=grp(parts.uno);led13.visible=false;Cy(.22,.5,M(0x2fbf55,{opacity:.85,roughness:.1}),led13,-.6,1.55,-2.45);Sp(.22,M(0x2fbf55,{opacity:.85,roughness:.1}),led13,-.6,1.8,-2.45);
+const ledLight=new THREE.PointLight(0x44ff77,0,6);ledLight.position.set(-.6,2.2,-2.45);led13.add(ledLight);
+
+/* ================== 1. Build ================== */
+const BUILD=[
+ {id:'stand',t:'Stand up two small wooden feet to hold the timer.',lab:'Wooden feet',tip:'First make a stand so the cardboard can stand up straight.'},
+ {id:'card',t:'Cut a square of white cardboard and cut a slot for the servo at the bottom middle.',lab:'White cardboard with a slot',tip:'The timer face is made of white cardboard.'},
+ {id:'face',t:'Draw the timer face: HAND WASH TIMER and 0, 5, 10, 15, 20 around the slot.',lab:'Markers: draw 0–20 face',tip:'Now draw the numbers so you can read the seconds.'},
+ {id:'tape',t:'Stick a piece of tape on each side of the slot.',lab:'Tape',tip:'Tape makes the slot strong before the servo goes in.'},
+ {id:'servo',t:'Push the SG90 servo into the slot.',lab:'SG90 micro servo',tip:'The servo is the motor that moves the pointer.'},
+ {id:'pointer',t:'Fix the red pointer on the servo horn. It starts at 0.',lab:'Red pointer (servo horn)',tip:'The pointer shows the seconds.'},
+ {id:'ir',t:'Fix the HW-201 IR sensor on the left side.',lab:'HW-201 IR sensor',tip:'The timer needs a sensor that can see a hand without touching.'},
+ {id:'disp',t:'Put the soap dispenser next to the sensor.',lab:'Soap dispenser',tip:'Now the hand gets soap right where the sensor can see it!'}];
+const EXTRA=[{id:'x1',lab:'DC motor',why:'A DC motor spins round and round. The pointer must stop at exact angles, so we use a servo.'},{id:'x2',lab:'Ultrasonic sensor',why:'This project uses the infrared (IR) sensor from the book.'},{id:'x3',lab:'Light bulb',why:'A light bulb is not needed for the timer.'}];
+const TRAY=[...BUILD.map(b=>({id:b.id,lab:b.lab})),...EXTRA].sort((a,b)=>a.lab.localeCompare(b.lab));
+function showParts(){BUILD.forEach((b,i)=>{const on=i<st.placed;if(b.id==='face'){cardFace.map=on?drawnT:blankT;cardFace.needsUpdate=true}else parts[b.id].visible=on});parts.uno.visible=cur>=1||st.placed>=8}
+function drawBuild(){$('bSteps').innerHTML=BUILD.map((b,i)=>`<li class="${i<st.placed?'dn':i===st.placed?'cur':''}">${b.t}</li>`).join('');
+ $('tray').innerHTML=TRAY.map(p=>{const used=BUILD.findIndex(b=>b.id===p.id);return`<button type="button" class="btn ${used>=0&&used<st.placed?'used':''}" data-part="${p.id}">${p.lab}</button>`}).join('');
+ if(st.placed>=BUILD.length){msg('mB','good','✔ Your touchless timer is built! Turn it around with your finger to see it from every side.');$('nB').disabled=false;done(0)}
+ else if(!$('mB').dataset.k)msg('mB','',`Part ${st.placed+1} of ${BUILD.length}: ${BUILD[st.placed].tip}`);$('mB').dataset.k=''}
+$('tray').addEventListener('click',e=>{const b=e.target.closest('[data-part]');if(!b||st.placed>=BUILD.length)return;const id=b.dataset.part,want=BUILD[st.placed];
+ if(id===want.id){st.placed++;save();SFX.ok();if(id==='face'){cardFace.map=drawnT;cardFace.needsUpdate=true}else{parts[id].visible=true;dropIn(parts[id],K.hooks,id==='servo'||id==='pointer'?3:5)}
+  if(id==='ir')K.view('sensor');else if(id==='face')K.view('dial');else if(id==='disp')K.view('hero');
+  msg('mB','good',`✔ ${want.lab}: ${want.t}`);$('mB').dataset.k='1';drawBuild();hudBuild()}
+ else{SFX.bad();const x=EXTRA.find(p=>p.id===id);msg('mB','bad',x?`Not needed: ${x.why}`:`Not yet. ${want.tip}`)}});
+function hudBuild(){hud(`<div class="h">Part <b>${Math.min(st.placed,BUILD.length)}</b> of ${BUILD.length}</div>`)}
+
+/* ================== 2. Wire ================== */
+const WIRES=[
+ {id:'sSig',g:'wS',name:'Orange',sub:'servo signal',col:0xf08a24,hex:'#f08a24',pin:'9',hint:'The servo signal tells the motor where to turn. The code uses pin 9.'},
+ {id:'sPwr',g:'wS',name:'Red',sub:'servo power',col:0xe53935,hex:'#e53935',pin:'5V',hint:'The servo motor needs 5 volts.'},
+ {id:'sGnd',g:'wS',name:'Black',sub:'servo ground (brown wire)',col:0x222222,hex:'#222',pin:'GND',hint:'Ground wires always go to GND.'},
+ {id:'iOut',g:'wI',name:'Blue',sub:'IR sensor OUT',col:0x2f6fe0,hex:'#2f6fe0',pin:'7',hint:'The sensor output goes to digital pin 7. The code reads pin 7.'},
+ {id:'iGnd',g:'wI',name:'Green',sub:'IR sensor GND',col:0x3aa655,hex:'#3aa655',pin:'GND',hint:'Ground wires always go to GND.'},
+ {id:'iVcc',g:'wI',name:'Yellow',sub:'IR sensor VCC',col:0xe8c13a,hex:'#e8c13a',pin:'3.3V',hint:'The book powers the IR sensor from 3.3V.'}];
+const PINS=['13','9','7','2','5V','3.3V','GND','A0'];
+const cab=grp();let wSel=null;
+function wireFrom(id){const w=(x,y,z)=>new THREE.Vector3(x,y,z);
+ return {sSig:w(2.55,PY-1.35,-2.8-.1),sPwr:w(2.55,PY-1.35,-2.8),sGnd:w(2.55,PY-1.35,-2.7),iOut:w(-3.7,SY+.45,-.37),iGnd:w(-3.7,SY,-.37),iVcc:w(-3.7,SY-.45,-.37)}[id]}
+function wireTo(w){const name=w.pin==='GND'?(w.id==='sGnd'?'GND':'GNDT'):w.pin;return K.unoPin(uno,name)}
+function drawCables(){while(cab.children.length){const m=cab.children.pop();if(m.geometry)m.geometry.dispose()}
+ WIRES.forEach(w=>{if(st.wires[w.id])K.cable(cab,wireFrom(w.id),wireTo(w),w.col,w.g==='wS'?2.5:1.5)})}
+function drawWires(){['wS','wI'].forEach(g=>$(g).innerHTML=WIRES.filter(w=>w.g===g).map(w=>`<button type="button" class="wire ${st.wires[w.id]?'ok':''} ${wSel===w.id?'sel':''}" data-w="${w.id}"><i style="background:${w.hex}"></i><span>${w.name} wire<small>${w.sub}${st.wires[w.id]?' → pin '+w.pin+' ✔':''}</small></span></button>`).join(''));
+ $('pins').innerHTML=PINS.map(p=>`<button type="button" class="btn" data-pin="${p}">${p}</button>`).join('');
+ const n=Object.keys(st.wires).length;hud(`<div class="h">Wires connected: <b>${n}</b> / 6</div>`);
+ Object.entries(TAGS).forEach(([k,t])=>{const used=WIRES.some(w=>st.wires[w.id]&&(w.pin===k||(k==='GNDT'&&w.id==='iGnd')||(k==='GND'&&w.id==='sGnd')));K.setTag(t,k.replace('GNDT','GND'),used);t.visible=cur===1||cur===3});
+ if(n===6){msg('mW','good','✔ All 6 wires are connected! Servo → pin 9, 5V, GND. IR sensor → pin 7, GND, 3.3V.');$('nW').disabled=false;done(1)}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-w]');if(b){wSel=b.dataset.w;SFX.click();const w=WIRES.find(x=>x.id===wSel);msg('mW','',`${w.name} wire (${w.sub}) selected. Now choose its pin.`);drawWires();K.view('back');return}
+ const p=e.target.closest('[data-pin]');if(!p)return;if(!wSel){msg('mW','bad','Choose a wire first.');SFX.bad();return}
+ const w=WIRES.find(x=>x.id===wSel);if(p.dataset.pin===w.pin){st.wires[w.id]=1;save();wSel=null;SFX.ok();drawCables();K.view('board');msg('mW','good',`✔ ${w.name} wire → pin ${w.pin}.`);drawWires()}
+ else{SFX.bad();msg('mW','bad',`Not pin ${p.dataset.pin}. ${w.hint}`)}});
+
+/* ================== 3. IR sensor ================== */
+const seen={near:0,far:0};
+function irUpdate(){const d=+$('irD').value,r=+$('irR').value;$('irDv').textContent=d;$('irRv').textContent=r;const det=d<=r;
+ hand.visible=true;bub.visible=false;placeHand(d);beams(d,r,true);K.setLed(ir,det);
+ hud(`<div class="h">Hand: <b>${d} cm</b> · range: <b>${r} cm</b></div><div class="h big">OUT = ${det?'<b>HIGH</b> ✋ hand seen':'LOW'}</div>`);
+ if(det)seen.near=1;else seen.far=1;
+ msg('mI',det?'good':'',det?`Reflected beam = hand detected! ${d} cm is inside the ${r} cm range, so the green light turns on and OUT sends <b>HIGH</b>.`:`The light goes out, but ${d} cm is too far for it to bounce back. OUT is <b>LOW</b>. Move closer, or turn the sensitivity screw.`);
+ if(seen.near&&seen.far){$('nI').disabled=false;done(2)}}
+['irD','irR'].forEach(id=>$(id).addEventListener('input',irUpdate));
+
+/* ================== 4. Program ================== */
+const BL=[
+ {t:'when Arduino starts',c:'hat',code:['void setup() {'],ind:0},
+ {t:'set pin 7 as INPUT (IR sensor)',c:'sns',code:['  pinMode(7, INPUT);'],ind:1,hint:'First tell the Arduino where the IR sensor is.'},
+ {t:'attach the servo to pin 9',c:'mot',code:['  s.attach(9);'],ind:1,hint:'Next connect the servo in the code: pin 9.'},
+ {t:'move servo to 180° (start at 0 s)',c:'mot',code:['  s.write(180);','}'],ind:1,hint:'Put the pointer at the start: 180°.'},
+ {t:'forever',c:'ctl',code:['','void loop() {'],ind:0,hint:'Now the part that repeats forever.'},
+ {t:'if pin 7 reads HIGH (hand seen)',c:'sns',code:['  if (digitalRead(7) == HIGH) {'],ind:1,hint:'Check the sensor: did it see a hand?'},
+ {t:'count angle i from 180 down to 0',c:'ctl',code:['    for (int i = 180; i >= 0; i--) {'],ind:2,hint:'Count down the angle one degree at a time.'},
+ {t:'move servo to angle i',c:'mot',code:['      s.write(i);'],ind:3,hint:'Move the pointer to the new angle.'},
+ {t:'wait 111 ms',c:'ctl',code:['      delay(111);','    }'],ind:3,hint:'Wait a little between steps: 180 × 111 ms ≈ 20 s.'},
+ {t:'move servo back to 180°',c:'mot',code:['    s.write(180);'],ind:2,hint:'Reset the pointer to 0 seconds.'},
+ {t:'wait 1 second',c:'ctl',code:['    delay(1000);','  }','}'],ind:2,hint:'Pause for 1 second before the next hand.'}];
+const DIS=[{t:'read analog pin A0',c:'sns',why:'This project reads a digital pin (pin 7), not A0.'},{t:'turn LED on pin 13 on',c:'oth',why:'There is no LED in this project (until Challenge 2!).'},{t:'wait 20 ms',c:'ctl',why:'20 ms is much too short: 180 × 20 ms is only 3.6 seconds.'}];
+const PAL=[...BL.map((b,i)=>({...b,i})),...DIS.map((b,i)=>({...b,i:-1-i}))].sort((a,b)=>((a.t.length*7+a.c.length)%11)-((b.t.length*7+b.c.length)%11));
+function drawProg(){$('pal').innerHTML=PAL.map(b=>`<button type="button" class="blk ${b.c} ${b.i>=0&&b.i<st.blocks?'used':''}" data-b="${b.i}">${b.t}</button>`).join('');
+ $('script').innerHTML=st.blocks?BL.slice(0,st.blocks).map(b=>`<span class="blk ${b.c}" style="margin-left:${b.ind*18}px">${b.t}</span>`).join(''):'<span class="small">Tap the first block…</span>';
+ const lines=['#include &lt;Servo.h&gt;','Servo s;',''];BL.slice(0,st.blocks).forEach((b,i)=>b.code.forEach(l=>lines.push(i===st.blocks-1?`<span class="new">${l.replace(/</g,'&lt;')}</span>`:l.replace(/</g,'&lt;'))));
+ $('code').innerHTML=lines.join('\n');
+ if(st.blocks>=BL.length){msg('mP','good','✔ Your program is complete! Upload it to the Arduino and test your timer.');$('nP').disabled=false;done(3)}
+ hud(`<div class="h">Blocks: <b>${st.blocks}</b> / ${BL.length}</div>`)}
+$('pal').addEventListener('click',e=>{const b=e.target.closest('[data-b]');if(!b||st.blocks>=BL.length)return;const i=+b.dataset.b;
+ if(i===st.blocks){st.blocks++;save();SFX.ok();msg('mP','',`✔ ${BL[i].t}`);drawProg()}
+ else if(i<0){SFX.bad();msg('mP','bad','Not needed: '+DIS[-1-i].why)}
+ else{SFX.bad();msg('mP','bad','Not yet. '+(BL[st.blocks].hint||'Start with the hat block.'))}});
+$('pReset').onclick=()=>{st.blocks=0;save();$('nP').disabled=true;msg('mP','','');drawProg()};
+
+/* ================== 5. Test ================== */
+const T={a:180,run:false,pause:0,real:false,sp:1,low:false,lv:'HIGH',full:0,dly:111,mode:'test',ledT:0};
+const RANGE=10;let target=30,shown=30;
+function out(det){return T.low?(det?'LOW':'HIGH'):(det?'HIGH':'LOW')}
+function testHud(){const s=Math.round((180-T.a)/180*(T.dly*180/1000));hud(`<div class="h big">⏱ ${s} s</div><div class="h">digitalRead(7) = <b>${out(shown<=RANGE)}</b></div>`)}
+K.hooks.push((dt)=>{
+ // hand glides toward its target distance
+ if(Math.abs(shown-target)>.01){shown+=(target-shown)*Math.min(1,dt*3);if(Math.abs(shown-target)<.05)shown=target;if(cur===4||cur===7)placeHand(shown)}
+ // soap drop + bubbles
+ bub.children.forEach(b=>{b.userData.p+=dt*2;b.position.y=.5+Math.abs(Math.sin(b.userData.p))*.9});
+ if(drop.visible){drop.position.y-=dt*9;if(drop.position.y<SY+.1){drop.visible=false;bub.visible=true}}
+ if(T.ledT>0){T.ledT-=dt;ledLight.intensity=1.6;led13.children[0].material=led13.children[1].material=M(0x6dff8f,{emissive:0x33ff66,emissiveIntensity:1});if(T.ledT<=0){ledLight.intensity=0;led13.children[0].material=led13.children[1].material=M(0x2fbf55,{opacity:.85,roughness:.1})}}
+ if(cur!==4&&cur!==7)return;
+ const det=shown<=RANGE,trig=out(det)===T.lv;K.setLed(ir,det);
+ const total=T.dly*180/1000;
+ if(T.pause>0){T.pause-=dt*T.sp}
+ else if(T.run){const prev=Math.floor((180-T.a)/180*total);T.a-=dt*T.sp*180/total;if(Math.floor((180-T.a)/180*total)!==prev)SFX.tick();
+  if(T.a<=0){T.a=180;T.run=false;T.pause=1;if(T.real){T.full++;finishWash()}}}
+ else if(trig){T.run=true;T.real=det;
+  if(det){pump.position.y=-.35;setTimeout(()=>pump.position.y=0,350);drop.position.copy(TIP);drop.visible=true;if(T.mode==='test')msg('mT','','Hand seen! Soap comes out and the timer starts. Keep washing until the pointer reaches 20.')}
+  else if(T.mode==='test')msg('mT','bad','⚠ The pointer is moving but there is <b>no hand</b>! This sensor sends LOW when it sees a hand. Change <code>HIGH</code> to <code>LOW</code>.')}
+ parts.pointer.rotation.z=T.a*Math.PI/180;
+ if(!det&&!T.run)bub.visible=false;
+ if(cur===4)testHud()});
+function finishWash(){SFX.done();
+ if(T.mode==='c1'){const secs=T.dly*180/1000;T.mode='test';if(Math.abs(secs-30)<=.5)star('c1','c1m',`⭐ ${secs.toFixed(1)} seconds! 180 × ${T.dly} ms ≈ 30 s. Relabel your dial 0, 7.5, 15, 22.5, 30.`);else{msg('c1m','bad',`That was ${secs.toFixed(1)} seconds. ${secs<30?'Make the wait bigger.':'Make the wait smaller.'}`)}target=30;return}
+ if(T.mode==='c2'){T.ledT=2;T.mode='test';star('c2','c2m','⭐ The pointer reached 20 and the green light on pin 13 came on for 2 seconds. Build it with a real LED and a 220 Ω resistor!');target=30;return}
+ $('sW').textContent=T.full;$('sM').textContent=T.full*3;
+ msg('mT','good',`✔ 20 seconds! Clean hands. ${T.low&&T.lv==='LOW'?'You also fixed the LOW sensor, great troubleshooting! ':''}${T.full>1?`${T.full} washes, ${T.full*3} ml of soap.`:''}`);
+ $('nT').disabled=false;st.tested=1;save();done(4);banner('✔ 20 seconds · clean hands!');K.view('hero')}
+setInterval(()=>{if(cur===4){$('sS').textContent=Math.round((180-T.a)/180*(T.dly*180/1000))}},200);
+$('tHand').onclick=()=>{target=3;$('tD').value=3;$('tDv').textContent=3;K.view('hero')};
+$('tAway').onclick=()=>{target=30;$('tD').value=30;$('tDv').textContent=30};
+$('tD').addEventListener('input',e=>{target=+e.target.value;$('tDv').textContent=target});
+document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{T.sp=+b.dataset.sp;document.querySelectorAll('[data-sp]').forEach(x=>x.classList.toggle('on',x===b))});
+document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{T.lv=b.dataset.lv;document.querySelectorAll('[data-lv]').forEach(x=>x.classList.toggle('on',x===b));T.run=false;T.a=180;T.pause=0;msg('mT','',`Line 12 now says digitalRead(7) == ${T.lv}.`)});
+$('tLow').onchange=e=>{T.low=e.target.checked;T.run=false;T.a=180;T.pause=0;target=30;$('tD').value=30;$('tDv').textContent=30;msg('mT','',T.low?'New sensor connected. Watch the pointer…':'Back to the first sensor.')};
+function banner(t){const b=$('banner');b.textContent=t;b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,4500)}
+
+/* ================== 6. Questions ================== */
+const Q=[{q:'1. A student measured the detection distance of the IR sensor at two sensitivity settings: 8 cm and 16 cm. What is the ratio of the first distance to the second?',o:['1:2','1:3','2:3'],a:0,e:'8 : 16 → divide both by 8 → 1 : 2.'},
+ {q:'2. Which type of wave does an infrared sensor emit to detect nearby objects?',o:['Sound waves','Infrared light waves','Radio waves'],a:1,e:'An IR sensor sends out infrared light, light we cannot see.'},
+ {q:'3. A touchless soap dispenser releases 3 ml of soap each time it detects a hand. If 45 students use it in one day, how much soap is used?',o:['105 ml','135 ml','165 ml'],a:1,e:'45 × 3 ml = 135 ml.'},
+ {q:'4. Good health: how does your touchless timer support good health?',o:['Encourages correct handwashing time','Grows more food','Designs faster vehicles'],a:0,e:'It helps everyone wash for the full 20 seconds, without touching anything.'}];
+function drawQuiz(){$('quiz').innerHTML=Q.map((x,i)=>{const c=st.quiz[i];return`<div class="q">${x.q}</div><div class="choices">${x.o.map((o,j)=>`<button type="button" class="btn ${c==null?'':j===x.a&&c===x.a?'right':j===c?'wrong':''}" data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div><div class="fb" style="color:${c===x.a?'var(--ok)':'var(--warn)'}">${c==null?'':c===x.a?'✔ '+x.e:'Not quite, try again!'}</div>`}).join('');
+ const ok=Q.every((x,i)=>st.quiz[i]===x.a);$('nQ').disabled=!ok;if(ok)done(5)}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('[data-o]');if(!b)return;const i=+b.dataset.q,o=+b.dataset.o;st.quiz[i]=o;save();o===Q[i].a?SFX.ok():SFX.bad();drawQuiz()});
+
+/* ================== 7. Assess ================== */
+const RUB=[['Understand the challenge',['Even with help, I was not sure what to do.','After some help, I understood.','I understood and need a little practice.','I understood well and could help a classmate.']],
+ ['Brainstorm your model',['I used the example without changes.','I changed one or two things.','I made most of my own design.','I created my own design and it worked well.']],
+ ['Record results and data',['I did not record results.','I recorded some results.','I recorded most results clearly.','I recorded all results clearly.']],
+ ['Build and test',['My model did not work.','It worked a little.','It worked most of the time.','It worked really well; I tested it more than once.']],
+ ['How I feel about this project',['☹️','😐','🙂','😄']],
+ ['Connect to a Global Goal',['No connection.','A little.','Quite a lot.','A lot, and I can explain how.']]];
+function drawRub(){$('rub').innerHTML=RUB.map((r,i)=>`<div><div class="rq">${i+1}. ${r[0]}</div><div class="lv" role="radiogroup" aria-label="${r[0]}">${r[1].map((t,j)=>`<button type="button" role="radio" aria-checked="${st.rub[i]===j}" class="${st.rub[i]===j?'on':''}" data-r="${i}" data-l="${j}" ${i===4?`aria-label="${['Beginner','Emerging','Accomplished','Expanding'][j]}" style="font-size:24px"`:''}>${t}</button>`).join('')}</div></div>`).join('');
+ const n=Object.keys(st.rub).length;$('finish').disabled=n<RUB.length;msg('mA','',n<RUB.length?`${n} of ${RUB.length} rows done.`:'All rows done. Press Finish!')}
+$('rub').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;st.rub[b.dataset.r]=+b.dataset.l;save();SFX.click();drawRub()});
+function showFin(){showParts();parts.uno.visible=true;drawCables();hand.visible=true;target=shown=3;placeHand(3);bub.visible=true;parts.pointer.rotation.z=0;K.setLed(ir,true);K.view('hero',true);
+ setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false},400)}
+$('finish').onclick=()=>{st.finished=1;save();done(6);SFX.done();showFin();setTimeout(()=>$('fin').scrollIntoView({behavior:'smooth',block:'center'}),500)};
+
+/* ================== 8. Challenges ================== */
+function star(k,id,h){msg(id,'good',h);if(!st.ch[k]){st.ch[k]=1;save()}drawStars()}
+function drawStars(){const n=['c1','c2'].filter(k=>st.ch[k]).length;$('stars').textContent=n;document.querySelectorAll('[data-st]').forEach(e=>{const on=!!st.ch[e.dataset.st];e.textContent=on?'★':'☆';e.closest('.ch').classList.toggle('won',on)});if(n)done(7);led13.visible=!!st.ch.c2}
+$('c1d').addEventListener('input',()=>{$('c1s').textContent=(180*(+$('c1d').value||0)/1000).toFixed(1)});
+$('c1run').onclick=()=>{const d=+$('c1d').value;if(!(d>0))return;T.dly=d;T.mode='c1';T.sp=10;T.run=false;T.a=180;T.pause=0;T.low=false;T.lv='HIGH';target=3;K.view('dial');msg('c1m','',`Testing ${(d*180/1000).toFixed(1)} seconds (shown 10× faster)…`)};
+const C2={d1:['OUTPUT','INPUT'],d2:['13','7','9'],d3:['HIGH','LOW'],d4:['2000','111','20'],d5:['LOW','HIGH']};const c2v={};
+const sel=k=>`<select data-c2="${k}" style="font:inherit;background:#ffd27a;color:#141a2b;border:0;border-radius:4px"><option value="">?</option>${[...C2[k]].sort().map(o=>`<option>${o}</option>`).join('')}</select>`;
+$('c2code').innerHTML=['void setup() {','  ...',`  pinMode(13, ${sel('d1')});`,'}','void loop() {','  if (digitalRead(7) == HIGH) {','    for (...) { s.write(i); delay(111); }',`    digitalWrite(${sel('d2')}, ${sel('d3')});`,`    delay(${sel('d4')});`,`    digitalWrite(13, ${sel('d5')});`,'    s.write(180); delay(1000);','  }','}'].join('\n');
+$('c2code').addEventListener('change',e=>{const k=e.target.dataset.c2;if(k)c2v[k]=e.target.value});
+$('c2run').onclick=()=>{const bad=Object.keys(C2).filter(k=>c2v[k]!==C2[k][0]);
+ if(bad.length){SFX.bad();msg('c2m','bad',{d1:'An LED is something we switch on: OUTPUT.',d2:'The LED is on pin 13.',d3:'HIGH turns the LED on.',d4:'2 seconds = 2000 ms.',d5:'LOW turns it off again.'}[bad[0]]);return}
+ led13.visible=true;T.dly=111;T.mode='c2';T.sp=6;T.run=false;T.a=180;T.pause=0;T.low=false;T.lv='HIGH';target=3;K.view('iso');msg('c2m','','Testing… watch the green LED on the Arduino.')};
+
+/* ================== HUD + navigation ================== */
+function hud(h){$('hud').innerHTML=h}
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();
+ showParts();Object.values(TAGS).forEach(t=>t.visible=i===1||i===3);hand.visible=i>=2;bub.visible=false;beams(0,0,false);drop.visible=false;T.run=false;T.pause=0;T.a=180;parts.pointer.rotation.z=Math.PI;
+ if(i>=1){parts.uno.visible=true;drawCables()}else cab.clear?cab.clear():0;
+ if(i===0){hudBuild();K.view('iso')}
+ if(i===1){drawWires();K.view('iso')}
+ if(i===2){K.view('sensor');irUpdate()}
+ if(i===3){drawProg();K.view('board')}
+ if(i===4){T.mode='test';T.dly=111;T.sp=+document.querySelector('[data-sp].on').dataset.sp;target=shown=+$('tD').value;placeHand(shown);K.view('hero');testHud()}
+ if(i===5){hud('<div class="h">Answer the 4 questions</div>');K.view('spin')}
+ if(i===6){hud('');K.view('hero');if(st.finished)showFin()}
+ if(i===7){hud('<div class="h">Challenges</div>');target=shown=30;placeHand(30);K.view('iso');drawStars()}
+ window.scrollTo(0,0)}
+drawBuild();drawWires();drawProg();drawQuiz();drawRub();drawStars();
+go(st.finished?6:Math.min(...[0,1,2,3,4,5,6].filter(i=>!st.done.includes(i)),7));
+
+</script>
+</body>
+</html>

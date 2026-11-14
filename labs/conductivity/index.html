@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Conductivity Meter</title>
+<style>
+/* Grade 7 · Activity 5 · Conductivity Meter. Same 3D layout as the hand wash lab; water-blue accent */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#1f7fae;--acc-d:#155f86;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #2fb0cf}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#2fb0cf,#1f7fae);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+table.dt{width:100%;border-collapse:collapse;margin:8px 0}.dt th{background:#16233f;color:#fff;padding:7px;font-size:14px}.dt td{border:1px solid var(--line);height:34px;padding:5px 8px;font-weight:600;font-size:14px}
+.gsvg{width:100%;height:auto;display:block;background:var(--tray);border-radius:10px;margin:6px 0}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">🧪</div><div><h1>Conductivity Meter</h1><p>Grade 7 · Activity 5 · Conductivity meter using Arduino (water + salt)</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Project steps"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D model of the conductivity meter. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="iso">3D</button><button class="btn" data-v="front">Front</button><button class="btn" data-v="top">Top</button><button class="btn" data-v="cups">Cups</button><button class="btn" data-v="board">Wiring</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+</div>
+<div>
+<!-- 1 Build -->
+<section class="card panel" id="p0">
+ <div class="k">Step 1 · Materials</div>
+ <h2>Set up your conductivity meter</h2>
+ <p style="margin-top:0">Salt water <b>conducts electricity</b> better than tap water! Build a meter that measures it. Choose the right part for each step. Some parts are not needed.</p>
+ <ol class="steps" id="bSteps"></ol>
+ <div class="tray" id="tray"></div>
+ <div class="msg" id="mB"></div>
+ <div class="next"><button class="btn pri" data-go="1" id="nB" disabled>Next: wire it ▶</button></div>
+</section>
+<!-- 2 Wire -->
+<section class="card panel" id="p1">
+ <div class="k">Step 2 · Circuit design</div>
+ <h2>Connect the sensor and the RGB LED</h2>
+ <p style="margin-top:0">Choose a wire, then choose where it goes. The long leg of the RGB LED is the 2nd terminal.</p>
+ <h3>Breadboard power</h3><div class="wires" id="wP"></div>
+ <h3>Soil moisture sensor (our probes)</h3><div class="wires" id="wS"></div>
+ <h3>RGB LED</h3><div class="wires" id="wL"></div>
+ <h3>Goes to</h3><div class="pins" id="pins"></div>
+ <div class="msg" id="mW">Choose a wire first.</div>
+ <div class="next"><button class="btn pri" data-go="2" id="nW" disabled>Next: the water ▶</button></div>
+</section>
+<!-- 3 Water -->
+<section class="card panel" id="p2">
+ <div class="k">Step 3 · Water solution</div>
+ <h2>Prepare the water</h2>
+ <p style="margin-top:0">When salt dissolves in water, it breaks into tiny charged particles called <b>ions</b>. Ions carry electricity through the water.</p>
+ <ol class="steps" id="waSteps"><li>Fill two cups with tap water.</li><li>Add salt to cup 1.</li><li>Stir it to dissolve the salt.</li></ol>
+ <div class="row"><button class="btn" id="waFill">🚰 Fill both cups</button><button class="btn" id="waSalt" disabled>🧂 Add a spoon of salt to cup 1</button><button class="btn" id="waStir" disabled>🥄 Stir</button></div>
+ <div class="msg" id="mWa">Start by filling both cups with tap water.</div>
+ <div class="next"><button class="btn pri" data-go="3" id="nWa" disabled>Next: program it ▶</button></div>
+</section>
+<!-- 4 Program -->
+<section class="card panel" id="p3">
+ <div class="k">Step 4 · Code</div>
+ <h2>Program the meter</h2>
+ <p style="margin-top:0">Tap the blocks in order. The Arduino code is written for you as you go. Three blocks are not needed!</p>
+ <div class="palette" id="pal"></div>
+ <div class="split"><div><div class="small"><b>Your program</b></div><div class="script" id="script"></div></div><div><div class="small"><b>Arduino code</b></div><pre class="code" id="code"></pre></div></div>
+ <div class="calc"><b>How to read the number:</b> <code>analogRead(A0)</code> gives 0 to 1023. With our probes, a <b>lower</b> number means the water <b>conducts better</b>.<br>🟢 below 200 · 🔴 200–599 · 🟡 600 and up (red + green = yellow)</div>
+ <div class="msg" id="mP"></div>
+ <div class="row"><button class="btn" id="pReset">↺ Start again</button></div>
+ <div class="next"><button class="btn pri" data-go="4" id="nP" disabled>Next: test it ▶</button></div>
+</section>
+<!-- 5 Test -->
+<section class="card panel" id="p4">
+ <div class="k">Step 5 · Test procedure</div>
+ <h2>Dip the probe and record</h2>
+ <p style="margin-top:0">Dip the probe into each cup for <b>2 seconds</b>. Record the Serial Monitor value and the LED colour.</p>
+ <div class="row"><button class="btn" data-dip="salt">🧂 Dip in salt water</button><button class="btn" data-dip="tap">🚰 Dip in tap water</button><button class="btn" data-dip="air">⬆ Lift out</button></div>
+ <div class="row"><button class="btn pri" id="tRec" disabled>📝 Record this reading</button><span class="small" id="tHold"></span></div>
+ <table class="dt" aria-label="Results"><thead><tr><th>🧂 Salt cup</th><th>🚰 Tap water</th></tr></thead><tbody id="tBody"></tbody></table>
+ <div class="msg" id="mT">Record at least 2 readings for each cup.</div>
+ <div id="tQ" hidden><div class="q">Which water conducts electricity better?</div><div class="choices"><button class="btn" data-ans="salt">🧂 Salt water</button><button class="btn" data-ans="tap">🚰 Tap water</button><button class="btn" data-ans="same">They are the same</button></div><div class="fb" id="tQm"></div></div>
+ <div class="next"><button class="btn pri" data-go="5" id="nT" disabled>Next: questions ▶</button></div>
+</section>
+<!-- 6 Questions -->
+<section class="card panel" id="p5">
+ <div class="k">Step 6 · Math, science and reflection</div>
+ <h2>Show what you know</h2>
+ <div id="quiz"></div>
+ <div class="next"><button class="btn pri" data-go="6" id="nQ" disabled>Next: self-assessment ▶</button></div>
+</section>
+<!-- 7 Assess -->
+<section class="card panel" id="p6">
+ <div class="k">Step 7 · Self-assessment</div>
+ <h2>How did you do?</h2>
+ <p class="small" style="margin-top:0">Choose one box in each row that best describes your work.</p>
+ <div class="lvh" aria-hidden="true"><span>Beginner</span><span>Emerging</span><span>Accomplished</span><span>Expanding</span></div>
+ <div class="rub" id="rub"></div>
+ <div class="msg" id="mA"></div>
+ <div class="next"><button class="btn pri" id="finish" disabled>Finish my project 🎉</button></div>
+ <div id="fin" hidden>
+  <h3>🎉 Project complete: Conductivity Meter</h3>
+  <p style="margin:0">Your probes measured how well water conducts electricity, and your RGB LED showed it. Salt adds ions, and ions help current flow. Great work for life below water!</p>
+  <img id="finImg" alt="Your finished conductivity meter in 3D">
+  <div class="row"><button class="btn pri" data-go="7">Try the challenges 🏆</button></div>
+ </div>
+</section>
+<!-- 8 Challenges -->
+<section class="card panel" id="p7">
+ <div class="k">Step 8 · Challenges</div>
+ <h2>Be a water scientist</h2>
+ <p style="margin-top:0">Earn a star for each challenge: <b id="stars">0</b> / 3 ⭐</p>
+ <div class="ch"><div class="chh"><span class="star" data-st="c1">☆</span><h3 style="margin:0">🧂 Salt detective</h3></div>
+  <p>Does more salt mean better conductivity? Add salt spoon by spoon and measure each time.</p>
+  <div class="row"><button class="btn" id="c1add">🧂 Add 1 spoon</button><button class="btn pri" id="c1m">📏 Measure</button><button class="btn" id="c1new">↺ New cup</button><span class="small" id="c1sp">0 spoons</span></div>
+  <svg class="gsvg" viewBox="0 0 520 260" id="c1g" role="img" aria-label="Graph of reading against spoons of salt"></svg>
+  <div id="c1q" hidden><div class="q">What pattern do you see?</div><div class="choices"><button class="btn" data-c1="down">More salt → lower number → conducts better</button><button class="btn" data-c1="up">More salt → conducts worse</button><button class="btn" data-c1="none">Salt changes nothing</button></div></div>
+  <div class="msg" id="c1msg">Measure at least 4 different amounts (start with 0 spoons).</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c2">☆</span><h3 style="margin:0">🧪 Test other liquids</h3></div>
+  <p>Predict first, then dip the probe in each liquid.</p><div id="c2list"></div><div class="msg" id="c2msg">Make a prediction for each liquid, then press Test.</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c3">☆</span><h3 style="margin:0">🔵 Very salty = blue</h3></div>
+  <p>The 3rd leg of the RGB LED is <b>blue</b>. Connect it to pin 4 and make the LED glow blue for very salty water like the sea.</p>
+  <pre class="code" id="c3code" style="min-height:0"></pre>
+  <div class="row"><button class="btn pri" id="c3run">Check and test with sea water</button></div><div class="msg" id="c3msg"></div></div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+/* ================== Conductivity Meter · 3D lab ================== */
+const $=id=>document.getElementById(id);
+const S=['Build','Wire','Water','Program','Test','Questions','Assess','Challenges'];
+const KEY='britus-g7-conductivity3d';
+const st=(()=>{const d={done:[],placed:0,wires:{},wa:{fill:0,salt:0,stir:0},blocks:0,rec:{salt:[],tap:[]},ans:null,quiz:{},rub:{},finished:0,ch:{},c2:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off'};
+function hud(h){$('hud').innerHTML=h}
+function banner(t){const b=$('banner');b.textContent=t;b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,4000)}
+
+/* ================== 3D scene ================== */
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[0,3,0],r:42,aspect:.68,views:{
+ iso:[0.3,0.92,44,[-1,2.5,1.5]],front:[0,1.25,42,[-1,3,1]],top:[0,0.14,48,[-1,1,1]],cups:[0.12,1.1,24,[1,4,8]],board:[0.1,0.72,30,[-3,1,-4.5]],led:[0.3,1.0,14,[2.5,2,-3.5]],fin:[0.28,0.95,40,[-1,2.5,1.5]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const parts={};
+/* Arduino */
+parts.uno=grp();const uno=K.uno(parts.uno);parts.uno.position.set(-11.5,0,-4);parts.uno.rotation.y=.25;parts.uno.scale.setScalar(1.3);
+const TAGS=K.unoTags(uno,['2','3','4','A0','5V','GND','3.3V']);{const lift={'2':0,'3':.8,'4':1.6,'A0':0,'5V':.8,'GND':1.6,'3.3V':0};Object.entries(TAGS).forEach(([k,t])=>{t.position.y+=lift[k]-.2;t.scale.set(1,.5,1)})}
+/* breadboard */
+const BBX=1,BBZ=-4.6;
+const bbT=tex(1040,560,(x,w,h)=>{x.fillStyle='#f4f4ef';x.fillRect(0,0,w,h);const rail=(y,c)=>{x.strokeStyle=c;x.lineWidth=5;x.beginPath();x.moveTo(30,y);x.lineTo(w-30,y);x.stroke()};
+ rail(28,'#e53935');rail(118,'#2f6fe0');rail(h-118,'#e53935');rail(h-28,'#2f6fe0');x.fillStyle='#e53935';x.font='bold 30px Arial';x.fillText('+',4,62);x.fillStyle='#2f6fe0';x.fillText('−',4,104);
+ x.fillStyle='#55554f';for(let r of [50,86])for(let c=0;c<30;c++)x.fillRect(46+c*32+(c/5|0)*4,r,10,10);for(let r of [h-86,h-50])for(let c=0;c<30;c++)x.fillRect(46+c*32+(c/5|0)*4,r,10,10);
+ for(let r=0;r<5;r++)for(let c=0;c<30;c++)x.fillRect(46+c*32,160+r*30,10,10);for(let r=0;r<5;r++)for(let c=0;c<30;c++)x.fillRect(46+c*32,h-310+r*30+60,10,10);
+ x.fillStyle='#e2e2da';x.fillRect(30,h/2-10,w-60,20)});
+parts.bb=grp();(()=>{const top=new THREE.MeshStandardMaterial({map:bbT,roughness:.7}),side=M(0xe9e9e2);const b=Bx(13,.9,7,side,parts.bb,BBX,.45,BBZ);b.material=[side,side,top,side,side,side]})();
+/* rail points (top surface): + rail near the back edge, − rail next to it */
+const RP=x=>V3(BBX-6.5+x,0.95,BBZ-3.15),RN=x=>V3(BBX-6.5+x,0.95,BBZ-2.03);/* + and − rails along the back edge */
+/* RGB LED on the breadboard: 4 legs */
+const LEGX=[1.9,2.25,2.6,2.95],LEGZ=BBZ+.6;
+parts.led=grp();const ledBody=M(0xf2f2f2,{opacity:.75,roughness:.1,depthWrite:true});
+LEGX.forEach((x,i)=>Cy(.03,i===1?1.6:1.3,M(0xbbbbbb,{metalness:.7,roughness:.3}),parts.led,x,.9+(i===1?.8:.65),LEGZ,null,6));
+const ledC=Cy(.55,.8,ledBody,parts.led,2.42,2.25,LEGZ,null,24);const ledD=Sp(.55,ledBody,parts.led,2.42,2.65,LEGZ,24);Cy(.62,.12,ledBody,parts.led,2.42,1.82,LEGZ,null,24);
+const ledLight=new THREE.PointLight(0xffffff,0,9);ledLight.position.set(2.42,2.6,LEGZ+.4);parts.led.add(ledLight);
+const LC={green:0x2ee66b,red:0xff3b3b,yellow:0xffd400,blue:0x3b7bff};
+function setLed(c){if(!c){ledC.material=ledD.material=ledBody;ledLight.intensity=0;return}const m=M(LC[c],{emissive:LC[c],emissiveIntensity:.9,opacity:.92,roughness:.1,depthWrite:true});ledC.material=ledD.material=m;ledLight.color.setHex(LC[c]);ledLight.intensity=2.2}
+/* 1 kΩ resistor from leg 2 to the − rail */
+parts.res=grp();(()=>{const z0=LEGZ-.2,z1=RN(0).z;const mid=(z0+z1)/2;Cy(.02,Math.abs(z1-z0),M(0xbbbbbb,{metalness:.7}),parts.res,2.25,1.15,mid,'z',6);const b=Cy(.17,1.0,M(0xd9b98a),parts.res,2.25,1.15,mid,'z',14);
+ [[-.3,0x6b3b22],[-.1,0x111111],[.1,0xe53935],[.3,0xc9a227]].forEach(([o,c])=>Cy(.18,.07,M(c),parts.res,2.25,1.15,mid+o,'z',14));[z0,z1].forEach(z=>Cy(.02,.3,M(0xbbbbbb),parts.res,2.25,1.0,z,null,6))})();
+/* soil moisture sensor module (blue PCB, blue screw, 4 pins) */
+parts.mod=grp();parts.mod.position.set(9.5,0,-4.2);
+(()=>{const mT=tex(256,320,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#3b78ff';x.fillRect(70,90,70,70);x.strokeStyle='#fff';x.lineWidth=6;x.strokeRect(70,90,70,70);x.beginPath();x.moveTo(105,98);x.lineTo(105,152);x.moveTo(78,125);x.lineTo(132,125);x.stroke();
+ x.fillStyle='#151515';x.fillRect(160,180,60,40);x.fillStyle='#fff';x.font='bold 22px Arial';x.textAlign='center';['VCC','GND','D0','A0'].forEach((t,i)=>x.fillText(t,40+i*58,300));x.fillStyle='#ff4040';x.beginPath();x.arc(60,220,10,0,7);x.fill()});
+ const side=M(0x1d3fae),top=new THREE.MeshStandardMaterial({map:mT,roughness:.5});Bx(2.6,.16,3.2,side,parts.mod,0,.6,0).material=[side,side,top,side,side,side];
+ [-1.0,-.35,.3,.95].forEach(x=>{Bx(.25,.25,.25,0x111111,parts.mod,x,.8,-1.6);Cy(.04,.8,M(0xc9a227,{metalness:.8,roughness:.3}),parts.mod,x,1.2,-1.6,null,6)});
+ Bx(.7,.5,.3,0x111111,parts.mod,0,.85,1.55);Bx(2.4,.4,.5,0x222222,parts.mod,0,.2,0)})();
+const MODPIN={VCC:V3(8.5,1.65,-5.8),GND:V3(9.15,1.65,-5.8),A0:V3(10.45,1.65,-5.8)};
+/* probe (YL-69 fork) hangs on its wires; moves above the cups */
+parts.probe=grp();const probe=grp(parts.probe);
+(()=>{Bx(2.4,.9,.3,0x111111,probe,0,0,0);[[-.75],[.75]].forEach(([x])=>{Bx(.7,6,.12,M(0xb9b06a,{roughness:.4,metalness:.3}),probe,x,-3.45,0);const t=new THREE.Mesh(new THREE.ConeGeometry(.35,.7,4),M(0xb9b06a,{metalness:.3}));t.rotation.z=Math.PI;t.rotation.y=Math.PI/4;t.position.set(x,-6.8,0);probe.add(t);
+ for(let i=0;i<7;i++)Bx(.28,.18,.13,0xf5f5f0,probe,x+(i%2?.15:-.15),-1.2-i*.75,0)});Cy(.05,.3,M(0xc9a227),probe,-.3,.6,0,null,6);Cy(.05,.3,M(0xc9a227),probe,.3,.6,0,null,6)})();
+const PROBE={air:V3(1,10.5,8.5),salt:V3(-2.5,6.6,8.5),tap:V3(4.5,6.6,8.5)};probe.position.copy(PROBE.air);let probeTo=PROBE.air.clone();
+const probeWires=grp();function drawProbeWires(){while(probeWires.children.length){const m=probeWires.children.pop();m.geometry&&m.geometry.dispose()}
+ const a=probe.position;[[0xe53935,-.3],[0x6b3b22,.3]].forEach(([c,o])=>{const s=V3(a.x+o,a.y+.75,a.z),e=V3(9.5+o,.9,-2.6);const cu=new THREE.CatmullRomCurve3([s,V3(s.x,s.y+2.5,s.z-1),V3((s.x+e.x)/2,Math.max(s.y,4)+2,(s.z+e.z)/2),e]);K.mesh(new THREE.TubeGeometry(cu,30,.07,6,false),M(c),probeWires)})}
+parts.probe.add(probeWires);
+/* paper cups with water, salt and ions */
+function cupLabel(t){return tex(512,128,(x,w,h)=>{x.fillStyle='#3fa34d';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 64px Arial';x.textAlign='center';x.fillText(t,w/2,86)})}
+function cup(x0,label){const g=grp(parts.cups);g.position.set(x0,0,8.5);g.scale.setScalar(.78);
+ K.mesh(new THREE.LatheGeometry([[0,.02],[1.9,.02],[2.65,6.2],[2.75,6.3]].map(([r,y])=>new THREE.Vector2(r,y)),40),M(0xf6f2ea,{roughness:.8,side:THREE.DoubleSide,opacity:.5}),g);
+ const lm=new THREE.Mesh(new THREE.CylinderGeometry(2.48,2.2,1.4,40,1,true,-.9,1.8),new THREE.MeshStandardMaterial({map:cupLabel(label),roughness:.6}));lm.position.y=3.1;g.add(lm);g.userData.label=lm;
+ const w=K.mesh(new THREE.LatheGeometry([[0,.06],[1.86,.06],[2.5,5.0],[0,5.0]].map(([r,y])=>new THREE.Vector2(r,y)),40),M(0x7cc4f2,{opacity:.72,roughness:.05}),g);w.scale.y=.001;w.visible=false;g.userData.water=w;return g}
+parts.cups=grp();const cupS=cup(-2.5,'SALT WATER'),cupT=cup(4.5,'TAP WATER');
+const salt=grp(cupS);for(let i=0;i<40;i++)Bx(.12,.12,.12,0xffffff,salt,(Math.random()-.5)*2.6,.15+Math.random()*.15,(Math.random()-.5)*2.6);salt.visible=false;
+const ions=grp(cupS);for(let i=0;i<26;i++){const s=Sp(.13,M(i%2?0x2f6fe0:0xe53935,{roughness:.3}),ions,(Math.random()-.5)*3,.6+Math.random()*3.8,(Math.random()-.5)*3,10);s.userData={p:Math.random()*6,b:s.position.clone()}}ions.visible=false;
+const spoon=grp(K.sc);Cy(.08,6,M(0xc9ccd0,{metalness:.8,roughness:.2}),spoon,0,3,0,null,8);const sb=Sp(.45,M(0xc9ccd0,{metalness:.8,roughness:.2}),spoon,0,0,0,16);sb.scale.set(1,.35,1.4);spoon.position.set(-2.5,2.5,8.5);spoon.rotation.z=.25;spoon.visible=false;
+
+/* ================== 1. Build ================== */
+const BUILD=[['uno','Arduino Uno','The Arduino is the brain of the meter.'],['bb','Breadboard','The breadboard shares power with its + and − rails.'],['mod','Soil moisture sensor module','The sensor module turns the probe signal into a number.'],['probe','Probe (2 metal legs)','The probe legs go into the water.'],['led','RGB LED','The RGB LED shows the result in colour.'],['res','1 kΩ resistor','The resistor protects the LED.'],['cups','2 paper cups','Now the cups for the water.']];
+const EXTRA=[['x1','SG90 servo','No motor is needed: the LED shows the result.'],['x2','IR sensor','The IR sensor sees hands. We need probes that touch the water.']];
+const TRAY=[...BUILD.map(b=>({id:b[0],lab:b[1]})),...EXTRA.map(b=>({id:b[0],lab:b[1]}))].sort((a,b)=>a.lab.localeCompare(b.lab));
+function showParts(){BUILD.forEach(([id],i)=>parts[id].visible=i<st.placed);if(st.placed>3)drawProbeWires()}
+function drawBuild(){$('bSteps').innerHTML=BUILD.map((b,i)=>`<li class="${i<st.placed?'dn':i===st.placed?'cur':''}">${b[1]}: ${b[2]}</li>`).join('');
+ $('tray').innerHTML=TRAY.map(p=>{const k=BUILD.findIndex(b=>b[0]===p.id);return`<button type="button" class="btn ${k>=0&&k<st.placed?'used':''}" data-part="${p.id}">${p.lab}</button>`}).join('');
+ hud(`<div class="h">Part <b>${Math.min(st.placed,BUILD.length)}</b> of ${BUILD.length}</div>`);
+ if(st.placed>=BUILD.length){msg('mB','good','✔ Everything is on the table! Turn the model with your finger to look closely.');$('nB').disabled=false;done(0)}else if(!$('mB').dataset.k)msg('mB','',`Part ${st.placed+1} of ${BUILD.length}: ${BUILD[st.placed][2]}`);$('mB').dataset.k=''}
+$('tray').addEventListener('click',e=>{const b=e.target.closest('[data-part]');if(!b||st.placed>=BUILD.length)return;const id=b.dataset.part,want=BUILD[st.placed];
+ if(id===want[0]){st.placed++;save();SFX.ok();parts[id].visible=true;dropIn(parts[id],K.hooks,4);if(id==='probe')drawProbeWires();if(id==='led'||id==='res')K.view('led');else if(id==='cups')K.view('cups');else K.view('iso');msg('mB','good','✔ '+want[1]);$('mB').dataset.k='1';drawBuild()}
+ else{SFX.bad();const x=EXTRA.find(p=>p[0]===id);msg('mB','bad',x?'Not needed: '+x[2]:'Not yet. '+want[2])}});
+
+/* ================== 2. Wire ================== */
+const WIRES=[
+ {id:'p5',g:'wP',name:'Red jumper',sub:'+ rail → Arduino',hex:'#e53935',col:0xe53935,to:'5V',a:()=>RP(.4),hint:'The + rail gets its power from the 5V pin.'},
+ {id:'pG',g:'wP',name:'Black jumper',sub:'− rail → Arduino',hex:'#222',col:0x222222,to:'GND',a:()=>RN(.4),hint:'The − rail connects to a GND pin.'},
+ {id:'sV',g:'wS',name:'Red wire',sub:'sensor VCC',hex:'#e53935',col:0xe53935,to:'+ rail',a:()=>MODPIN.VCC,hint:'VCC takes power from the + rail on the breadboard.'},
+ {id:'sG',g:'wS',name:'Black wire',sub:'sensor GND',hex:'#222',col:0x222222,to:'− rail',a:()=>MODPIN.GND,hint:'GND goes to the − rail on the breadboard.'},
+ {id:'sA',g:'wS',name:'Yellow wire',sub:'sensor A0',hex:'#e8c13a',col:0xe8c13a,to:'A0',a:()=>MODPIN.A0,hint:'A0 on the sensor goes to A0 on the Arduino (analog in).'},
+ {id:'l1',g:'wL',name:'Red wire',sub:'LED 1st terminal (red)',hex:'#e53935',col:0xe53935,to:'2',a:()=>V3(LEGX[0],.95,LEGZ+1.2),hint:'The 1st terminal is red: it goes to pin 2.'},
+ {id:'l2',g:'wL',name:'1 kΩ resistor',sub:'LED 2nd terminal (long leg)',hex:'#c8a165',col:0,to:'− rail',hint:'The long leg goes through the 1 kΩ resistor to the − rail.'},
+ {id:'l3',g:'wL',name:'Nothing',sub:'LED 3rd terminal (blue)',hex:'#9aa3b0',col:0,to:'Leave empty',hint:'The 3rd terminal (blue) stays empty in this project.'},
+ {id:'l4',g:'wL',name:'Green wire',sub:'LED 4th terminal (green)',hex:'#3aa655',col:0x3aa655,to:'3',a:()=>V3(LEGX[3],.95,LEGZ+1.2),hint:'The 4th terminal is green: it goes to pin 3.'}];
+const TGT=['2','3','4','A0','5V','GND','+ rail','− rail','Leave empty'];
+const cab=grp();let wSel=null;
+function endOf(w){if(w.to==='+ rail')return RP(w.id==='sV'?11:3);if(w.to==='− rail')return RN(w.id==='sG'?10.4:3);return K.unoPin(uno,w.to)}
+function drawCables(){while(cab.children.length){const m=cab.children.pop();m.geometry&&m.geometry.dispose()}
+ WIRES.forEach(w=>{if(st.wires[w.id]&&w.a)K.cable(cab,w.a(),endOf(w),w.col,w.to.includes('rail')?1.4:2.4)});parts.res.visible=st.placed>5}
+function drawWires(){['wP','wS','wL'].forEach(g=>$(g).innerHTML=WIRES.filter(w=>w.g===g).map(w=>`<button type="button" class="wire ${st.wires[w.id]?'ok':''} ${wSel===w.id?'sel':''}" data-w="${w.id}"><i style="background:${w.hex}"></i><span>${w.name}<small>${w.sub}${st.wires[w.id]?' → '+w.to+' ✔':''}</small></span></button>`).join(''));
+ $('pins').innerHTML=TGT.map(p=>`<button type="button" class="btn" data-pin="${p}">${p}</button>`).join('');
+ const n=Object.keys(st.wires).length;hud(`<div class="h">Connections: <b>${n}</b> / ${WIRES.length}</div>`);
+ Object.entries(TAGS).forEach(([k,t])=>{K.setTag(t,k,WIRES.some(w=>st.wires[w.id]&&w.to===k));t.visible=cur===1});
+ if(n===WIRES.length){msg('mW','good','✔ Everything is connected: probes → A0, red LED → pin 2, green LED → pin 3, power through the breadboard rails.');$('nW').disabled=false;done(1)}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-w]');if(b){wSel=b.dataset.w;SFX.click();const w=WIRES.find(x=>x.id===wSel);msg('mW','',`${w.name} (${w.sub}) selected. Where does it go?`);drawWires();K.view(w.g==='wL'?'led':'board');return}
+ const p=e.target.closest('[data-pin]');if(!p)return;if(!wSel){SFX.bad();msg('mW','bad','Choose a wire first.');return}
+ const w=WIRES.find(x=>x.id===wSel);if(p.dataset.pin===w.to){st.wires[w.id]=1;save();wSel=null;SFX.ok();drawCables();msg('mW','good',`✔ ${w.name} → ${w.to}.`);drawWires()}else{SFX.bad();msg('mW','bad',`Not ${p.dataset.pin}. ${w.hint}`)}});
+
+/* ================== 3. Water ================== */
+let fillT=0,stirT=0;
+function waDraw(){const w=st.wa,li=$('waSteps').children;li[0].className=w.fill?'dn':'cur';li[1].className=w.salt?'dn':w.fill?'cur':'';li[2].className=w.stir?'dn':w.salt?'cur':'';
+ $('waSalt').disabled=!w.fill;$('waStir').disabled=!w.salt||w.stir;[cupS,cupT].forEach(c=>{c.userData.water.visible=!!w.fill;if(w.fill&&!fillT)c.userData.water.scale.y=1});salt.visible=!!w.salt&&!w.stir;ions.visible=!!w.stir;cupS.userData.water.material=M(w.salt?0x9fd2f2:0x7cc4f2,{opacity:.72,roughness:.05});
+ if(w.stir){msg('mWa','good','✔ The salt dissolved into ions (red + and blue −). Cup 1 is salt water, cup 2 is tap water.');$('nWa').disabled=false;done(2)}}
+$('waFill').onclick=()=>{st.wa.fill=1;save();fillT=.001;[cupS,cupT].forEach(c=>{c.userData.water.visible=true;c.userData.water.scale.y=.001});SFX.click();msg('mWa','','Filling the cups…');waDraw()};
+$('waSalt').onclick=()=>{st.wa.salt=Math.min(3,st.wa.salt+1);save();salt.visible=true;salt.position.y=5;SFX.click();msg('mWa','',`${st.wa.salt} spoon${st.wa.salt>1?'s':''} of salt in cup 1. It sits at the bottom… stir it!`);waDraw()};
+$('waStir').onclick=()=>{stirT=2.2;spoon.visible=true;SFX.click()};
+K.hooks.push(dt=>{if(fillT){fillT+=dt*.6;const k=Math.min(1,fillT);[cupS,cupT].forEach(c=>c.userData.water.scale.y=k);if(k>=1)fillT=0}
+ if(salt.visible&&salt.position.y>0)salt.position.y=Math.max(0,salt.position.y-dt*8);
+ if(stirT>0){stirT-=dt;const a=performance.now()/180;spoon.position.set(-2.5+Math.cos(a)*.8,2.5,8.5+Math.sin(a)*.8);if(stirT<=0){spoon.visible=false;st.wa.stir=1;save();SFX.ok();waDraw()}}
+ if(ions.visible)ions.children.forEach(s=>{s.userData.p+=dt;s.position.set(s.userData.b.x+Math.sin(s.userData.p)*.3,s.userData.b.y+Math.cos(s.userData.p*1.3)*.2,s.userData.b.z+Math.cos(s.userData.p)*.3)});
+ probe.position.lerp(probeTo,Math.min(1,dt*3));if(probe.position.distanceTo(probeTo)>.01)drawProbeWires()});
+
+/* ================== 4. Program ================== */
+const BL=[
+ {t:'when Arduino starts',c:'hat',code:['void setup() {'],ind:0},
+ {t:'set A0 as INPUT (probes)',c:'sns',code:['  pinMode(A0, INPUT);'],ind:1,hint:'First tell the Arduino where the probes are: A0.'},
+ {t:'set pins 2 and 3 as OUTPUT (LED)',c:'oth',code:['  pinMode(2, OUTPUT);','  pinMode(3, OUTPUT);'],ind:1,hint:'Now the LED pins: 2 and 3 are outputs.'},
+ {t:'start the Serial Monitor at 9600',c:'oth',code:['  Serial.begin(9600);','}'],ind:1,hint:'Open the Serial Monitor so you can see the numbers.'},
+ {t:'forever',c:'ctl',code:['','void loop() {'],ind:0,hint:'Now the part that repeats forever.'},
+ {t:'Conductivity = read A0',c:'sns',code:['  Conductivity = analogRead(A0);'],ind:1,hint:'Read the probes.'},
+ {t:'print Conductivity',c:'oth',code:['  Serial.println(Conductivity);'],ind:1,hint:'Show the number on the Serial Monitor.'},
+ {t:'if below 200 → GREEN (pin 3)',c:'ctl',code:['  if (Conductivity < 200) {','    digitalWrite(2, LOW); digitalWrite(3, HIGH);','  }'],ind:1,hint:'First check the best conductors: below 200 is green.'},
+ {t:'else if below 600 → RED (pin 2)',c:'ctl',code:['  else if (Conductivity < 600) {','    digitalWrite(2, HIGH); digitalWrite(3, LOW);','  }'],ind:1,hint:'Next: 200 to 599 is red.'},
+ {t:'else → YELLOW (pins 2 + 3)',c:'ctl',code:['  else {','    digitalWrite(2, HIGH); digitalWrite(3, HIGH);','  }'],ind:1,hint:'Everything else: red + green = yellow.'},
+ {t:'wait 10 ms',c:'ctl',code:['  delay(10);','}'],ind:1,hint:'A tiny pause before reading again.'}];
+const DIS=[{t:'move servo to 90°',c:'mot',why:'There is no servo in this project.'},{t:'read digital pin 7',c:'sns',why:'The probes give a number, so we read the analog pin A0.'},{t:'wait 111 ms',c:'ctl',why:'That is the hand wash timer! Here we only wait 10 ms.'}];
+const PAL=[...BL.map((b,i)=>({...b,i})),...DIS.map((b,i)=>({...b,i:-1-i}))].sort((a,b)=>((a.t.length*7)%13)-((b.t.length*7)%13));
+function drawProg(){$('pal').innerHTML=PAL.map(b=>`<button type="button" class="blk ${b.c} ${b.i>=0&&b.i<st.blocks?'used':''}" data-b="${b.i}">${b.t}</button>`).join('');
+ $('script').innerHTML=st.blocks?BL.slice(0,st.blocks).map(b=>`<span class="blk ${b.c}" style="margin-left:${b.ind*18}px">${b.t}</span>`).join(''):'<span class="small">Tap the first block…</span>';
+ const L=['int Conductivity = 0;',''];BL.slice(0,st.blocks).forEach((b,i)=>b.code.forEach(l=>{const e=l.replace(/</g,'&lt;');L.push(i===st.blocks-1?`<span class="new">${e}</span>`:e)}));$('code').innerHTML=L.join('\n');
+ hud(`<div class="h">Blocks: <b>${st.blocks}</b> / ${BL.length}</div>`);if(st.blocks>=BL.length){msg('mP','good','✔ Your program is complete! Upload it and open the Serial Monitor.');$('nP').disabled=false;done(3)}}
+$('pal').addEventListener('click',e=>{const b=e.target.closest('[data-b]');if(!b||st.blocks>=BL.length)return;const i=+b.dataset.b;
+ if(i===st.blocks){st.blocks++;save();SFX.ok();msg('mP','','✔ '+BL[i].t);drawProg()}else if(i<0){SFX.bad();msg('mP','bad','Not needed: '+DIS[-1-i].why)}else{SFX.bad();msg('mP','bad','Not yet. '+BL[st.blocks].hint)}});
+$('pReset').onclick=()=>{st.blocks=0;save();$('nP').disabled=true;msg('mP','','');drawProg()};
+
+/* ================== 5. Test ================== */
+const LIQ={air:1016,tap:430,distilled:905,sugar:870,lemon:310,sea:62};
+const saltRead=sp=>Math.round(40+390*Math.exp(-1.1*sp));
+const noisy=v=>Math.max(0,Math.min(1023,Math.round(v+(Math.random()-.5)*12)));
+const colorOf=v=>v<200?'green':v<600?'red':'yellow';const CN={green:'Green',red:'Red',yellow:'Yellow',blue:'Blue'};
+const TT={where:'air',since:0,val:LIQ.air,log:[],liq:null,blue:false};
+function baseVal(){if(TT.where==='air')return LIQ.air;if(TT.where==='salt')return saltRead(TT.spoons!=null?TT.spoons:Math.max(1,st.wa.salt||1));return TT.liq?LIQ[TT.liq]:LIQ.tap}
+function serial(){return `<div class="h" style="font-family:Consolas,monospace;background:rgba(20,26,43,.92);min-width:170px"><span style="color:#9fb0c4;font-size:11px">Serial Monitor · 9600</span><br>${TT.log.slice(-6).join('<br>')}</div>`}
+setInterval(()=>{if(cur!==4&&cur!==7)return;const inWater=TT.where!=='air'&&probe.position.distanceTo(probeTo)<.3;TT.val=noisy(inWater?baseVal():LIQ.air);TT.log.push(TT.val);if(TT.log.length>30)TT.log.shift();
+ const c=TT.blue&&TT.val<100?'blue':colorOf(TT.val);setLed(c);
+ if(cur===4){const held=TT.where!=='air'&&performance.now()-TT.since>=2000;$('tRec').disabled=!held||st.rec[TT.where].length>=4;$('tHold').textContent=TT.where==='air'?'':held?'2 seconds ✔ ready':`Hold still… ${Math.max(0,2-(performance.now()-TT.since)/1000).toFixed(1)} s`}
+ hud(serial()+`<div class="h">LED: <b>${CN[c]}</b></div>`)},250);
+function dip(w){TT.where=w;TT.since=performance.now();probeTo=PROBE[w].clone()}
+document.querySelectorAll('[data-dip]').forEach(b=>b.onclick=()=>{dip(b.dataset.dip);K.view('cups')});
+function recDraw(){let h='';for(let i=0;i<4;i++){const a=st.rec.salt[i],b=st.rec.tap[i];h+=`<tr><td>${a?`${a.v} · ${CN[a.c]} LED`:''}</td><td>${b?`${b.v} · ${CN[b.c]} LED`:''}</td></tr>`}$('tBody').innerHTML=h;
+ const ok=st.rec.salt.length>=2&&st.rec.tap.length>=2;$('tQ').hidden=!ok;
+ if(ok&&st.ans==='salt'){$('tQm').style.color='var(--ok)';$('tQm').textContent='✔ Salt water conducts better: its number is much lower and the LED is green. Salt adds ions that carry the current.';$('nT').disabled=false;done(4)}}
+$('tRec').onclick=()=>{const w=TT.where;if(w==='air')return;st.rec[w].push({v:TT.val,c:colorOf(TT.val)});save();SFX.ok();recDraw();msg('mT','good',`Recorded ${TT.val} for the ${w==='salt'?'salt cup':'tap water'} (${CN[colorOf(TT.val)]} LED).`);TT.since=performance.now()};
+document.querySelectorAll('[data-ans]').forEach(b=>b.onclick=()=>{st.ans=b.dataset.ans;save();if(st.ans!=='salt'){SFX.bad();$('tQm').style.color='var(--warn)';$('tQm').textContent='Look at your table again: a lower number means the water conducts better.'}else{SFX.done();banner('✔ Salt water conducts better!')}recDraw()});
+
+/* ================== 6. Questions ================== */
+const Q=[{q:'1. A student adds 5 g of salt to 250 ml of water, then another 3.5 g. What is the total amount of salt dissolved?',o:['7.5 g','8.5 g','9.5 g'],a:1,e:'5 g + 3.5 g = 8.5 g.'},
+ {q:'2. When salt dissolves in water, it breaks into tiny charged particles. What are they called?',o:['Molecules','Ions','Atoms'],a:1,e:'Charged particles are called ions.'},
+ {q:'3. Pure water has a conductivity of 0.05 units and salt water 12.5 units. How many times greater is salt water?',o:['150 times','200 times','250 times'],a:2,e:'12.5 ÷ 0.05 = 250 times.'},
+ {q:'4. Life below water: how does your conductivity meter help?',o:['Tests water quality','Designs faster aircraft','Builds city highways'],a:0,e:'It tests how dissolved substances change the water, to protect sea life.'}];
+function drawQuiz(){$('quiz').innerHTML=Q.map((x,i)=>{const c=st.quiz[i];return`<div class="q">${x.q}</div><div class="choices">${x.o.map((o,j)=>`<button type="button" class="btn ${c==null?'':j===x.a&&c===x.a?'right':j===c?'wrong':''}" data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div><div class="fb" style="color:${c===x.a?'var(--ok)':'var(--warn)'}">${c==null?'':c===x.a?'✔ '+x.e:'Not quite, try again!'}</div>`}).join('');
+ const ok=Q.every((x,i)=>st.quiz[i]===x.a);$('nQ').disabled=!ok;if(ok)done(5)}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('[data-o]');if(!b)return;const i=+b.dataset.q,o=+b.dataset.o;st.quiz[i]=o;save();o===Q[i].a?SFX.ok():SFX.bad();drawQuiz()});
+
+/* ================== 7. Assess ================== */
+const RUB=[['Understand the challenge',['Even with help, I was not sure what to do.','After some help, I understood.','I understood and need a little practice.','I understood well and could help a classmate.']],
+ ['Brainstorm your model',['I used the example without changes.','I changed one or two things.','I made most of my own design.','I created my own design and it worked well.']],
+ ['Record results and data',['I did not record results.','I recorded some results.','I recorded most results clearly.','I recorded all results clearly.']],
+ ['Build and test',['My model did not work.','It worked a little.','It worked most of the time.','It worked really well; I tested it more than once.']],
+ ['How I feel about this project',['☹️','😐','🙂','😄']],
+ ['Connect to a Global Goal',['No connection.','A little.','Quite a lot.','A lot, and I can explain how.']]];
+function drawRub(){$('rub').innerHTML=RUB.map((r,i)=>`<div><div class="rq">${i+1}. ${r[0]}</div><div class="lv" role="radiogroup" aria-label="${r[0]}">${r[1].map((t,j)=>`<button type="button" role="radio" aria-checked="${st.rub[i]===j}" class="${st.rub[i]===j?'on':''}" data-r="${i}" data-l="${j}" ${i===4?`aria-label="${['Beginner','Emerging','Accomplished','Expanding'][j]}" style="font-size:24px"`:''}>${t}</button>`).join('')}</div></div>`).join('');
+ const n=Object.keys(st.rub).length;$('finish').disabled=n<RUB.length;msg('mA','',n<RUB.length?`${n} of ${RUB.length} rows done.`:'All rows done. Press Finish!')}
+$('rub').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;st.rub[b.dataset.r]=+b.dataset.l;save();SFX.click();drawRub()});
+function showFin(){st.placed=BUILD.length;showParts();drawCables();Object.assign(st.wa,{fill:1,salt:Math.max(1,st.wa.salt),stir:1});waDraw();dip('salt');probe.position.copy(PROBE.salt);drawProbeWires();setLed('green');K.view('fin',true);
+ setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false},500)}
+$('finish').onclick=()=>{st.finished=1;save();done(6);SFX.done();showFin();setTimeout(()=>$('fin').scrollIntoView({behavior:'smooth',block:'center'}),600)};
+
+/* ================== 8. Challenges ================== */
+function star(k,id,h){msg(id,'good',h);if(!st.ch[k]){st.ch[k]=1;save()}SFX.done();drawStars()}
+function drawStars(){const n=['c1','c2','c3'].filter(k=>st.ch[k]).length;$('stars').textContent=n;document.querySelectorAll('[data-st]').forEach(e=>{const on=!!st.ch[e.dataset.st];e.textContent=on?'★':'☆';e.closest('.ch').classList.toggle('won',on)});if(n)done(7)}
+const C1={sp:0,pts:{}};
+function c1draw(){const P=Object.entries(C1.pts).map(([k,v])=>[+k,v]).sort((a,b)=>a[0]-b[0]);const X=k=>60+k*84,Y=v=>226-v/450*190;
+ let s=`<line x1="60" y1="226" x2="500" y2="226" stroke="#9b8f78" stroke-width="2"/><line x1="60" y1="30" x2="60" y2="226" stroke="#9b8f78" stroke-width="2"/>`;
+ [0,100,200,300,400].forEach(v=>s+=`<text x="52" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="currentColor">${v}</text><line x1="60" y1="${Y(v)}" x2="500" y2="${Y(v)}" stroke="#ccc" stroke-dasharray="3 4"/>`);
+ [0,1,2,3,4,5].forEach(k=>s+=`<text x="${X(k)}" y="244" text-anchor="middle" font-size="12" fill="currentColor">${k}</text>`);s+=`<text x="280" y="258" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">spoons of salt</text>`;
+ if(P.length>1)s+=`<polyline points="${P.map(([k,v])=>`${X(k)},${Y(v)}`).join(' ')}" fill="none" stroke="#1f7fae" stroke-width="3"/>`;
+ P.forEach(([k,v])=>s+=`<circle cx="${X(k)}" cy="${Y(v)}" r="6" fill="${{green:'#2ee66b',red:'#ff3b3b',yellow:'#ffd400'}[colorOf(v)]}" stroke="#333"/><text x="${X(k)}" y="${Y(v)-11}" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">${v}</text>`);
+ $('c1g').innerHTML=s;$('c1sp').textContent=`${C1.sp} spoon${C1.sp===1?'':'s'}`;$('c1q').hidden=P.length<4||!(0 in C1.pts)}
+$('c1add').onclick=()=>{if(C1.sp<5){C1.sp++;salt.visible=true;salt.position.y=5;SFX.click()}c1draw()};
+$('c1new').onclick=()=>{C1.sp=0;C1.pts={};c1draw();msg('c1msg','','New cup of tap water. Measure at 0 spoons first.')};
+$('c1m').onclick=()=>{TT.spoons=C1.sp;TT.liq=null;dip('salt');K.view('cups');setTimeout(()=>{const v=noisy(saltRead(C1.sp));C1.pts[C1.sp]=v;c1draw();msg('c1msg','',`${C1.sp} spoon${C1.sp===1?'':'s'}: ${v} (${CN[colorOf(v)]} LED). ${Object.keys(C1.pts).length<4?'Add more salt and measure again.':'Look at the pattern!'}`)},1200)};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c1]');if(!b)return;if(b.dataset.c1==='down')star('c1','c1msg','⭐ More salt → more ions → lower number → conducts better. After about 3 spoons it hardly changes: the water is nearly full of ions.');else{SFX.bad();msg('c1msg','bad','Look at the graph again: what happens to the number as you add salt?')}});
+const L2=[['distilled','💧 Distilled water',0,0xe6f4ff],['sugar','🍬 Sugar water',0,0xf6efe0],['lemon','🍋 Lemon juice',1,0xf6e27a],['sea','🌊 Sea water',1,0x4aa3c9]];
+function c2draw(){$('c2list').innerHTML=L2.map(([k,n,good])=>{const r=st.c2[k]||{};return`<div class="row" style="border-bottom:1px solid var(--line);padding-bottom:6px"><b style="min-width:140px">${n}</b><span class="seg" role="group"><button class="${r.p==='good'?'on':''}" data-p2="${k}" data-v="good">Conducts well</button><button class="${r.p==='poor'?'on':''}" data-p2="${k}" data-v="poor">Conducts poorly</button></span><button class="btn" data-t2="${k}" ${r.p?'':'disabled'}>Test</button>${r.v!=null?`<span>${r.v} · ${CN[colorOf(r.v)]} ${((r.v<600)===!!good)===(r.p==='good')?'✔':'✖ surprise!'}</span>`:''}</div>`}).join('')}
+document.addEventListener('click',e=>{const p=e.target.closest('[data-p2]');if(p){st.c2[p.dataset.p2]=Object.assign(st.c2[p.dataset.p2]||{},{p:p.dataset.v});save();c2draw();return}
+ const t=e.target.closest('[data-t2]');if(!t)return;const k=t.dataset.t2,L=L2.find(x=>x[0]===k);cupT.userData.water.material=M(L[3],{opacity:.75,roughness:.05});cupT.userData.water.visible=true;cupT.userData.water.scale.y=1;TT.liq=k;dip('tap');K.view('cups');
+ setTimeout(()=>{st.c2[k].v=noisy(LIQ[k]);save();c2draw();const why={distilled:'Distilled water has almost no ions, so it hardly conducts.',sugar:'Sugar dissolves but makes no ions, so sugar water conducts poorly!',lemon:'Lemon juice has acid, which makes ions, so it conducts.',sea:'Sea water is full of salt ions: it conducts very well.'};
+  if(L2.every(([k])=>st.c2[k]&&st.c2[k].v!=null))star('c2','c2msg',`⭐ All 4 liquids tested! ${why[k]} Only things that make ions help electricity flow.`);else msg('c2msg','',why[k])},1300)});
+const C3={e1:['4','2','3'],e2:['OUTPUT','INPUT'],e3:['100','600','1023'],e4:['HIGH','LOW']};const c3v={};
+const s3=k=>`<select data-c3="${k}" style="font:inherit;background:#ffd27a;color:#141a2b;border:0;border-radius:4px"><option value="">?</option>${[...C3[k]].sort().map(o=>`<option>${o}</option>`).join('')}</select>`;
+$('c3code').innerHTML=['void setup() {','  ...',`  pinMode(${s3('e1')}, ${s3('e2')});   // new: blue leg`,'}','void loop() {','  Conductivity = analogRead(A0);',`  if (Conductivity &lt; ${s3('e3')}) {      // very salty`,`    digitalWrite(4, ${s3('e4')});           // blue`,'  }','  else if (Conductivity &lt; 200) { ... green ... }','  ...','}'].join('\n');
+$('c3code').addEventListener('change',e=>{const k=e.target.dataset.c3;if(k)c3v[k]=e.target.value});
+$('c3run').onclick=()=>{const bad=Object.keys(C3).filter(k=>c3v[k]!==C3[k][0]);if(bad.length){SFX.bad();msg('c3msg','bad',{e1:'The blue leg goes to pin 4.',e2:'An LED pin is an OUTPUT.',e3:'Very salty water gives a very low number: below 100.',e4:'HIGH turns the blue light on.'}[bad[0]]);return}
+ TT.blue=true;TT.liq='sea';cupT.userData.water.material=M(0x4aa3c9,{opacity:.75,roughness:.05});cupT.userData.water.visible=true;cupT.userData.water.scale.y=1;dip('tap');K.view('led');setTimeout(()=>star('c3','c3msg','⭐ Sea water reads below 100 and the LED glows blue! Now your meter has 4 levels: blue, green, red and yellow.'),1600)};
+
+/* ================== navigation ================== */
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();
+ showParts();Object.values(TAGS).forEach(t=>t.visible=i===1);if(i>=1)drawCables();else{while(cab.children.length)cab.children.pop()}
+ TT.blue=i===7&&!!st.ch.c3;TT.liq=null;TT.spoons=null;if(i>=2)waDraw();setLed(null);if(i!==4&&i!==7)dip('air');
+ if(i===0){drawBuild();K.view('iso')}
+ if(i===1){drawWires();K.view('board')}
+ if(i===2){hud('<div class="h">Prepare the water</div>');K.view('cups')}
+ if(i===3){drawProg();K.view('board')}
+ if(i===4){dip('air');recDraw();K.view('cups')}
+ if(i===5){hud('<div class="h">Answer the 4 questions</div>');K.view('spin')}
+ if(i===6){hud('');if(st.finished)showFin();else K.view('fin')}
+ if(i===7){c1draw();c2draw();drawStars();K.view('cups')}
+ window.scrollTo(0,0)}
+drawBuild();drawWires();drawProg();drawQuiz();drawRub();
+go(st.finished?6:Math.min(...[0,1,2,3,4,5,6].filter(i=>!st.done.includes(i)),7));
+
+</script>
+</body>
+</html>
