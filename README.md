@@ -14,6 +14,7 @@ This project is made as a virtual lab for the **STEM Nexus Arabia curriculum**.
 | 3 | Little Lever Builder (homework) | `labs/little-lever-builder/` |
 | 4 | Power Up the Toys | `labs/power-toys/` |
 | 4 | Battery Builder (homework) | `labs/battery-builder/` |
+| 4 | Ring the Bell (Project 4, Early Electronics Kit) | `labs/bell/` |
 | 5 | Plants and Pollinators (Project 3) | `labs/pollinators/` |
 | 5 | Cleaning the Ocean (Project 4, LEGO WeDo 2.0) | `labs/ocean/` |
 | 5 | Sort to Recycle (Project 5, LEGO WeDo 2.0) | `labs/recycle/` |
