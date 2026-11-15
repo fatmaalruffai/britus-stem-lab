@@ -29,6 +29,7 @@ This project is made as a virtual lab for the **STEM Nexus Arabia curriculum**.
 | 9 | Reflection (Project 10) | `labs/reflection/` |
 | 9 | Wind Turbines (Project 12) | `labs/windturbines/` |
 | 9 | Weather Seesaw (Project 13) | `labs/weatherseesaw/` |
+| 11 | Raspberry Pi Pico Lab (Lessons 1–3: Meet the Pico, Blinking LED, Temperature Sensor) | `labs/picolab/` |
 
 Students sign in with two names (first name and father's name), their school, grade and the school's student password.
 
