@@ -16,6 +16,7 @@ This project is made as a virtual lab for the **STEM Nexus Arabia curriculum**.
 | 4 | Battery Builder (homework) | `labs/battery-builder/` |
 | 5 | Plants and Pollinators (Project 3) | `labs/pollinators/` |
 | 5 | Cleaning the Ocean (Project 4, LEGO WeDo 2.0) | `labs/ocean/` |
+| 5 | Sort to Recycle (Project 5, LEGO WeDo 2.0) | `labs/recycle/` |
 | 5 | Virtual Robotics Lab | `labs/robotics/` |
 | 7 | Touchless Hand Wash Timer | `labs/handwash/` |
 | 7 | Touchless Inventions | `labs/touchless/` |
