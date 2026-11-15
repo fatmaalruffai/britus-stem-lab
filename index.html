@@ -240,8 +240,12 @@ const SLIDES=[
  {id:'conductivity',grade:'Grade 7 · Activity 5',title:'Conductivity Meter',text:'Salt water conducts electricity better!',glow:'#1f6f9a',acc:'#7fd3f2'},
  {id:'pollinators',grade:'Grade 5 · Project 3',title:'Plants and Pollinators',text:'A robot bee that visits the flower.',glow:'#7a8b1e',acc:'#c8e86a'},
  {id:'ocean',grade:'Grade 5 · Project 4',title:'Cleaning the Ocean',text:'Three WeDo machines take plastic out of the sea.',glow:'#00838f',acc:'#7fe3ea'},
+ {id:'recycle',grade:'Grade 5 · Project 5',title:'Sort to Recycle',text:'A WeDo truck that sorts recycling by size.',glow:'#2e7d32',acc:'#9be29f'},
  {id:'robotics',grade:'Grade 5 · Robotics',title:'Virtual Robotics Lab',text:'Build and code animal robots in 3D.',glow:'#5a3aa8',acc:'#b9a2ff'},
  {id:'power-toys',grade:'Grade 4 · Electricity',title:'Power Up the Toys',text:'Series and parallel batteries in a toy car.',glow:'#9a3a22',acc:'#ffa184'},
+ {id:'bell',grade:'Grade 4 · Project 4',title:'Ring the Bell',text:'Snap together a musical doorbell and ring it.',glow:'#5e35b1',acc:'#c3b0ff'},
+ {id:'fishing',grade:'Grade 4 · Project 5',title:'Night Fishing',text:'A fish bait that glows only in water.',glow:'#1565c0',acc:'#9fd0ff'},
+ {id:'diaper',grade:'Grade 4 · Project 6',title:'Wet Diaper Alarm',text:'A light and sound alarm for a wet diaper.',glow:'#e65100',acc:'#ffcc80'},
  {id:'levers',grade:'Grade 3 · Simple Machines',title:'Levers',text:'First, second and third class levers.',glow:'#1d5aa8',acc:'#8cc0ff'}
 ];
 const GRADES=['KG','1','2','3','4','5','6','7','8','9','10','11','12'];
@@ -252,9 +256,13 @@ const PROJECTS={
  '3':[{id:'levers',chips:['Physics','Build','Test'],color:'c-blue',path:'labs/levers/index.html',title:'Levers',tag:'Simple Machines · Project 6',desc:'Build first, second and third class levers, test them and find levers in everyday life.',art:'levers'},
       {id:'little-lever',chips:['Build','3D','Homework'],color:'c-orange',path:'labs/little-lever-builder/index.html',title:'Little Lever Builder',tag:'Homework',desc:'Build the three levers again, see them in 3D, test them and earn your Lever Engineer certificate.',art:'little'}],
  '4':[{id:'power-toys',chips:['Circuits','Build','Test'],color:'c-red',path:'labs/power-toys/index.html',title:'Power Up the Toys',tag:'Electricity',desc:'Build series and parallel circuits, measure the voltage and design a toy that uses batteries.',art:'toys'},
-      {id:'battery-builder',chips:['Circuits','Homework'],color:'c-teal',path:'labs/battery-builder/index.html',title:'Battery Builder',tag:'Homework',desc:'Build battery circuits on the snap board and power up a toy car, robot and fan.',art:'battery'}],
+      {id:'battery-builder',chips:['Circuits','Homework'],color:'c-teal',path:'labs/battery-builder/index.html',title:'Battery Builder',tag:'Homework',desc:'Build battery circuits on the snap board and power up a toy car, robot and fan.',art:'battery'},
+      {id:'bell',chips:['Circuits','Build','Sound'],color:'c-purple',path:'labs/bell/index.html',title:'Ring the Bell',tag:'Project 4',desc:'Snap the book\'s musical doorbell circuit together in 3D, ring it for a visitor, time the tune and fix broken doorbells.'},
+      {id:'fishing',chips:['Circuits','Build','Water'],color:'c-blue',path:'labs/fishing/index.html',title:'Night Fishing',tag:'Project 5',desc:'Snap the book\'s water activated LED together in 3D, dip the fish bait in the pond, test which liquids conduct and design water alarms.'},
+      {id:'diaper',chips:['Circuits','Build','Health'],color:'c-orange',path:'labs/diaper/index.html',title:'Wet Diaper Alarm',tag:'Project 6',desc:'Snap the book\'s wet diaper alarm together in 3D, swap the button for the touch plate, drip water on a diaper and time the light and sound alarm.'}],
  '5':[{id:'pollinators',chips:['Biology','Build','Code'],color:'c-green',path:'labs/pollinators/index.html',title:'Plants and Pollinators',tag:'Project 3',desc:'Learn the parts of a flower, then build, connect, program and test a robot bee.',art:'bee'},
       {id:'ocean',chips:['Environment','Build','Code'],color:'c-teal',path:'labs/ocean/index.html',title:'Cleaning the Ocean',tag:'Project 4',desc:'Build the WeDo Reel, Sweep and Grab machines in 3D, program them and find which one is best for each kind of ocean plastic.'},
+      {id:'recycle',chips:['Environment','Build','Code'],color:'c-green',path:'labs/recycle/index.html',title:'Sort to Recycle',tag:'Project 5',desc:'Build the WeDo recycling truck in 3D, program it to flip its load, then change the design so it sorts boxes by size and shape.'},
       {id:'robotics',chips:['Build','Code','Robots'],color:'c-purple',path:'labs/robotics/index.html',title:'Virtual Robotics Lab',tag:'Robotics',desc:'Build and code animal robots in 3D: frog, turtle, crocodile and parrot.',art:'frog'}],
  '7':[{id:'handwash',chips:['Health','3D','Code'],color:'c-orange',path:'labs/handwash/index.html',title:'Touchless Hand Wash Timer',tag:'Activity 3 · Touchless Soap Dispenser',desc:'Build it in 3D: an IR sensor sees your hand, soap comes out and a servo counts 20 seconds of washing.',art:'handwash'},
       {id:'touchless',chips:['IR sensor','Servo','3D'],color:'c-purple',path:'labs/touchless/index.html',title:'Touchless Inventions',tag:'IR sensor + servo · 3 builds',desc:'Use the same idea to build a touchless trash can, a smart parking gate and a candy dispenser, then design your own invention.',art:'touchless'},
@@ -323,7 +331,7 @@ $('fSignin').onsubmit=e=>{e.preventDefault();const name=$('inName').value.trim()
  $('signErr').textContent='';
  /* a student keeps the grade she first signed in with (the real lock comes from the school login) */
  const prev=Object.values(Data._get(KEY_STUDENTS,{})).find(x=>slug(x.school)===slug(school)&&slug(x.name)===slug(name));const g=prev?prev.grade:grade;
- const s={id:slug(school)+'__'+g+'__'+slug(name),name,school,grade:g,joined:prev?prev.joined:new Date().toISOString()};Data.setCurrent(s);showProjects()};
+ const s={id:slug(school)+'__'+g+'__'+slug(name),name,school,grade:g,joined:prev?prev.joined:new Date().toISOString()};Data.setCurrent(s);{const nx=nextLab();if(nx){location.replace(nx);return}}showProjects()};
 $('btnSwitch').onclick=()=>{Data.signOut();$('fSignin').reset();view('vSignin')};
 
 /* projects */
@@ -392,7 +400,8 @@ $('btnPrint').onclick=()=>window.print();
 $('btnCertBack').onclick=()=>{location.hash='';showProjects()};
 window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#cert\/(.+)$/);if(m)showCert(decodeURIComponent(m[1]));else if(!$('vCert').hidden)showProjects()});
 
-function home(){try{const t=sessionStorage.getItem('britusTeacher');if(t&&t!=='1')TEACHER=t}catch(_){}const m=location.hash.match(/^#cert\/(.+)$/);Data.current()?(m?showCert(decodeURIComponent(m[1])):showProjects()):view('vSignin')}
+function nextLab(){/* came from a lab link: go back to it after signing in */try{const n=new URLSearchParams(location.search).get('next');if(!n)return '';const u=new URL(n,location.href);if(u.origin===location.origin&&/\/labs\//.test(u.pathname))return u.href}catch(_){}return ''}
+function home(){try{const t=sessionStorage.getItem('britusTeacher');if(t&&t!=='1')TEACHER=t}catch(_){}const m=location.hash.match(/^#cert\/(.+)$/);const nx=nextLab();if(nx&&(Data.current()||TEACHER)){location.replace(nx);return}Data.current()?(m?showCert(decodeURIComponent(m[1])):showProjects()):view('vSignin');if(nx&&!Data.current())$('signErr').textContent='Please sign in first to open this project.'}
 window.addEventListener('pageshow',()=>{if(!$('vProjects').hidden)showProjects()});
 home();
 </script>
