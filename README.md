@@ -16,6 +16,7 @@ This project is made as a virtual lab for the **STEM Nexus Arabia curriculum**.
 | 4 | Battery Builder (homework) | `labs/battery-builder/` |
 | 4 | Ring the Bell (Project 4, Early Electronics Kit) | `labs/bell/` |
 | 4 | Night Fishing (Project 5, Early Electronics Kit) | `labs/fishing/` |
+| 4 | Wet Diaper Alarm (Project 6, Early Electronics Kit) | `labs/diaper/` |
 | 5 | Plants and Pollinators (Project 3) | `labs/pollinators/` |
 | 5 | Cleaning the Ocean (Project 4, LEGO WeDo 2.0) | `labs/ocean/` |
 | 5 | Sort to Recycle (Project 5, LEGO WeDo 2.0) | `labs/recycle/` |

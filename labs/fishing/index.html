@@ -489,7 +489,7 @@ function banner(t){const b=$('banner');b.textContent=t;b.hidden=false;clearTimeo
 
 /* ================== 3D scene ================== */
 const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[0.6,0.5,-2],r:20,aspect:.62,views:{
- board:[0.25,0.95,12,[0.8,0.4,0]],top:[0,0.12,12,[0.8,0,0]],pond:[0.12,1.25,19,[-1,2.0,-8]],bait:[0.1,1.35,9,[-1,2.2,-8.8]],
+ board:[0.25,0.95,12,[0.8,0.4,0]],top:[0,0.12,12,[0.8,0,0]],pond:[0.12,1.25,19,[-1,2.0,-8]],bait:[0.15,1.3,9,[-1,3.4,-8.8]],
  fin:[0.3,1.1,24,[0,1.4,-4]]}});
 const {M,Bx,Cy,Sp,grp,tex}=K;const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
 const G=1.3,PLY=0.3;/* grid step, plate top */
@@ -585,29 +585,50 @@ const pond=grp();pond.position.set(0,0,-10);const WATER_TOP=2.2;
  Bx(16,0.3,7,M(0x3d2f22,{roughness:.95}),pond,0,0.15,0);/* bank */
  const tank=Bx(12,WATER_TOP-0.3,5,M(0x0b3d6b,{opacity:.6,transparent:true,roughness:.15}),pond,0,0.3+(WATER_TOP-0.3)/2,0);
  Bx(12,0.04,5,M(0x2c6fae,{opacity:.55,transparent:true,roughness:.05,metalness:.2}),pond,0,WATER_TOP,0);
- for(let i=0;i<10;i++){const r=Bx(0.15,0.8+Math.random()*0.9,0.15,M(0x2e7d32),pond,-5.5+Math.random()*11,0.7,-2+Math.random()*4);r.rotation.z=(Math.random()-.5)*0.4}})();
+ for(let i=0;i<14;i++){const h=1.2+Math.random()*1.6;const r=Cy(0.04,h,M(0x2e5d2a,{roughness:.8}),pond,-5.6+Math.random()*11.2,0.3+h/2,-2.2+Math.random()*1.2,'y',5);r.rotation.z=(Math.random()-.5)*0.3}
+ for(let i=0;i<6;i++){const pad=new THREE.Mesh(new THREE.CircleGeometry(0.45+Math.random()*0.25,20,0.3,Math.PI*1.85),M(0x3f8f3a,{roughness:.7,side:THREE.DoubleSide}));pad.rotation.x=-Math.PI/2;pad.rotation.z=Math.random()*6;pad.position.set(-5+Math.random()*10,WATER_TOP+0.03,-2+Math.random()*3.5);pond.add(pad);if(i%3===0){const fl=Sp(0.14,M(0xf8bbd0,{roughness:.5}),pond,pad.position.x,WATER_TOP+0.12,pad.position.z,10);fl.scale.y=0.6}}
+ for(let i=0;i<26;i++){const g=new THREE.DodecahedronGeometry(0.25+Math.random()*0.35,0);const m=new THREE.Mesh(g,M([0x6d6a66,0x7f7a73,0x5c5955][i%3],{roughness:.95}));const side=i%2;m.position.set(side?-6.4+Math.random()*12.8:(Math.random()<.5?-6.3:6.3),0.35+Math.random()*0.15,side?2.7+Math.random()*0.5:-2.5+Math.random()*5);m.rotation.set(Math.random()*3,Math.random()*3,0);m.scale.y=0.6;pond.add(m)}
+ Bx(12,0.08,5,M(0xc2a878,{roughness:1}),pond,0,0.34,0);for(let i=0;i<30;i++){const g=Sp(0.08+Math.random()*0.08,M(0x8d8172,{roughness:1}),pond,-5.8+Math.random()*11.6,0.4,-2.3+Math.random()*4.6,6);g.scale.y=0.5}})();
 /* fishing rod + line + fish bait prototype */
 const rod=grp(pond);rod.position.set(-7.5,0.3,1.8);(()=>{const r=Cy(0.08,7.5,M(0x6d4c2f),rod,0,0,0,'y',8);r.position.set(2.2,2.6,0);r.rotation.z=-1.05;Cy(0.22,0.25,M(0x333333),rod,0.6,1.1,0.2,'z',12)})();
+/* ---------- realistic fish (side-profile body with painted scales, fins and eyes) ---------- */
+function fishTex(c){return tex(512,280,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,c.back);g.addColorStop(0.45,c.mid);g.addColorStop(0.62,c.belly);g.addColorStop(1,c.belly);x.fillStyle=g;x.fillRect(0,0,w,h);
+ if(c.spots)for(let i=0;i<60;i++){x.fillStyle=c.spots;x.beginPath();x.arc(Math.random()*w*0.85+w*0.1,Math.random()*h*0.45+h*0.08,2+Math.random()*3,0,7);x.fill()}
+ if(c.stripe){const sg=x.createLinearGradient(0,h*0.42,0,h*0.56);sg.addColorStop(0,'rgba(0,0,0,0)');sg.addColorStop(0.5,c.stripe);sg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=sg;x.fillRect(0,h*0.42,w,h*0.14)}
+ x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=1.2;for(let yy=10;yy<h;yy+=11)for(let xx=(yy/11%2)*7;xx<w;xx+=14){x.beginPath();x.arc(xx,yy,7,0.2*Math.PI,0.8*Math.PI);x.stroke()}
+ x.strokeStyle='rgba(0,0,0,.35)';x.lineWidth=3;x.beginPath();x.moveTo(w*0.08,h*0.5);x.bezierCurveTo(w*0.4,h*0.44,w*0.7,h*0.48,w*0.95,h*0.5);x.stroke();
+ x.strokeStyle='rgba(0,0,0,.45)';x.lineWidth=4;x.beginPath();x.arc(w*0.06,h*0.5,h*0.3,-0.7,0.7);x.stroke();
+ if(c.lure){x.fillStyle='rgba(255,255,255,.35)';x.fillRect(w*0.3,h*0.55,w*0.3,h*0.18)}})}
+function mkFish(par,L,c){const f=grp(par);const s=new THREE.Shape();
+ s.moveTo(-0.55,0);s.bezierCurveTo(-0.52,0.17,-0.25,0.27,0.0,0.24);s.bezierCurveTo(0.22,0.21,0.32,0.1,0.38,0.06);s.lineTo(0.55,0.24);s.quadraticCurveTo(0.5,0,0.55,-0.22);s.lineTo(0.38,-0.05);s.bezierCurveTo(0.3,-0.12,0.1,-0.2,-0.05,-0.2);s.bezierCurveTo(-0.3,-0.2,-0.52,-0.14,-0.55,0);
+ const geo=new THREE.ExtrudeGeometry(s,{depth:0.06,bevelEnabled:true,bevelThickness:0.07,bevelSize:0.03,bevelSegments:5,curveSegments:24});geo.translate(0,0,-0.03);
+ const t=fishTex(c);t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping;t.repeat.set(1/1.1,1/0.6);t.offset.set(0.5,0.5);
+ const body=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map:t,roughness:c.lure?.25:.45,metalness:c.lure?.45:.15}));body.castShadow=true;f.add(body);
+ const fm=new THREE.MeshStandardMaterial({color:c.fin,transparent:true,opacity:.75,side:THREE.DoubleSide,roughness:.6});
+ const d=new THREE.Shape();d.moveTo(-0.12,0.22);d.quadraticCurveTo(0.0,0.4,0.18,0.2);d.lineTo(-0.12,0.22);f.add(new THREE.Mesh(new THREE.ShapeGeometry(d),fm));
+ [-1,1].forEach(k=>{const pf=new THREE.Shape();pf.moveTo(0,0);pf.quadraticCurveTo(0.12,-0.04,0.16,-0.12);pf.lineTo(0,0);const m=new THREE.Mesh(new THREE.ShapeGeometry(pf),fm);m.position.set(-0.32,-0.06,k*0.07);m.rotation.y=k*0.5;f.add(m);
+  const e=Sp(0.045,M(0x111111,{roughness:.1}),f,-0.43,0.06,k*0.085,12);Sp(0.015,M(0xffffff,{emissive:0xffffff}),f,-0.445,0.075,k*0.12,6);Cy(0.06,0.01,M(c.eye||0xd4b25a),f,-0.43,0.06,k*0.078,'z',14)});
+ const an=new THREE.Shape();an.moveTo(0.1,-0.18);an.quadraticCurveTo(0.2,-0.3,0.3,-0.1);an.lineTo(0.1,-0.18);f.add(new THREE.Mesh(new THREE.ShapeGeometry(an),fm));
+ f.scale.setScalar(L);f.userData.body=body;return f}
 const bait=grp(pond);const BAIT_UP=4.6,BAIT_DOWN=1.15;bait.position.set(-1.0,BAIT_UP,1.2);
-const fishMat=M(0xff8f00,{roughness:.4});
-(()=>{const b=Sp(0.6,fishMat,bait,0,0,0,20);b.scale.set(1.7,0.85,0.7);const t=new THREE.Mesh(new THREE.ConeGeometry(0.5,0.8,3),fishMat);t.rotation.z=Math.PI/2;t.position.set(1.25,0,0);t.scale.set(1,1,0.3);bait.add(t);
- Sp(0.12,M(0x111111),bait,-0.7,0.15,0.36,10);
- const win=Bx(0.6,0.4,0.05,M(0xcfefff,{opacity:.45,transparent:true}),bait,0.05,0.05,0.42);bait.userData.win=win;
- Bx(0.5,0.06,0.3,M(0xf2c230),bait,0,-0.5,0);/* touch plate on the belly */
- Cy(0.04,0.4,M(0x888888,{metalness:.7}),bait,-0.1,0.6,0,'y',6)})();
-const baitLed=Sp(0.13,M(0xff3b3b,{emissive:0x000000}),bait,-0.82,0.18,0.3,12);const baitLight=new THREE.PointLight(0xff3333,0,7);baitLight.position.set(-0.9,0.1,0.4);bait.add(baitLight);
+(()=>{const lure=mkFish(bait,2.0,{back:'#d35400',mid:'#ff9f1a',belly:'#ffe9b0',fin:0xff7a00,stripe:'rgba(120,40,0,.45)',spots:'rgba(90,30,0,.5)',lure:true,eye:0xffd54f});
+ const win=Bx(0.42,0.22,0.02,M(0xcfefff,{opacity:.45,transparent:true}),bait,0.05,-0.08,0.2);bait.userData.win=win;
+ const tp=Bx(0.5,0.05,0.18,M(0xf2c230,{metalness:.4,roughness:.3}),bait,0,-0.43,0);/* touch plate on the belly */
+ Cy(0.03,0.35,M(0xb0b0b0,{metalness:.8,roughness:.2}),bait,-1.05,0.0,0,'x',6);const eyelet=new THREE.Mesh(new THREE.TorusGeometry(0.06,0.015,6,14),M(0xb0b0b0,{metalness:.8}));eyelet.position.set(-1.24,0,0);bait.add(eyelet);
+ const hook=(x)=>{const h=grp(bait);h.position.set(x,-0.48,0);Cy(0.012,0.25,M(0x9e9e9e,{metalness:.9}),h,0,-0.12,0,'y',6);[0,2.1,4.2].forEach(a=>{const t=new THREE.Mesh(new THREE.TorusGeometry(0.07,0.012,6,12,Math.PI*1.2),M(0x9e9e9e,{metalness:.9}));t.position.set(Math.cos(a)*0.06,-0.28,Math.sin(a)*0.06);t.rotation.y=a;t.rotation.x=Math.PI/2;h.add(t)})};hook(-0.35);hook(0.45)})();
+const baitLed=Sp(0.07,M(0xff3b3b,{emissive:0x000000}),bait,-0.86,0.13,0.17,12);const baitLight=new THREE.PointLight(0xff3333,0,7);baitLight.position.set(-0.9,0.1,0.4);bait.add(baitLight);
 const glowT=tex(128,128,(x,w,h)=>{const g=x.createRadialGradient(w/2,h/2,2,w/2,h/2,w/2);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(0.25,'rgba(255,255,255,.6)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,w,h)});
 function glowSprite(par,sc){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowT,color:0xff3030,transparent:true,opacity:0,depthTest:false,blending:THREE.AdditiveBlending}));s.scale.set(sc,sc,sc);par.add(s);return s}
 const baitGlow=glowSprite(bait,3.2);baitGlow.position.set(-0.7,0.1,0.3);
 const lineGeo=new THREE.BufferGeometry().setFromPoints([V3(0,0,0),V3(0,1,0)]);const line=new THREE.Line(lineGeo,new THREE.LineBasicMaterial({color:0xdddddd}));pond.add(line);
 function updLine(){const tip=V3(-7.5+2.2+3.2,0.3+2.6+1.8,1.8);const p=bait.position.clone().add(V3(-0.1,0.8,0));lineGeo.setFromPoints([tip,p])}
 /* fish in the pond */
-const fishes=[];for(let i=0;i<4;i++){const f=grp(pond);const m=M([0x90a4ae,0xb0bec5,0x78909c,0xa1887f][i],{roughness:.5});const b=Sp(0.4,m,f,0,0,0,14);b.scale.set(1.8,0.8,0.6);const t=new THREE.Mesh(new THREE.ConeGeometry(0.35,0.6,3),m);t.rotation.z=-Math.PI/2;t.position.set(-0.85,0,0);t.scale.set(1,1,0.3);f.add(t);
- f.position.set(-5+i*3.2,0.8+Math.random()*0.8,-1.5+Math.random()*2.5);f.userData={home:f.position.clone(),ph:Math.random()*6};fishes.push(f)}
+const fishes=[];[[0x5d7a4a,'#3f5a35','#9fb47a','#eef0dc','rgba(30,40,20,.6)'],[0x6b7f8f,'#4a5d6b','#a9bccb','#f2f4f6',null],[0x8a6d3b,'#6b4f2a','#c9a46a','#f5ead2','rgba(60,30,10,.55)'],[0x5a6e5a,'#3e4f3e','#8fa58f','#e9efe6','rgba(20,30,20,.5)']].forEach((c,i)=>{const f=mkFish(pond,1.4+i*0.15,{back:c[1],mid:c[2],belly:c[3],fin:c[0],spots:c[4],stripe:i===1?'rgba(200,80,120,.35)':null});
+ f.position.set(-5+i*3.2,0.8+Math.random()*0.8,-1.5+Math.random()*2.5);f.userData.home=f.position.clone();f.userData.ph=Math.random()*6;fishes.push(f)});
 let baitTarget=BAIT_UP,glowing=false,glowColor=0xff3333;
 K.hooks.push(dt=>{bait.position.y+=(baitTarget-bait.position.y)*Math.min(1,dt*3);bait.rotation.z=Math.sin(performance.now()/700)*0.08;updLine();
  const T=performance.now()/1000;fishes.forEach(f=>{const u=f.userData;let tgt=u.home.clone().add(V3(Math.sin(T*0.5+u.ph)*1.2,Math.sin(T+u.ph)*0.15,0));if(glowing&&live.wet)tgt=bait.position.clone().add(V3(1.0+Math.sin(u.ph)*0.6,-0.2+Math.cos(u.ph)*0.3,Math.sin(u.ph*2)*0.6));
-  const d=tgt.clone().sub(f.position);f.position.add(d.multiplyScalar(Math.min(1,dt*0.9)));f.rotation.y=d.x>0.01?Math.PI:d.x<-0.01?0:f.rotation.y});
+  const d=tgt.clone().sub(f.position);f.position.add(d.multiplyScalar(Math.min(1,dt*0.9)));f.userData.body.parent.rotation.x=Math.sin(T*6+u.ph)*0.05;f.rotation.y=d.x>0.01?Math.PI:d.x<-0.01?0:f.rotation.y});
  live.wet=bait.position.y<WATER_TOP-0.2&&!live.drySeal});
 
 /* ================== circuit simulation (snap points) ================== */
