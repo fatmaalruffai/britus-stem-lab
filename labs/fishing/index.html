@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>/* Britus sign-in gate: a lab opens only after signing in on the main page */(function(){try{if(localStorage.getItem("britusStudent")||sessionStorage.getItem("britusTeacher"))return}catch(e){}location.replace("../../index.html?next="+encodeURIComponent(location.href))})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Night Fishing</title>
+<style>
+/* Grade 4 · Project 5 · Night Fishing. Early Electronics snap kit; night blue accent */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#1565c0;--acc-d:#0d3c80;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #ff8a3d}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#0d3c80,#ff8f00);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+table.dt{width:100%;border-collapse:collapse;margin:8px 0}.dt th{background:#16233f;color:#fff;padding:7px;font-size:14px}.dt td{border:1px solid var(--line);height:34px;padding:5px 8px;font-weight:600;font-size:14px}
+.gsvg{width:100%;height:auto;display:block;background:var(--tray);border-radius:10px;margin:6px 0}
+.oled{background:#05070a;color:#e8f4ff;border-radius:8px;padding:8px 10px;font:600 13px Consolas,monospace;display:inline-block}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:15px}.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok)}
+.sl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.sl output{font:800 20px Consolas,monospace;min-width:64px;text-align:right}
+.gauge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.gauge div{background:var(--tray);border-radius:9px;padding:8px;text-align:center}.gauge b{display:block;font-size:24px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--surf)}
+.ex .tag{display:inline-block;background:var(--acc);color:var(--onacc);font:800 11.5px "Segoe UI",system-ui,sans-serif;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;margin-bottom:4px}
+.ex h3{margin-top:4px}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.pc div{background:var(--tray);border-radius:9px;padding:8px;font-size:14px}.pc b{display:block}
+@media(max-width:560px){.pc{grid-template-columns:1fr}}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}.cmp th,.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:left}.cmp th{background:var(--navy);color:#fff}
+.opt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.opt label{display:grid;gap:3px;font-weight:700;font-size:14px}
+.opt select,textarea{font:inherit;padding:7px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+textarea{width:100%;min-height:90px}
+@media(max-width:560px){.opt{grid-template-columns:1fr}}
+.tips{margin:6px 0;padding-left:22px}.tips li{margin:4px 0}
+.foil{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:360px;margin:8px auto;background:#b3261e;padding:10px;border-radius:10px}
+.foil button{aspect-ratio:1;border-radius:50%;border:3px solid #7a1712;cursor:pointer;font:700 12px inherit;color:#fff}
+.foil button.solid{border-radius:8px;background:#b3261e;border-color:#e57373}.foil button.hole{background:#fdf6e3;color:#7a1712}
+.heat{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:360px;margin:8px auto}.heat div{border-radius:6px;padding:6px 2px;text-align:center;font:700 12px/1.3 inherit;background:var(--tray)}
+svg.sim{width:100%;height:auto;display:block;background:#0f1626;border-radius:10px;margin:6px 0}
+.oledbox{background:#05070a;border-radius:10px;padding:10px;display:flex;justify-content:center;margin:8px 0}.oledbox canvas{image-rendering:pixelated;width:100%;max-width:512px;border:2px solid #f2c230;border-radius:4px}
+.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}.nums label{display:grid;gap:3px;font-weight:700;font-size:14px}.nums input,.mtab input{font:inherit;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink);width:100%}
+.mtab{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}.mtab th,.mtab td{border:1px solid var(--line);padding:6px;text-align:left}.mtab th{background:var(--navy);color:#fff}.mtab td.ok{background:rgba(46,125,50,.15)}.mtab td.no{background:rgba(198,40,40,.12)}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-right:4px;border:1px solid rgba(0,0,0,.25)}
+.ser{background:#0b0f18;color:#9ef0a8;border-radius:10px;padding:8px 10px;font:13px/1.5 Consolas,monospace;height:150px;overflow-y:auto;margin:8px 0;white-space:pre-wrap}
+.ser .t{color:#7f8ca6}.ser .hit{color:#ffd27a}
+.rem{display:grid;grid-template-columns:repeat(3,56px);gap:6px;justify-content:center;background:#1b1b1b;padding:12px;border-radius:18px;width:max-content;margin:8px auto}
+.rem button{height:48px;border-radius:50%;border:0;background:#1e40af;color:#ffeb3b;font:800 18px inherit;cursor:pointer;box-shadow:0 3px 0 #0b1a4a}.rem button.ok{background:#f2c230;color:#1b1b1b;box-shadow:0 3px 0 #8a6a00}.rem span{display:block}
+.rem button:active{transform:translateY(2px);box-shadow:none}
+.hex input{font:600 14px Consolas,monospace;text-transform:uppercase;width:100%;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+.hex td.ok input{border-color:var(--ok)}.hex td.no input{border-color:var(--warn)}
+.led{display:inline-block;width:14px;height:14px;border-radius:50%;background:#3a1010;vertical-align:middle;margin-right:6px;border:1px solid #000}.led.on{background:#ff3b30;box-shadow:0 0 10px #ff3b30}
+.wstrip{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;min-height:64px;padding:8px;border:2px dashed var(--line);border-radius:12px;background:var(--surf);margin:8px 0}
+.wb{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;height:54px;border-radius:9px;color:#fff;font:700 12px/1.1 inherit;padding:3px 6px;border:0;cursor:pointer;text-align:center}
+.wb .i{font-size:20px;line-height:1}.wb input{width:38px;margin-top:2px;font:700 12px inherit;text-align:center;border:0;border-radius:4px;padding:1px}
+.wb.st{background:#f2c230;color:#1b1b1b}.wb.mo{background:#1f8a3b}.wb.lp{background:#f2c230;color:#1b1b1b;outline:3px solid #f2c230;outline-offset:-1px}.wb.sn{background:#d8322f}.wb.wt{background:#e86f1c}
+.pal{display:flex;flex-wrap:wrap;gap:4px}.pal .wb{min-width:64px}
+.mtab td.ok{background:rgba(46,160,67,.15)}.mtab td.no{background:rgba(216,50,47,.12)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin:6px 0}.mgrid figure{margin:0}.mgrid img{width:100%;background:#fff;border:1px solid var(--line);border-radius:8px}.mgrid figcaption{font-size:11px;text-align:center;color:var(--mute)}
+.mdl{display:flex;gap:6px;flex-wrap:wrap}.mdl .btn.on{background:var(--acc);color:#fff}
+.bat{height:14px;border-radius:7px;background:var(--line);overflow:hidden}.bat i{display:block;height:100%;background:linear-gradient(90deg,#2ea043,#f2c230,#d8322f)}
+.vol{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin:6px 0}.vol figure{margin:0;text-align:center;font-weight:800}.vol svg{width:150px;height:auto;background:var(--tray);border-radius:10px}
+#board{width:100%;max-width:420px;display:block;margin:6px auto;background:#eef0f4;border-radius:12px;touch-action:manipulation}
+#board .dot{cursor:pointer}#board .dot:hover circle.r{stroke:var(--acc);stroke-width:3}
+.bookimg{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}.bookimg img{max-width:100%;border-radius:8px;border:1px solid var(--line)}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}.big{font-size:1.15rem;padding:12px 18px}
+.sw{font-weight:800}.timer{font:800 2rem/1 ui-monospace,Menlo,monospace;background:#1f2433;color:#7fffb0;padding:8px 14px;border-radius:10px;min-width:120px;text-align:center}
+.guide{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}.guide figure{margin:0;background:var(--tray,#f6f3ec);border-radius:10px;padding:6px}.guide figcaption{font-size:.9rem;margin-bottom:4px}.guide img,.guide svg{width:100%;display:block;border-radius:8px;background:#fff}
+@media(max-width:560px){.guide{grid-template-columns:1fr}}
+#nowPart{display:flex;align-items:center;gap:10px;background:#efe9fb;border:2px solid var(--acc);border-radius:10px;padding:8px 10px;margin:6px 0;font-weight:700}#nowPart img{height:56px}
+.tray .btn img{height:34px;display:block;margin:0 auto 3px}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">🎣</div><div><h1>Night Fishing</h1><p>Grade 4 · Project 5 · Build a fake fish bait that lights up in water</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Project steps"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D model of the electronics kit water activated LED circuit on its mounting plate, next to a pond at night with a fishing rod and a fish-shaped bait. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="board">Circuit</button><button class="btn" data-v="top">From above</button><button class="btn" data-v="pond">Pond</button><button class="btn" data-v="bait">Bait</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+ <div class="ctl" id="liveCtl" hidden><button class="btn big sw" id="swBtn">Switch 15: OFF</button><button class="btn big" id="touchBtn">👆 Touch the plate</button><button class="btn big pri" id="dipBtn">🎣 Lower into the water</button></div>
+</div>
+<div>
+<!-- 1 Plan -->
+<section class="card panel" id="p0">
+ <div class="k">Step 1 · Problem and plan</div>
+ <h2>A bait that glows in the dark water</h2>
+ <div class="ex" style="margin-top:0"><b>The problem (book)</b><p style="margin:4px 0 0">You work in a company that makes fishing materials. Your team must design a <b>fake bait for night fishing</b> that gives light in the water to attract the fish. The company does <b>not</b> want the bait to give light outside the water.</p></div>
+ <p><b>Challenge (book):</b> act as an <b>electrical engineer</b> and design a fish-shaped fake bait that gives light in the water.</p>
+ <h3>Vocabulary (book)</h3>
+ <div class="q">What does <b>fake</b> mean?</div><div class="choices"><button class="btn" data-vo="fake:ok">Imitation: something made to look like something else</button><button class="btn" data-vo="fake:no1">Very old</button><button class="btn" data-vo="fake:no2">Very bright</button></div>
+ <div class="q">What is <b>bait</b>?</div><div class="choices"><button class="btn" data-vo="bait:no1">A kind of boat</button><button class="btn" data-vo="bait:ok">Food put on a hook to catch fish (or in nets and traps)</button><button class="btn" data-vo="bait:no2">A fishing net</button></div>
+ <div class="q">What is a <b>fishing rod</b>?</div><div class="choices"><button class="btn" data-vo="rod:no1">A fish's tail</button><button class="btn" data-vo="rod:no2">A light bulb</button><button class="btn" data-vo="rod:ok">A long wooden or plastic stick with a fishing line and hook</button></div>
+ <div class="fb" id="vom"></div>
+ <div class="q">Brainstorm (book): how can a circuit work as a fake bait that lights only in water?</div><div class="choices"><button class="btn" data-bs="water">Water carries electricity between two contacts, so it closes the circuit and the LED lights</button><button class="btn" data-bs="cold">Cold water makes light</button><button class="btn" data-bs="fish">The fish switches it on</button></div><div class="fb" id="bsm"></div>
+ <div class="q">Design requirements (book): the circuit must…</div>
+ <label class="chk"><input type="checkbox" data-dr="0"><span><b>give light only when there is water</b></span></label>
+ <label class="chk"><input type="checkbox" data-dr="1"><span>be <b>placed inside the fish-shaped</b> prototype</span></label>
+ <label class="chk"><input type="checkbox" data-dr="2"><span><b>show how it works with water</b> in the prototype</span></label>
+ <div class="msg" id="mPl">Answer the questions and tick the 3 design requirements.</div>
+ <div class="next"><button class="btn pri" data-go="1" id="nPl" disabled>Next: build the circuit ▶</button></div>
+</section>
+<!-- 2 Build -->
+<section class="card panel" id="p1">
+ <div class="k">Step 2 · Build the circuit (book)</div>
+ <h2>Water Activated LED</h2>
+ <p style="margin-top:0">Book: <i>Try to build the circuit yourself. If you are having trouble, view the following directions.</i></p><ol class="small" style="margin:0 0 6px;padding-left:20px"><li>Look at the <b>finished circuit</b> and the part in colour.</li><li>Find that part in the <b>parts box</b> (match the picture and the number!).</li><li>Tap the <b>2 dots</b> on your plate where its ends go.</li></ol>
+ <div class="guide">
+  <figure><figcaption>📖 <b>The finished circuit</b> (book)</figcaption><img id="bkCirc" alt="Book picture: the finished water activated LED circuit on the mounting plate, with terminals A, B, C and D"></figure>
+  <figure><figcaption>👉 <b>Where this part goes</b></figcaption><svg id="target" viewBox="0 0 400 340" aria-label="The finished circuit with the part you need now shown in colour"></svg></figure>
+ </div>
+ <div id="nowPart"></div>
+ <div class="small"><b>Parts box (Early Electronics Kit)</b></div>
+ <div class="tray" id="tray"></div>
+ <svg id="board" viewBox="0 0 400 340" role="application" aria-label="Mounting plate: tap the dots where the part snaps on"></svg>
+ <div class="msg" id="mB"></div>
+ <ol class="steps" id="bSteps"></ol>
+ <div class="small">⚠ Book: be careful not to short-circuit the battery. Do not damage the parts.</div>
+ <div class="next"><button class="btn pri" data-go="2" id="nB" disabled>Next: light it! ▶</button></div>
+</section>
+<!-- 3 Light it -->
+<section class="card panel" id="p2">
+ <div class="k">Step 3 · Light it (book)</div>
+ <h2>Go night fishing!</h2>
+ <p style="margin-top:0">Book circuit building instructions:</p>
+ <ol class="steps" id="tSteps"><li>Connect the touch plate to terminals C–D. ✔ (you did it in Build)</li><li>Turn on the switch 15.</li><li>Touch the plate with your finger: does the LED light?</li><li>Lower the bait into the water. Then lift it out.</li></ol>
+ <p>Use the big buttons under the 3D view. Watch the fish in the dark pond!</p>
+ <div class="msg" id="mT">Turn on switch 15.</div>
+ <div id="tQ" hidden>
+  <div class="q">Why does the LED light only when the bait is in the water?</div><div class="choices"><button class="btn" data-tq="cond">Water conducts electricity: it joins terminals C and D, so the circuit is complete</button><button class="btn" data-tq="cold">Water is cold</button><button class="btn" data-tq="fish">The fish push the switch</button></div><div class="fb" id="tQm"></div>
+ </div>
+ <div class="next"><button class="btn pri" data-go="3" id="nT" disabled>Next: test and record ▶</button></div>
+</section>
+<!-- 4 Evaluate -->
+<section class="card panel" id="p3">
+ <div class="k">Step 4 · Evaluation (book record sheet)</div>
+ <h2>Student's record sheet</h2>
+ <div class="q">1) Were you able to make your own circuit or did you use the instructions?</div><div class="choices"><button class="btn" data-r1="own">Own</button><button class="btn" data-r1="ins">Instructions</button></div>
+ <div class="q">2) Try it. Does your circuit work perfectly?</div><div class="choices"><button class="btn" data-r2="yes">Yes</button><button class="btn" data-r2="no">No</button></div>
+ <div class="q">3) If your LED fish bait could catch a fish that is 16.5 feet away, how many yards is that? <span class="small">(1 yard = 3 feet)</span></div>
+ <div class="row"><input type="number" id="yd" step="0.1" style="width:110px;font:inherit;padding:8px" aria-label="Yards"><span>yards</span><button class="btn" id="ydChk">✔ Check</button></div><div class="fb" id="ydm"></div>
+ <h3>Test it: which liquids light the bait?</h3>
+ <p class="small" style="margin-top:0">Dip the bait into each cup. Watch the LED.</p>
+ <div class="row" id="cups"></div>
+ <table class="mtab" id="cupTab"></table>
+ <div class="q">4) How does the LED give light with water? (group discussion)</div><div class="choices"><button class="btn" data-r4="cond">Water conducts a small electric current between the two contacts of the touch plate, so the circuit closes and the musical IC lights the LED</button><button class="btn" data-r4="mag">Water is magnetic</button><button class="btn" data-r4="heat">Water heats the LED</button></div><div class="fb" id="r4m"></div>
+ <div class="q">5) Suggest other purposes in real life for the water-activated LED circuit. <span class="small">(choose all that fit)</span></div>
+ <label class="chk"><input type="checkbox" data-r5="leak"><span>A water-leak alarm under the sink</span></label>
+ <label class="chk"><input type="checkbox" data-r5="rain"><span>A rain detector for the washing line</span></label>
+ <label class="chk"><input type="checkbox" data-r5="bath"><span>A "bath is full" warning</span></label>
+ <label class="chk"><input type="checkbox" data-r5="toast"><span>A toaster</span></label>
+ <div class="fb" id="r5m"></div>
+ <div class="msg" id="mE">Answer all 5 questions and test the 4 cups.</div>
+ <div class="next"><button class="btn pri" data-go="4" id="nE" disabled>Next: math ▶</button></div>
+</section>
+<!-- 5 Math -->
+<section class="card panel" id="p4">
+ <div class="k">Step 5 · Math and science</div>
+ <h2>Distance, time and money</h2>
+ <p style="margin-top:0">Book math: use the four operations to solve word problems with distances, time and money. <b>1 yard = 3 feet</b>, <b>1 foot = 12 inches</b>, <b>1 hour = 60 minutes</b>.</p>
+ <div id="quiz"></div>
+ <div class="next"><button class="btn pri" data-go="5" id="nQ" disabled>Next: reflect ▶</button></div>
+</section>
+<!-- 6 Reflect -->
+<section class="card panel" id="p5">
+ <div class="k">Step 6 · Improve, reflect and communicate (book)</div>
+ <h2>How did you do?</h2>
+ <div class="q">Improve (book): what change would make your bait better?</div><div class="choices"><button class="btn" data-im="seal">Seal the circuit inside a waterproof fish, so only the touch plate touches the water</button><button class="btn" data-im="open">Let the whole circuit get wet</button><button class="btn" data-im="none">Nothing can be improved</button></div><div class="fb" id="imm"></div>
+ <div class="q">Reflection (book): what can be done towards ending hunger and promoting sustainable food?</div><div class="choices"><button class="btn" data-sc="fair">Fish only what we need, let small fish go and protect where fish live</button><button class="btn" data-sc="all">Catch every fish in the sea</button><button class="btn" data-sc="waste">Throw extra food away</button></div><div class="fb" id="scm"></div>
+ <h3>Communication (book)</h3>
+ <table class="mtab"><tr><th>Positive feedback</th><th>Negative feedback</th><th>Suggested solutions</th></tr><tr><td><input id="fb1" aria-label="Positive feedback"></td><td><input id="fb2" aria-label="Negative feedback"></td><td><input id="fb3" aria-label="Suggested solutions"></td></tr></table>
+ <p class="small">Assessment rubric (book): choose one box in each row.</p>
+ <div class="lvh" aria-hidden="true"><span>Beginner</span><span>Emerging</span><span>Accomplished</span><span>Expanding</span></div>
+ <div class="rub" id="rub"></div>
+ <div class="msg" id="mA"></div>
+ <div class="next"><button class="btn pri" id="finish" disabled>Finish my project 🎉</button></div>
+ <div id="fin" hidden>
+  <h3>🎉 Project complete: Night Fishing</h3>
+  <p style="margin:0">You built the book's water activated LED, made it glow only in water, tested different liquids and explained how water closes a circuit (SDG 2: zero hunger).</p>
+  <img id="finImg" alt="Your water activated LED circuit in 3D">
+  <div class="row"><button class="btn pri" data-go="6">Try the challenges 🏆</button></div>
+ </div>
+</section>
+<!-- 7 Challenges -->
+<section class="card panel" id="p6">
+ <div class="k">Step 7 · Challenges</div>
+ <h2>Think like an electrical engineer</h2>
+ <p style="margin-top:0">Earn a star for each challenge: <b id="stars">0</b> / 4 ⭐</p>
+ <div class="ch"><div class="chh"><span class="star" data-st="c1">☆</span><h3 style="margin:0">🐟 Make the fish prototype (book challenge)</h3></div>
+  <p>Book: <i>Design a fish-shaped fake bait that gives light in the water… build your circuit, draw your prototype.</i></p>
+  <div class="opt">
+   <label>The circuit goes<select id="c1c"><option value="">choose…</option><option value="in">Inside the fish, sealed from water</option><option value="boat">On the boat</option><option value="out">Outside, on the fish's back</option></select></label>
+   <label>The touch plate goes<select id="c1t"><option value="">choose…</option><option value="belly">On the fish's belly, touching the water</option><option value="inside">Sealed inside, dry</option></select></label>
+   <label>The LED goes<select id="c1l"><option value="">choose…</option><option value="eye">At the fish's eye, where fish can see it</option><option value="hidden">Hidden under the battery</option></select></label>
+   <label>Show how it works<select id="c1w"><option value="">choose…</option><option value="win">Clear window on the side of the fish</option><option value="hide">Hide everything</option></select></label>
+  </div>
+  <div class="row"><button class="btn pri" id="c1run">▶ Build my bait and fish</button></div>
+  <div class="msg" id="c1msg">Pick a place for each part.</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c2">☆</span><h3 style="margin:0">🔧 Fix the bait</h3></div>
+  <p>A bait came back broken! Turn the switch on, touch the plate, then <b>tap the part that is the problem</b>. Fix 3 baits to win.</p>
+  <svg id="fixBoard" viewBox="0 0 400 340" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#eef0f4;border-radius:12px" role="application" aria-label="Broken circuit: tap the part that is the problem"></svg>
+  <div class="row"><button class="btn pri" id="c2new">🔁 New broken bait</button><span class="small">Fixed: <b id="c2n">0</b> / 3</span></div>
+  <div class="msg" id="c2msg">Press "New broken bait".</div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c3">☆</span><h3 style="margin:0">🐠 Swim to the light</h3></div>
+  <p>A fish is <b>6 yards</b> away from the glowing bait. It swims <b>3 feet every second</b>.</p>
+  <div class="row"><label>How many seconds until it reaches the bait? <input type="number" id="c3a" style="width:90px;font:inherit;padding:6px"></label><button class="btn pri" id="c3chk">✔ Check</button></div>
+  <div class="msg" id="c3msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c4">☆</span><h3 style="margin:0">🌊 Sea or river?</h3></div>
+  <p>Use your cup test from Step 4. Night fishing happens in rivers (fresh water) and in the sea (salt water).</p>
+  <div class="q">Where will the bait glow brightest?</div><div class="choices"><button class="btn" data-c4="sea">In the sea: salt water conducts electricity better</button><button class="btn" data-c4="river">In the river: fresh water is cleaner</button><button class="btn" data-c4="same">The same everywhere</button></div>
+  <div class="msg" id="c4msg"></div></div>
+ <div class="next"><button class="btn pri" data-go="7">Next: other designs ▶</button></div>
+</section>
+<!-- 8 Other designs -->
+<section class="card panel" id="p7">
+ <div class="k">Step 8 · Other designs</div>
+ <h2>Other water circuits with the same kit</h2>
+ <p style="margin-top:0">Every design below uses only parts from your Early Electronics Kit. Press a design to see it work.</p>
+ <div class="ex"><span class="tag">Book design</span><h3>Glowing fish bait</h3><p>Touch plate 12 on C–D + Musical IC 21 + LED 17: lights only in water.</p><div class="row"><button class="btn" data-ds="book">▶ Try it</button></div></div>
+ <div class="ex"><span class="tag">Design 1</span><h3>Water-leak alarm</h3><p>Change the LED for the <b>loudspeaker 20</b>: when water leaks onto the touch plate, an alarm plays.</p><div class="row"><button class="btn" data-ds="alarm">▶ Try it</button></div>
+  <div class="pc"><div><b>✔ Good</b>Warns you before the floor is ruined.</div><div><b>✘ Watch out</b>Wipe the plate dry afterwards.</div></div></div>
+ <div class="ex"><span class="tag">Design 2</span><h3>Rain detector</h3><p>Put the touch plate outside: the first raindrops light the LED.</p><div class="row"><button class="btn" data-ds="rain">▶ Try it</button></div>
+  <div class="pc"><div><b>✔ Good</b>Bring the washing in on time.</div><div><b>✘ Watch out</b>Dew can turn it on too.</div></div></div>
+ <div class="ex"><span class="tag">Design 3</span><h3>Touch light</h3><p>No water needed: your skin also conducts a tiny current, so a finger on the plate lights the LED.</p><div class="row"><button class="btn" data-ds="touch">▶ Try it</button></div>
+  <div class="pc"><div><b>✔ Good</b>A fun night light.</div><div><b>✘ Watch out</b>Dry fingers may not work.</div></div></div>
+ <div class="ex"><span class="tag">Design 4</span><h3>Green glow bait</h3><p>Use the <b>green LED 26</b> instead of the red one: some fish come to green light more.</p><div class="row"><button class="btn" data-ds="green">▶ Try it</button></div>
+  <div class="pc"><div><b>✔ Good</b>Easy change: one part.</div><div><b>✘ Watch out</b>Check the + side of the LED.</div></div></div>
+ <div class="ex"><span class="tag">Design 5</span><h3>Light and sound bait</h3><p>Add the <b>loudspeaker 20</b> next to the LED: the bait glows and plays a tune.</p><div class="row"><button class="btn" data-ds="both">▶ Try it</button></div>
+  <div class="pc"><div><b>✔ Good</b>Fun for a show.</div><div><b>✘ Watch out</b>Sound under water may scare the fish!</div></div></div>
+ <div class="ex"><h3>Compare the designs</h3><div style="overflow-x:auto"><table class="cmp"><tr><th>Design</th><th>What starts it</th><th>Output</th><th>Use</th></tr>
+  <tr><td>Glowing bait (book)</td><td>Water on touch plate</td><td>Red LED</td><td>Night fishing</td></tr><tr><td>Water-leak alarm</td><td>Water on touch plate</td><td>Loudspeaker</td><td>Home safety</td></tr>
+  <tr><td>Rain detector</td><td>Rain on touch plate</td><td>LED</td><td>Weather</td></tr><tr><td>Touch light</td><td>Finger</td><td>LED</td><td>Night light</td></tr>
+  <tr><td>Green glow bait</td><td>Water</td><td>Green LED</td><td>Night fishing</td></tr><tr><td>Light and sound</td><td>Water</td><td>LED + speaker</td><td>Show</td></tr></table></div></div>
+ <div class="ex" id="dz"><span class="tag">Your turn</span><h3>Design your own water circuit</h3>
+  <p>Choose parts <b>from your kit</b>, press <b>Try my design</b> and read the engineer's check.</p>
+  <div class="opt">
+   <label>Sensor on C–D<select id="dStart"><option value="touch">Touch plate 12</option><option value="button">Button 14</option><option value="none">Nothing</option></select></label>
+   <label>Output<select id="dOut"><option value="led">LED 17</option><option value="spk">Loudspeaker 20</option><option value="both">LED + loudspeaker</option><option value="none">Nothing</option></select></label>
+   <label>Used for<select id="dUse"><option value="fish">Fishing bait</option><option value="leak">Water-leak alarm</option><option value="rain">Rain detector</option></select></label>
+   <label>Power<select id="dPow"><option value="bat">Battery compartment 19</option><option value="none">No battery</option></select></label>
+  </div>
+  <div class="row"><button class="btn pri" id="dTry">▶ Try my design</button></div>
+  <div class="msg" id="dChk">Choose your parts and press Try my design.</div>
+  <h3>Tips and hints</h3>
+  <ul class="tips">
+   <li><b>Only the sensor should touch the water:</b> keep the battery and the IC dry.</li>
+   <li><b>Water is the "switch":</b> it joins C and D. A button would need a finger, not water.</li>
+   <li><b>Salt water works better</b> than fresh water, and oil does not work at all.</li>
+   <li><b>Check the LED's + side:</b> it lights in one direction only.</li>
+   <li><b>Test one change at a time,</b> then dip it again.</li>
+  </ul>
+  <h3>Your team's plan (book team roles)</h3>
+  <p class="small" style="margin-top:0">Team Captain, Head Architect, Material Manager, Project Tester: write what you will build, the parts you need, and one idea from every team member.</p>
+  <textarea id="dPlan" aria-label="Your team's plan" placeholder="Our design … It turns on when … Parts: … Captain: … Architect: … Material Manager: … Tester: …"></textarea>
+  <div class="row"><button class="btn" id="dSave">💾 Save our plan</button><span class="small" id="dSaved"></span></div>
+ </div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai · Circuit pictures from the Britus STEM Resource Book, Grade 4 (Dome Publications / SKOOL21), shown for classroom use.</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+const BOOKIMG={"p2": "data:image/webp;base64,UklGRqYBAABXRUJQVlA4IJoBAADQCACdASo0ABgAPl0mjkUjoiEb+qwAOAXEoAnTMf8s2o3tnP/l4p/AuDnSVN5utcObetZ5jPMAWk0D1/meBpQyOVKIlcH6ylWlaPA7EWwAAP79C6A3hvHt/4L64PnRt6Mk8JdZqHu3OKVxLg49IWwrMrZdTNwvvOlzp+chpVwHOmKj5eNSYRmsYXLnvm41xNH1jeUvf7XuP7We0I/hdBa6EWKBj1ilThz+ncJ488Qw7MV+7GHxzVkG5Cpd6dioIGvOVS+GQq0j8++ecmbN3IywuvUefpK9dIKIqK2tYy0FhDVrLQ5c9gxFkN9vZN+qXQnzkKnU+fOhDHMjRlkf+stVvIfhls2hs+vLtLYxAL7xEr12ypoPOain4O3Cruc2tnUz/OGu1Dz9EEaSapfKgOuJO6T0bbG8Jbp69fYl6zOrUa6uFQgLr5AasmmUiWZ35W/JXjaTXpol6vOmQOuSAFkAnATa5CWkmTJFUWpjy11J8e07CebIbe+d5dMMPAxgmG8pxdcdazOVROPd4+Hl4EomBRip6/ErLEnAAA==", "p3": "data:image/webp;base64,UklGRlACAABXRUJQVlA4IEQCAABQDACdASpSABgAPl0kj0UjoiEYDAaoOAXEsQBdmYmFcklWpsGGodCylOro2jIWwNooMA3VWK9dsO/pMNUjp5CLgOoYKmrTtNJkQD+Y+qW0VQwbN2IVYO4/2V5KZxp/OCO+CCiDPnIwRgD2gAD++yPCDEX/E72VWB9JO3vhDJqI2IHQ46W6vRG/tj76CrKRjGLffTXuMwF/75E9FQL80OWi4rMhX38InyI+ctiEqX+2YZo6d5QuHxZEFRqwKFD7ND/td8BXcXf/ETZmPvjdeLejK/FRx6t3ijTlWstwpMm5MYTbijsFL29dGGbEL31H3vCNw9EKNilhrpdNwomHRrCOdEnvJ3XTOt/sr2LWIUj5D5zISs/BLzI0zXqefG795poYNlck4jgSWn9d08drZMciXb0z0zCMN93hulXzoDlTIx1EggmAh4U51u4qLbgUpcPEuvhR4LkzPS3nsaAPM2rMoAXYcnCS058YJdr78tgdGbfn82GSbclNxVTFiG98mmVz6rb5OhNu20oBRSZVxnX14P/mf5XMJ7Y1qj2KFFE0zwd8StutQsp6VdtZ30Or3dKe1Pkdd+vrSuUEXBW8+8jBGKSZb02NdPOsn+NGvIJhH9gnaTLnaiH9c4vMKCDZX7CSs/At4XJjC8qZT7p7ZU+uRXw0CfxB0/ziLX1DUhT3Cw5+n2//sC+dY1rnykymG0bMmsY53+NJtw3XCu1znamULmNVBuKw6QhNSjaDzy3W7XIwHsHcSkj1GBhH54WAGLUmAAAA", "p4": "data:image/webp;base64,UklGRuoCAABXRUJQVlA4IN4CAADwDACdASpqABgAPmEsk0ekIiGhJJgKAIAMCWQAnTNCgaelu6n9/Q3tu+doLwm+fpdGfd4gCG/9dAVRM6hvMRG1isjEUZXoiy45vX+n0bkRT7JVbTG34bAC3TJfR17Ov7Lofnan1GMbqhW/yoZzYDuAAP79WPbCnK85DBJJ3cMxGY78jYMHSg5b5chLzUXwDACX7Ye5yH/2c7ZZHMzu7FEP3FFM3xkP4caq4PO8LydVIvpjzGBuIQEwL49ZfnPC5itwufOOQQvaDzqgSiiMn1Wum7DmYX0jGEoOplj9mOXNdeRvzNRRJ1x7OQ59JvDiJ+7TYKzG6fEOpMXXJkI24t6CwGcnb5m6oN7TFXJ67n2aWznt5rajHupB4PT5a1skPLVE3/nXKX6RaZk++DRj6DzTu4e7avaWS59LAje0w4ywPaM4RJwzF/4ntNpDlubZDCz9rt5xGW19LlGsn5AdqW2ZfmmHMEBALM3zheZtevWeOLf5HCMrOVjKx116dofhPCMX8uF9hHAib6dtnwD2shjtN88Q9tG05cgAqyr8E22z9Ca2TruM+BIPbtJX3dYfgVbNjMotY3AphxeMn5rKi+MmCh4jVLgrDhtDP+obSM5yxTQUgN4T7nqDo7C6BGpmOzpTpVCaQrjwmWPzGJi4LBU5xT+trka4G4GoVk8/a67q7fQNtt/UWzHPZdpUDL2Mj2r79pvAuBJdIh7vjAsW2OKa6MhYst8GIHpCSO+nH4p50DGFo31GXp0QbbNI5NAgxfLd3BzfyI6DLcVLvqCAKL7TzifvLDGUwRomgMQqcIvj3ihE9upRFVTE9ZQy9vinB3rHKIg8jnZVI+k6zBxHph6imyNaxGkDIdG3tMgrcs+rpj6rANaz3Me6JPJTKJuUP0xFSnfIQJZpGlpSKjAI0FFbxnOArz5NiMM8wPwiDAcAbdaxxEk0N/DlWhrzr9uWvvkIx0pAr1VJ22P5RAAAAA==", "p5": "data:image/webp;base64,UklGRowDAABXRUJQVlA4IIADAABQEACdASqIABgAPl0ij0UjoiEYDHaoOAXEsgBOmWhBuks2hsIhWYXHLZ+sDnhvPsvpD/N4UBHBrh4iWzGWFk+jpo4ogW0gOYEmnfBMQHjE2dX+wkWmwvgXPdjSymgazyi7+FyVaRfRHbl9Qy3Q7Lpeamgvh9vMDaWip5GYtVL7yMBmJWk9S6wzkjAAAOP//0kBgv/pl9HgFDhgQ9fA5UP1vB3loFmJ2kVSDU5uk7O43C7SYsdrPNpxyu5RuiTYTEjg1ly9iqy1UIwIi3bWLGuptyzbpOVVf9o2lzFJDg3SQITN/VPyop16wew4ayvKQAXWlY1OVzqXOGOjJaV8LbiI9I1YvKnP+2KbFjFCNQro8x1BeBOsNPmNpmKZ3LhPM6XfDfbhi5S5gc995ZjxfMXmIi5DH2qaEd9tzcezz6DB5/iSJbiplbSLU2aFKvirwzbyRkk9EspB+FRStphBs5mVrmGdtRVaffJO+XebQgQ9KUNd7UQJSB2y2fCjuG8BssF+LfIBxxrJJ6HB3yk76/6vv8CfppS/8uWa92gkNCRydmKrahhktHf4TaO8ZH1iI27MzG79fyztx+qR02P61PEz2ohveCnWknQ4SPYeYbNTFW22vQ3CZsgeOgNLaIq7lMCGIc1QS/JLBv4Fk6AREhFxnpvPcM7vvy9OS4Vcgmy9FYXky9YB1D7HkpmguBmwo5/gIy9PB6PSPbj7b4KJxTxJ+i47XJkf1rynlnxjc1v8ejFk9LUDYiuAH1ny3bznMxm6OABLaowsldJBWv44S9MrNxsZ8/OzH8xmDygjV6z0xYqXOwynQ5d3BxFdubruXW1J7ewpDUyl5KVSLgXPTEXM0xSn6N9vsQ3rpc0mZH9SOLGJ93tJB+eHIX/hMH7Hh5Z3UQcLdmUSyk5eWZvFZssOue615eyy4jIh45XxReSEbac0Oi6ZmMONckRabHa5UPXD3Vkv5oFCk+SGony1clMVSI7VqH75Cjjo9HnhclIe2SzCTDFsyuVk2vwSOscVyI2DAvV9Hsea2zhdk3BDxFmXoTJ8zZL+7NgRDYIo5LDSLAQM7cLYsjZSckwax24P3Rfkabz0b3nIwsumrR/x3FNfLQWftxrZooDW4MEpWlU8f3B35M3yhC1d23kJvLvpGIDszzwVnGENJOFurCUc5keexvcGGMKfHFJxd3185LgAAA==", "p6": "data:image/webp;base64,UklGRu4DAABXRUJQVlA4IOIDAABQEgCdASqYABgAPmEskkYkIqGhKbVbaIAMCWQAnTOYDCfIubX0v8/6lOad6HPMp53vnmb7xvUn+1mmZ/52AynYe7ImVMYyfRd0TfugL77hzzPOg9Z1wxKOfp5c5v4XWDVqcrLyG+2m1f10YdtTs1E3ad0QG6Lumjypaj0dnxOqFiSL7N0Y29MeZg3VJ1m4z0gO3azq9rrduHhzAAD+/VuTvf+QLwbnMgL0eNyHBn9Bs+kh01PAFHV7/HrCk3qcjLrdJaMr7rkYotqm6h+c+M9QFiDM8bhV7H/4f8J0GXqP5wRM9waR/hzq8lMTM94vLfpn5e6bN1UnkNnPpYCL6bdfcZRD6iTEhWS130YrDHe55zT9mDJGAlE3DMMAE3wn5vi0JmIU9DOLDuVlFbqwVDI1myAn0Yf1uWHv5M1RY6FPNrt/H6MuVa7RrcvtN6Hphyy1cTAePOX1lBWs0CVmrROeRD/jYIC4OhsNz1JOvbu/PnFkOvq4MI/UrBwf+fS/1giYL/TDGbYHg49WHP1fC/ATehAuu6kJ5f7HMiOwPXfMEHSwSnp/iRquY0D6toBCathynRQ/WJbQv9CyKH8F9Gr+lADuO/GPIkvkS/A5X/YbAEub9E2ZiG+CVPgmFRP8bPXk2hE96tzszDZpxD/X8OpJDJcU2/0QsuZriLFpg1WgUmWc9atiM8BiM1nqQ21yIYPh2D/V7p9AhFKx21DBH8bVVsIjJ/hpbTASQcrLqwXNb3ni2RanVyVdzNbm/M9cKGakfQUALYn8OMtNxmdCa5nFpjcsJ6HnffpQPwJ7r/3rdLH0md8A/XZ8g0YTGj40g+8DNnwem04g/PYQ3YW+SQNF1srd7GOIGYf4c/KsqetcXRB4qCzceq21k83b0lOrjmFZ5Z1rIPa/KQmRhGZWZv0mEvU2xZH3FVwxSi91sqBBWcujnqxgJCG/Sycoi0GEP5MD5yA60TsdmU+yiscyBBwVl7rBTN1mQuzZROe3uw8IbfZXGotuWmu4TIkPRvIWLndq6NxjxFZZy1ISOgHdB8Qgf1JxDiRULPUlkvCaGOEq07KoPCjBNUHXc/1ALokWO9UUSPAVhHAylHovHi5hUE7yGRnoKemL4Bpe4tMShageAQhIKQTzugxTxAZkio71s7vOtNDZ2z3q9qiXtXAGzvlNmPalgCiqcJM/7L3STlAy0W2L/5pRTC7fEmDagqJQg8dLjwTWrUt3kEQfRvH2u2NXgYN4vDXkhRaQ6UYqF5xIQK9WV5P/RhveNEv7ZxAaSlPtWHabSpSpnMYjNetxEImNVMQURjqoAClDIhggGe5mAAAA", "p11": "data:image/webp;base64,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", "p12": "data:image/webp;base64,UklGRmoEAABXRUJQVlA4IF4EAADwFACdASpuACwAPmEwk0ckIyGhIxgK8IAMCWwArseqV0uRvAHKQE1hUbdL+ef5H1FfrT+xXvN6bZ6AHTPeVVWLNtPdIulzlY2y5QH0yOFWffH9WjMe9PKcVsy2i02llvegzvTcVz7V9jSXPiQ/jiu8zDv7raoLGxZvfcy0G7XJQPi0NQ4P50hgZTJ+mNZFFyeDNGr8tEmzaslxfEpdwFrdph09V3iLmjcPr4O72GKbhAD+/hXbNbC3J4eafP/jNUvIhoKk+yi3gksm57lkz9gSAMkj9B0IA+jxD/l3yREWxJw/gx8Pb+M/4k4h35i/9/+QhfwZy+d9uEoqC0eKOY60DLgJ+REvmqp8oE6UlhJ6J8EGsGxwOPGPYClHtWzIizzc9uFGo1DYTLzHkO1RtxQFEuO6XPP3cgokEtL27HIuTI8HUjjLMtUXASAjaXeCHcH7luiohDBZ8ic5Ine/WOWYcO35/WydmMLlMEslr3382sJi2T2ER0/GwxijXVldz8OzA8knAWHVagZejpUbBSp8mh8CSGtZdXgLIGg8U4PeP3+HGOXTyYTFcJ/taa0lw9+3AkXQatZKOeZrnz+J6jnZoysQdCDBA8wn30Szymx8QSL0zCzUSvLAb73ZF6zqdzeB9+akcRfnjIl4y6fOXoo1Evs/POcEwP5r5snnb9FNjkbyB/ByLan8m00sfqLOh3eETy2tYT6top+/6biwNM+qqkdA+NZACxs40Jk5Wglvx/qP4SIe73aoVekJVvnwnXOJh5gscsE/H3L7g5wZySpK1Tokx49hZwyJEZuyWr8J2977QY+vExttj+8FP646KicRigAQCdeOfOcWyV6kw6yConiwzzAZsN+GqPZ/2R31uWx7p1649sxgqkuG9Vr0/8+eFLRIPAZ+eg6wf3b0FJQnRbNV6HdOd16sU4OScQl3+SLTg1rzBxss03u5w+77LIfwy1V71gg2NZl/XCYE5++a5+hYXz21SUQDSfCEXBLLepXcM4E5lOKxwuHIzgaqViY4+ytvtuyLavp6qfx7iKiEPG+uaYSrIzaVzWeEYMebIlZY3pTG0etb/7l2aXXodkGFtH07nqfn4n2pAEZ89rq0BdbjVNW23O+k9uqRL/CV9JtGPNJ4qJ6QuKbT/+ddj2AYDCNV+AgGBZGLYrKp0KP6aO3Yl2Pf38yhi45DTn+mWKsmi5b0Yj8y1K4eWCXHK7ZcxYCPTbN77NiOTszh3ukoQy+N8WXmqRmKh3W0F/jBnLkMNpCjlgZDF108hTLUlb/PUlZ2qzwKOvy1u9awZRzEjo611T3IoZymwhmBpFH9UOn/cQEcRej6L7i/9JYCQdK9MjyCzEaOUJbsSEN4Et0q+rDbnH3GTUSOYKqfflCtNFkkKga84qOz8Z/PLYz07yzpPrFzHHwCYXEJHGSeWS3u1sM9jW8hK2q8pvlzpjbezBIJNZu+eFbCXbAqUXWxgVcXy/xWtUUH2b4xroAAAA==", "p13": "data:image/webp;base64,UklGRgIFAABXRUJQVlA4IPYEAADQFQCdASpuACgAPmEsj0YkIqEhKrbckIAMCWQAx2PySZF6Ojo6LyZwb1b+I900vFS/zP+O94DnZutR9ADpffKkucHhT5GveMmolr0JdkspsHuI25WnRY9PmfS96VfrgIM1Ogw7Agto9bq5IQSnfgKkIi8V2J8Zs9V/DO0kMrdWUHFD4ro0fKFpa/5G40cGOL/GZktxznM7E1azobU4BYKY63uxvDBMEmUx7si9sQ6GExF9KsQGkAAA/v7NgqBCNB7pBUoPW7vxMdHRC/JAK0iOIrC1/mlxH63Z0UQjgkrCRe33xR2WNLJgou4mOCMvjC2Uy/KRDu0+93vUUxwFIgeJfUvR0T7XajgMdWDO5v3WLvHbEsF8iSCGRPagQ+q+bH/8Yc9200SUgjpyTowW80OFWO8LZg/np+XMGGjz2IVxMZrvmsl032lGFr9YC1ZMNG3/5YfrrjKhBaBN4DLVh+o+3+/9YT8/6x6s5gw8PQ5aCwgWYY1IY04xzah/C1NT+afhkG+OIgSzT1L16pILsqp9MqGLZunkXlgmafaON+v9bx0Ynf46BnvIt2MEW9/KVxi9IOvUXdIiJ6IIXh4ejYNP4Zx+g6nPW161IyZ7iP+/jtgLFYKcARZZ8utiwU1P/SvjjBhXHzk/61fUoxQ9Tr8rEQOn5JirhLOGkNnkKZuo0FIMyO5VN7rrpRb17hQY9f2rmqfD+bnnfxzA9pIrxI0f/KfPo6hTB4UeS1KL2ddD+z4Vfrn02SKi9InQMK1ShpSUs2A/d9QM3DOMH/RDphG+dZcIWZ7bReghq9GgkbBU2gtP/l9OwT3VZtKjUD2LPouFcMTmvcwky5ZzOBHX4sxGsZNM6HWnDsY5Aj8cRSNsphM6mExEiNQ6okD6/qTRWfKBc+eBAnoxTfQ4djCCQtpONdOUh84nMTXIvYlNa2XwcpaRc/1yn6dpAXEgcSIGR/RpBdfrlBdqDNh+M1JlZFvuEmYs1cKe4A9CPEpnvF584TiOs3FujwytM9liycIyyHSN/ZN2b5QBudx+mW3AWYNIhsweSA83X91TXd0z/P5DE5QrftJ/d4yLTeKQLlGYXPjYohhnED3c37drKRfs455/WcFcrmc0aTkIkYT2PqcVU8jTeK8Y7qDdviC34wDM/gahA7NrXYmQecXjWzSE7Jl2Er51o34i6ZH01Ju2UXpZ6jvoBuHJUvdAlQiTbwr0FHDssv38T+uI0j8Me1Au/JKbHCs+4VJ/yqxWgqy+nGBBbLuJnNL4eYvpoie1uhxm3w10SNk6xjfYxngrYtn/FFr/dg3X+/Scjs7IU9sjP6YLzvTvd2YJA+SgCThl0qSDGwVbFVHyjXJltXvFLALERN96sO/5y/k/rgk4+mNTRDwnGvoGeQUGRtQk4B+lwH55SlKUazda1IdDYLIdbOxlRUA6fq9Ils358MsFCdnvUa3XI50JyxS81MIRg+q/ctzUhBu336efNOhKhrsTNLjn8LkWdfxfmG1bH6ACiZ9seIv5W4spuZXauVF/EtD5J/pOf1eVbh/1buSHTxhOfKIzaDtoC5pdzX+IfaZNj3LFtWFcGmdjge4Ti4wGRX2gGxpuuGNlPHSqvJSdQFFqSF5XnxCYfhZjpCXN6KYZHC9JY/A/DvfX//lb6qES2goWeTnrrbJmO1RGekWiKUCBWcAFN239Y6D+iAAA", "p14": "data:image/webp;base64,UklGRvAEAABXRUJQVlA4IOQEAACQFgCdASpuACwAPmEqkEYkIiGhKrScAIAMCWwYnyc0OsHONbXwf4G5K4vtUd7C9vL5oPNu9J+8zc+z7P37SULjnN94yqSTP9D6+Oznab3vr5fx+BlrRxqGCyab//I5N8s7MpSy1Py8IQwuHIz5DUhaetUyHiDQ/32DsLpMMukGIqFx+5R8ng2N+ztw8szSGbYcZyPiWQgLgUhxiIJVjzOmedZfP0ZdrmzUxhyllc4QDsTLIvivIuH75qzcy4AA/v3ah+tSroK1PwJiV3c0XSiN6K7VUW7695Pt4l5kZC4ejjfZ3DYdnDk7cc7nSEno0YatdCIC2VS4tUD24uwp54hon8oMB+4/LgkaqgX9Q5Y0BQVWbnD1Cla+CcqM43hdhviTzgi5Uw9vl+d/GtNVK8mbk5XdaMJvPEwPS8nvPwcMIah1re0q/lezLIbd9jD6ZAu+RBJrQ8tAFpeIzsUkGuut8jltVV7+FLyvPagIP2qGv3+K9FVWY/U/gBUWv4fEz+EsJuPiDm/V8lkLdCglLbN4V+iA38vA7FjgI0suWKh20ikPEUej+MQeAWJaqBPeYNKmNVpQq2/yGVz/lFy8AuavXNvTQx26z6LVzAp29/0WW/LBZda6RUgVoipIULwuJIV55RbXf7qOcrHsSITij6udyvek4cwMKGcrBoov+2MoFdMkZbmJAqlCfuhm4NfjZNN2G9/O/78aFklByoEfQR4jFeerc4UgYXfHOvS2omgWAQLwVy/sjzrvVJ79Dyytq9T1mTP9DLoJa90/y+unaM86yNKvI5/6WL+clvMcWYzc1e03n+PAOSSbF6343mzT0+wk04U6k9fHRhHrivqpEX/M4+Ho/t1bEeweyUy3CBQM2suDyQ7hKXHgJW5Mav20/Hvf/2nwbDf6Rg6kWxKJVphZI+VolZjJ1/oQIttNP9ZDXVSgJB5RLXT8uR3UkpBbePmjql/lfaDjiUGzgnv1rzyoEb/xoix7cJIPk7wLtGcxkpuB0QjiOWsAzulz2L1yNl45OohbpQxnDKe66pHS8S6MxfJBZbD0DwyaCPmwU1tV51g3oqojXqxubbx5n2UiTVLziHH8DC+y+wSi6IFpicCpOATtQUlPUWmIPkzhYGRfgwKf0/7Ct8TuXBTiqI6I18MeK3erOpJZ1eRGVQLGRc4xpU1Pu/2Et4gDhHx7d/w19Xxrh5WG/6XEU3iyTWqov2fKVJejKdqrYousDOC80MTeh6Jm0PTzbcmhg5/hG68bvX/8MUMUJSY1+WbxXcDSt1s2zH6fdwTvJL1kFn+cR2k49IjpjzMrzhX6Ly90H3ZsehahaAtcXS+4hajYdC67X7JCy7Iooctz11z/ik5WXcjMEM/i75uDZjSblUexXo2/05pXj/148A5Ewvqi8BwwcjSIPAWk2bdiCRoHSI4qPGfFcvWW2SWqzjhC4uafM/ix4+i5SmxlJj2BDUBZBc+3xEC2ELAcbwHK/H5gZGTLbB2nrEnCeU4UxwVY0EHQ+BKDXzPSfIa94iHz9rN0l7l5tJCATUT1H+gRLEq+DA9usCcqHBujEvaGEOARBx6vJlYiZ3655qUjALb6iwxW26JrQjtR+y9C1oDTfM6fB+ufggqOzCdRXzOeKNaIqsVe/XjSfu6HRYYNJl1ylP0vZIkHXxXRPAAA", "p15": "data:image/webp;base64,UklGRqgFAABXRUJQVlA4IJwFAACwFwCdASpuACwAPmEoj0UkIqEWHP7EQAYEtgBhtASpadRyLHQz+/9w/x3si8RvpW+YDza9NI59D2hp93zO/AJXVxHwW9eP7937yuTlH9O4ktLRoAeLNo7epB9f/pbEfy0c1aXHyqh5jbNwefWjeOozlrNR90QMdFagE33jM/aSVyinOXmZFbM1DbGg3hO+NqQFQuk5eZwZ4RKKIcO1byOKDn6AWzIQgfl2x6KL17uuEP0yQrbP9ymjSPU0ckDu6G4aBPOq+QAA/v3aZRqtbQ/vOM5Ic9Pxnf9SHDZ6uUN2d7x8U46heIo5PAfoDkpCs5Y3rCg7S5QwVAcf3mP1ghiLLnhfH3b5rfvbZZXVTvPqdhFQ9BgRSiQ1SOXJAyHA/zXu09pcyUW+y5B2livvaX1p4uBRaykAB1CNb0LVX2Y6W0mhIsBs8S+N8IrtxJAG1mVTVcDOvBLfzlOM4X3O4TI5kxnc9O4PBguPFGtb0cr/FZSdWDmYo8JRvpj8MAaWbEUS46bv13MIxH58P6Ezp9kP/uU9zI56pvb4wxAxwL3l4daTs3lLL5dLHhXOKLFgDPjEbetpurKwDrc6H7daoEF+SEVKXVyQBOIdQQwzfhXeSdEWD28R6J3UQwv/jkn/5Ymy6nr2BKj4jUr8FCpgeUZpwi9MK72aQmqiG+yxNIO2buJRJFFvLrf0Bm8evrSL4dwkl5mv2J9J8SBuSglNYuUwutdSBFVaexkBu5Le5mHrcTzWbAomn6n4pzg/9DeSScb7sV13/YoFva3/wzib6UjLdKjY8u3aKfI3Ljs1JddA+UBL9LNJ1f1xdt94nt6/TTe/TGXioTCG7rG7APl58TMZC5l+5q5oVilhCk1aZPIMZrqSzWvk3/0r9O5pGISeKpOhST/dJvYjln76G198dP/tZPrIQCi9/XcOiBHg5fCqQMxDTBhY2XCLBpQmDsik1l1D5MblgW/zlff4PFu5aOHlE+9neUt83ubsidwHfMexQRWhyKksGspfNTweuXd9+PCnjGdhyKwNGEzOHJPdhprsI8QumifEaq8xhNZqByTPMbwO9+pR9Kp2sHzecK38Sg2edjW8vt+4x8jn0jZLZjuwpyACm6zrgX/JfiBMC/B6qUj5mbuzSF65AplYP8wlb7UcXOq0UbmesREWsdPbPGPWmcDVReC9gqRqDUU/A/tFlD28i7Ev61IxW0v5IcNbiAmDLDF2XG/ONbbDbTfesD9c4hvXPcrZ0wLjI0rmC7J9JIPyp4s+DoAj4QdaAwVu4Jtdhk5+sD7/pbVBkrydeLxeQYarusSxAGixw5J8rQGSXx/mbbeuZ4hx1u/O0cru1+qcR3HwuCTAnZUqT82OWL6e9eBfxUk0XhQj03RG32TgdFWqQK9G9XeoArEEBo+DQQJQoc7ZeeX52K00F66dP89uKsXTtRvGl9giFuxYCol0mHGrzdet8vetgRsNLysk5/F8NjUO8sGGry/m7viDUpY73SQGxTD7Rzwcx8YdWgcv1JRqoAqaa1tX5k9VgenDChGyJyz4D0Da44/0E58MxhjpcRzzsrVM/tsWQtafKl0toBiFzRBOFL3zb5LCadiSf2ru8FEbTWfd1Z0oSKbKHKGSyAlSYrBJqg/w0aLwCFfuvxayJSAL5+V/K9tSpLhYRd9na8fvuv+UdRLIW2xAMnCiNBEea9Suymm62pa0G8d9cBKhK4giR/qMrLWUGhQceGqJqvqERb3jcAY9i8kWZvdNpSOsihU0zGdlj5KvNUJoHblD7YMK0EBSShm25U+fij4nXink4igLnFnxjln+0MdF9KhiwuevVWNcz6FK09Arid5ykeehFpgD6bmvlNS2PnGAZH5RNHuei15nvmv35IbhA8c4Gf+AEzL2UnY6AMqib5KO+pnA/ds5pXJAAA==", "p16": "data:image/webp;base64,UklGRlAFAABXRUJQVlA4IEQFAABwFwCdASpuACgAPmEukkakIqGhJjQLwIAMCWccARBUOoiPh4J+QX1Z7P8b2Ip11/pfYH2X7xH+W/5fgBwAfmH9b/33Gb9dtbDMwaGvqb2EP13/5PYwKP+7w92G9qvkRBadhlEOKJcqO9owk1dH1Vs44q+r/j/knj2ivaGDGzKrYPFt8XnplGRZPERHZfyO/CtXWCR4E1uO/Tn2FGfDOGrgGJrt3pUe3N+MLpjq97dp7JzBxkIXxrtbomWEDNZ7JwdGYFYAAP7+SEC5k7/dk4N06qEyVMJu6otF0pfJGgmuG9n9mJKQVDe0P4Hgm3+iOI4biJmNkRl6hw4D/xkePq6fkyQy1KTfXX+u+Uk/zFpZKYPK9SJCPiV1Tpo/C/0F8P2iTQFbZ3P0OLDeVQTCg/jB1oobRckOAEo4/mn4H4M0AyOGtnVF++JhnR/NV+Qi9Ep7sCU2gx8Dr1W69f4fT+SBVX2KzRZOrFIkfXTocbCt0P0g0QO+UQP8z/YOHdvzP1UPVkFUsX9uqvJ4VPjEoonzob6SvDCqJW4SvSjAZIU6qCnZ8SL1lnCjD3CPwG9i2sNlAjeAXZLkmKYWN+FfLfHtmNBv1+V//nJxXDSWNee55Pzqea3dqUZrR0VdnQUs8aYYikUf0ial85cpamfHMCQrMeJbKOVmHyBt3GmQfmJveEnxP5dpENSGFTRr/jUSfoa9riBsclX5v/lmOJXjjJTp8mwyqZfciEgnDopT5yWN26bFDkUBvYJ8sOpuG8nk+9JhgWETw3EVgrgpTDoBf7k2giCYhP+GoU+cKTK+patz5/3NISudVtgC0Y4QY7rM6h2uYdwI16TNm/3Z5LV3FG+OXdJS5n+RDdco4j4r9lJ3VcK44PFr1BGIIf/wgkss0A9jt83vsI4W4/jt2yTZpnEYovFq9ZgKrn4QNz+5OMhq8GV1uT1mJCtaKg5NbT9j0fE5EPEYkeqA1AtOWm0kPe0G66k5PX/1VSyq8Yp0yU64Qb7mlCVbIPz3qI9x140gdTUg/lrvBY4m/gRq1QYf/1rCMsXk21orPU0TosRUQWunw6q/3/83bggx0iDiIvj32RHoekK+v2LiIplZk2mY+uDqJl8Sp8hf9hLiHEo9jR6dRBTP7bYPgNPg7i7rTdEY1fPvpUrEw/72sL1XztFDkG5vRj9QeM/KyD08dnDVMuW7SK2+pVXzyX3wYsjeWhEDIS/G7YQgL+QfGSIkSYXky6UteTMdhN2JjTzgITZBDpAIkEIdbDbLdphUUrwuHGm9A4Pqw17KMI3XUxdnWfrmSesyWxlkTt7qX/oXyneMJy1Cq/LG414XmQ/xLX2JzGv8fUdpXrymJ0wnbF2nnkuUKiOl77mUrC1W2ipYRTAeUeIbTR8lKUtpOXj4WHjumm0ZVN2B7m/HHG4kyKKETS4AxjM0bZInJ6k1qv/UYSB8ZUTj1LX76YQroE+lGJCjxwn91IPG/XT2/AGSD5e86/P33LTXpzEOueESpOuqBW7CmrEx23IkQW5ysE8S0qsee8LUKsoVyY3pG58LOMh9us4sDSJuXYb/XCR97zta3j8NjA+5iBLzJPA//UEcnWLHDfzPnTwKAauD/5FV/spj/qnrL84fq6I34X36Z+QnRop0mczjIuxngHQoS52ICz7/jlLgiyS2B5ZEu07oX4a/5zbUmN70eo/N5Cdmq5wqTgTdJOXqLagb/WoL7DA7VenR3GV5rDlQjUkdD5hvic1D9GUv23djNGLMxtmVOZ09AM3DkDkXLinD/FI15re5OmVyMBnNtKYAuAAA", "p17": "data:image/webp;base64,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", "p19": "data:image/webp;base64,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", "p20": "data:image/webp;base64,UklGRrgFAABXRUJQVlA4IKwFAABwGQCdASpuACgAPmEskkckIiGhJ7M6gIAMCWwAnTM5A+SO7O+CPEnGAsTeqfbt/tF6m/Nd6IDqcvQA6X79s6GD0K+0JPBGv+f9inZrtMf5Lfysjeh7NcVvYW/qo/7fmw92PcL/W3/hdhvyZhFEACP7QLiylA6L0gmr8fug63Ifhk19AvSmIMb2A4r+JRe26D5dKbesDyXNqIpEMC7TWPsR3L+geo6qw4GOhY4Qc2xOGUx+WC12Rn0/M9riQd+wsUGc2qbS5wjpLU8hyS/xez80GLlvgAD+/VWU01JYxlFuzUYxbuqm3khBwltXQEbwPov4EeWjYpPnZVfPrOIzTiTxdO6v3epnUM03I11b9dOjrp2PAaTHVWD51TYd+a2vOp/VNs9188TvG/6j+wNB+S31swj1ZOhjOdY04WkoHJ1bakTwWNKo5Uu1F7bJQpGwnycYzIe5z/I353aNeDgUwPWtXZSXahlGQ0Uj2+LiLB8MwvIH6dmViBNXn1g0e2+3q+3v/Wvw/LuPBUAtm8przepxSq85BVXVdLWuBQfAAS34KfYEtg+grZ+cshHAKt+47ayJo3RGMO1Ok9qYXIaojhQIuwom2S3NmWeAJq0NaVsvTsHGm2t2pb2QJ4DjK0wtBDL0zTk+uJmQPUh4ZdEWclFfiLrTgzbWDVpfK9L1/ukK2/ImVUxN4/8g23fZa+yITqivV7wk1dvB7x4fLDO0kYQ5PfeaLyJI3a8j2rusS2kj9rfIn2GGG6Tzns3xTXxoxGUuc3tFSiQL9S0cYDHc74BXDqXWv7h5XSjEjjTQ40je2dq4+oQL/FxhrnjP/G7tree/JCOCW/HG0zi1qoENh/soLLwO8Zk2mRwSw3aZ2mAEIM2OcSGvDUTV+Jg72n6eKWnwW3tvB4TJf1R+Mn/e+r/kfWaHluzGsxdiMXgGGr1d2uHCFxbsF282mfQhiTTPNncFGtUVutBTzbwcroV/y/FlSXg77r0Lv+Z9yqdXrMi3EmkLFyOykGHf8bLiC/0y5mjR0gmT96yb5HePtxzC7UO/BGB995SP3S1HMJnk4ApuBeEY3/XFAz7N9HEYIS9OnwcYwPZWYXcLh3QBQKpiBRAh3blxPIm7BfZUUXC/UsbJzpnpQSrDqfSBR4SdCssLF6AHm/krP8dBmz4sc2vappara+zgWs7IUY1ZnPInAbRC4CXeQg2/mF2vUYuk+NqpJuhmu+RZebn6Xq9uPCDdIuZ09aEMvHtDXaCbV0VXfZAT89aOu8yGKj5/nx5/9sCrhgPFTfQl6Tb0pIv13CmjJ+Wan5ghbUAEkybne8xLeXZyxW/02HJM0N3b6T7+8LFOoDfGJ7Jha0hqtX6fVTgFD/Ww/Qf7R7GSkXcnzNh92c/VwHBkN6cYIJ9RqINuJ4BPyD3jEeQJ/n7Jeytxhtm3eUh3HMRXj7U0HFU1pHJjrInaQ1YLxxB0XQfXGnyfUPx8w3y68vMlH6txVqSBBh4N4lhqHKOeOS7KCTS+4vZaN7P7lL02+XdehTV4/gPX19/X/j4VNMBUxWwXOSSewb0fJnEAtGDbs2amyukorJMXtRaQBNuRyBcoV9u0BRxSyXiDCa3h35J905YpgHTwwt2515qD9hqkH/0qqEigW2IHe8KOF/WKhIGGD8BDJ9JSR+7uDa2ot8op/inBN5O4JfNrz8dtdNKOsrYo4y1IdeyGhPjklLf+O3aL/zJuDXqm65RBrLzcyQx6csEHNMgCElxXgko0qtiI/S+GX3bOt2E0DVk/EAPm1UrAoIWd/pXAqPo62RvDpa1zcro/IUIBAwIvdGu4eBQmCAG4/DAK3A16V+KfYvJzT1DTgt4MldhZCC7fq5Ld2/YieZeOytpaqGy4F82irl1EdNywJ30ENLnlmlgSI50fuj+LzHcmNAltSWveLaHsjzXuJAkT1IdRAAA=", "p21": "data:image/webp;base64,UklGRiAFAABXRUJQVlA4IBQFAACwGQCdASpuAEwAPl0mkEUjoiGai30AOAXEswirEeruA598fPkfyA4ouJE7C5p8lnrj3AXmOx7eS1YY9pl2ry7bIXnszO1er65/uPOJy5CXhoP9yQ8WJdwaYaznlWgRgX1leC+jT89++Tp1xz5gHbKQvY06RTMm1iZZ1IR5w/oeWZM+MRDx4EqsBtzZPKK7XKbvG/WPt3a0AT1v1Ng4j3lOSLXlGjX5mZTufnibxA92jHwSRa7O96sKiSyu+niy9Yg5f2tZoYvEMKVqN316wkAPeLH02RQAAP79VZV6pbXzn2Kgg5tG2//jMRws2sls5v0+gygktmBcBV2u0dv+8F5E+rQNIxS0XNZryD8XIGCIOiKwUDf/CDzCjZWulaEBi36O8iAXqgga6Z5+MKoURR1i5jaA6jJTeN+f4X7nSnB6NGEXqH+TxmYatqN1ZA5PezraFzSCD+7H44C/12+4Hc0X81jZoz76CX1dnxLt2ow2XYKSOR//m5q5ZxN9DvsoIjn02I+FsDQIB0hxFDgjfBRPEnH5+Zf0B/d7+N8am8+mx5hq2+TNahJK4JlxcfHjdIqoTqeIR+t+PZIRMthn/Ylv1vsaPPdZ4Mv11uQJlJWmD2s+aL9WXyNC1Vmo9MmZnYtuyI5hpUzSNpVogoZ8wcblD1meJVQfu5wOtTDmFb3scSJI1Z+pnWLaoUzxTXvfp8SdmKTP9mlfpOKliL5tXxOHMCq7TkxTAyIXNWGRq386Tt+cFJy8fPqALqdgDlxlJ/0YztqQLBip4KBfbaoesCpjUasvzOcjprPQCKAj1+9Lt34UviEmWmhnY5kvBc84Hj82HDhHXMiQnymQLtPZQqR1+ypBMbvd0/TiH+jClbFgohwQh5ZF786FsW12V7Z9tzRJkkffid1W1eEYO9STwRbzxPlUbNOS/f3XzH6+KpmW/ppZjeC6PoL44FNmsl1zc93oZpil6hLcXjhsaCddTLDE7e/rJ95uQNtPhS/uHtVMKfEZQ0HTBlL8IJ0uIBiuSO5wJN3KFy1LhKrmfCW0RPtTBili6pw9M1vydudyAuguOTv46TesiOqT1MU41AffktciiMcgZQSBEggHA0S38ZIgnTff7S7StI6PwPDZz0Hkk7KOkhXkd0cRb+BY6ZA40Be5dv62/D3szqTuQ628z+9mUzHHeQmHbGnaLfCcrfv2u/NFl3GzM+7LfUuEP8Y0PrC2MwcyL4ObFQZSyUFxt7OyX6AXdVeECPv+5na7U0KOriKQEmoZa+3uLv/bnuH1+f0OXvhBQBuVdk3sYtHw6fDl0fzhX3aZPvRHO/WWuz673DQcPvzIROnfe8/+xrx9UId1nwV8N40UveWvtOiq8pmG6AQfAe+/rSDS7XmChgh9DRcE7enlyMVxmr/iGWR01s2ym3mjRgM8MyJ43zZ4vWFNkltGdPKKXBwuggqFRHwkRZ/nQgGlafucWN6saekPePyMeT9vkOMzzWjf5U1BJxljHhQEWuZri0+Ensfw7aKCTgT9isf+0PKmQPsGAONe0n3ndY9Mdlj9ffnBUeRtOhYI+2IFxPzAdACefpxuS7dBX8iqoMbcOEUY83GrmrkWx1ti4ykkASEph1dg9NzDtJiBsR6u2J9dV4/SfR0AC27Jazi/8dsEDL9e6OHtVO4zDXnqc6iX8uZnX59tCZAgDeNh7/fYUXordjxvsMw2HpLWLvs/9sOOjX/ZEQrub46eCYNmMwAA", "p24": "data:image/webp;base64,UklGRjYFAABXRUJQVlA4ICoFAACwGACdASpiACwAPmEukkekIqGhIwrwgAwJbACpJ16Q7or+K/B/CPFE7WOYD4S+q7xIunJ/Ov9r6qP1S/ZT3o+kA/znUm+hL0z3kuX2zrrYfOz+YDRAcz2mbmp+ZRF8fsstAYkVAIwuqGBVdCfJT+hhbfGEf1Kkzpza2KUNxRyRHgkcXores3GjiHRx1Dm62wM+FbCgIIfEBa/hf76CjZh5d/LUHSiR1vp8eYd9kMYzQlakNHwSpcOomqapF8Uz/uDcSAHIRXgorwPvLe4KAAD+/lbWMApxFPzioufFmGxsPAxhfJNB28h3dMT3wPk4GhKwBj0vjgnBVS8UdaYp1vOoZm2UmDMIdz+v/N8yO/42blvMWy1AcWX7oH1pdn/HA8RKC1qHNeomofU6z9cYoeWJKYd+bAV2PXyP/IGu5q6MVZddCX7ys7rnxxBYgTw4Om1JpnYshMHll7ZGN24NTLhsGk369qttYwpxXSyPf+jJhU8bF56w6E5S4X6mDfIcfmWo/rXIpQUYQ/Owm11ew6q7m6fITOppgUx8sHbT6QoAvjvsqVOh7x+mz5ebZbX7RpES2KsvaqkMi7JILXZbeiMcs0lFt8I6NsQHedPwzWuOR9nzbrh6555+etDkofamlv3GMPtQTDBUX79+W8J7NOv6yAbtmPV03j1/buc9HjEV+hylG/sB8kDU3h+dRTHlKv+uOnhXV/GWNDwHMElUwCDqrG2k+GXJP18hWXr5xwCMGmH05oR0uk9PIDMnPwkh6kyi2afz0Wy6Sqnp5dpoTyJ2ldpEglEhONqFiGdq/A+odXkuziE9Ja9+VmQEIe0xrLWrmjNOLGVvZHisadtbgyrfDoaJhA/w36UwoopmPNa7FDFOPOOTuqEIA79fXmSxHfpmZ2p1owFYOHoJ+5NoQdJkjgX2H5V49Mor4WJMyFmbH/b6G+NMkaO8gnJMfhCbpwGNhn0uF9zPr2XAoD8CEiFfxoRq8AQ3kP6exY3jUXHQ3T1jCG1gePRiFpFtQxjZkghaO0IxM3LfZYDmDNjNQdMgvd3PlrGQ9iRTf3HtoxmxdnIUOj76PuF2Zp6FgxZ8cEtrx/OTpxox+Zmfplb2+//NPg2XbV+sjoznkcArmFV3jegLdk1CPE6iXLks8h7QDUVVpFxHnqBek/AtdVo2ztjroL/f2Bz/SIZF19YoXwuMWb/mZrcyN/2/y1svH4UnDZp/Xvzflq4XhXGJo6OhLat8sD1+6TlA1H+tMydi1QlkIjeju8iPpBIjr843F+vbc9uA/ZG1maywb0TsejkP7rG28SaKpZbC0xnZquaJWxzps+NPlQXBogyl5dOjcuoDnXAP9hQsxIvJJnOx3ObPT0uXsq3TqsaVTfu/CLyMkqNWAxz1IQ6BRRvUtAwtIabYfJTj+iOWHnT352e52Dk52yZYYfz3KOM5z9uQDkkttpqa4I7j9HAkDR/Fgf/PvN2T/1efaLfJdCYqfdt+8R0kNu8YHbvYx+aUlSoZEfOv7Q65id0sAHCas/nwWDaRI9YWkjBnt4eih0sw6ornRY9RLbNyMKoycww7voIob5sojOTwyhTa/1HUvM9B00cL2IZodZB6PeMQT5kjlLjSe8/DbRFhpGdlzrq178J34dd07Y3muIFyX5httoYiQ/7tYSzbjGOi1a8NSXn038R2xtNXxU2qOU3sUWKsqXGWsP1dJJnfD6glvrauXMRJvu/P76tg/6K65SxoAnCRd/n9NoVmATpDWxciwIZKxDgAAA==", "circ": "data:image/webp;base64,UklGRgQyAABXRUJQVlA4IPgxAADQvQCdASp8AQ4BPmEqkUYkIqIhKVK8mIAMCWhuz4Di0UWEHk8z7ZvBXj30j91/Ln+0e8/Y37f/d/1l/Y/3D+aXcz2D5RfLn+/+7f5x/3j/nf3/3Vfo3/pfn/9Bn6mf9L/Af5X9j/jA/ab3U/3X/w+oP+i/43/xf8j9//ly/0X7X+6L+2f639kf+R8g39I/3P/q7EP/Mf9z2HP6b/uv/v68H7z/DV+5v7l+0v/8ez06TfrT/he2z/J/3n9r/RPyielP3X9rfi+/G8xfYfqg/K/ud+n/wf7lfG3+M/5Phv8hf735bvsO/J/5//qe+47rfcv9P6BHs99R/5n+J9Yn6r/SekH2O/7HuAfrj/xfXD/keH36t/svcE/ln9m/5f+J/ML5J//D/a/l97g/qb/4/7D4Ev5x/cP+/683sT/dj//+7H+0X//QVd/i/9bCE0iJUKuOt/a1R9yn4H6sTE511+R6fd2uf/c8RSdxVm0DgycnKhHM/PZfroh/PPNPA7cM0Zaf5iCVpp9RNiPlu0bgVGIsvvL8yUz2eIv5tUuaXUncE5RGodUuJ4vIzIaHKKSR9BlJZzsTY0nYeear3IW6u/nuKVhRXwB8Y9deTfsv8PcqscqhVIio0BrA5N0tTAJF/wD7AY3vkKmaE7G53KgRPtOCTgfsVVpp9loYvLmo89meIo4wt1iaD3K7X9mBEk3kuHiZ2EgtLcn3HtuYHl7HQguoRdd/DT7TgqDeT6iOMeNagUtYkuReRWAKcBjhaTQDfNvBfO3ocLs+cwZyhPNeyO97xalKKKY7cDlYa6eZDkNQN8Gnk5HM5hIlCA13262BKKweeW6SXo/DjIy1gaaDPasKJ6ly04KiRTHMh5aAJ3sKQXlhq+Zbia4qCiWTL/yl6zXVzC4e+GurAjOmhasvhPZ/PwE5Z6jGYMlk18sCBAKiUFhrKVsvxSpwRKBXQnZFHTm9plwyXFOB1iltV6eQ0ib9EWimO2PSdhCJaLIWAY+RkngwYvtj/Ny5WUUSpejUbDjT4VW3XErEh0CRssyvtvEzqrM7/QRVnpGcVro5NpuwzITJO6iL3PJf6RWDyWvqXQQXQmHOy54a+xtWpL8eMycX+ZgyEReF1VOYPVivKwZ7Q2frZirNdykUY5stL3wSSbLQkKl+mFy9sxe1kWKd8L9rqc4h8Md4O837ayJ9RFhtNwb1YHn9TDvkS/Go8Po/H9RSKbEkk/Y4Y5Kbgzv9NqnYGaoR0wCUpsXoEUz3zT0ZPVaUcxhgqhNCbyFhM2+5zQbtqaYFMB/zA+uF94HGdtbxr0TTUpEzAEKH/R44FXi4bh9uhq28zAGJ+qnTQ/EHJ6lZiOfbkg4b7sKmp4bV3CjEAtlW0Z03qd9/x2wmwITC4eLBWaqRbLVvFIjM7jyvX7BlzYVxO21AmT6Ee5uOIULX/YsoTGxDKpq2OdUZEuXR7ITO+lJdf6KGZqwtRomzhw8QdnYbJDnme8Knfsdd8JordNs9irAETJaFnEynPkb839EEsbf06QuwixA37nMBISRea/dWsmrslO4RfmkoR46iDrGmICtpCGr9eR6odYLFGQJoXdZcuXQjspm0ReSnkYMOxuOFVpG8a29tgUPjQPhcI1DgFiAiD8R1SFThvawyU+0SKNGedgKPeOIKrqtKw0aNGja8vjgHMI/CtstSNnxASCbrlF8RMIa0icdPFP6pMT7zUyzhTX1m9BmFo6kFSD837fucVk4k4mqIKOYZcQTnB3iT9PQVp8S6Z3un+7aVGjamN4dHKWVBFFdqom+7TYb+peRMMg+YVWM5S/Av4HjwuK0HjiX1GvsfQxhOgg3/+pAQ82/dGEjmhr3+jSPMKOva1u4MHHESTDifqz0UVSDMke58r9y3ph3xDlvJOCZ+SjqnJQ8jrCHDKYNUkIO0nXblNn28AmpikCXN3OxyPHlsImXp6MH0D/qR797bs7XW1NyDeB91d3hj/4OzjicycDL7qL+2rHhYQAT5iQIG2MVqCxj9PEM4EbZiXBm+Mavlo3tW6tecegAA/v05+nFaYSk/4iO7F2LaSvb6eWLJ99DwZQcwdEsYUbbDI2wcAaYRRN1Z/cSvbcYWk3AshAnP8/mMQy60GB8dbFG5ut2OBjFiCwL22KBE48ZYPctk+7M0lfy4lqUUUn6NmHd4Dv3vG4IReZekRB4SHx/M3yX8zE50rBNcORnScwg5bkvb0jym5qiFRFKc3BuFcISbGiOt0whM/IYF6KZmM/BEgsoDZlPNp21tC9X4xyJlEDXkWVlCChvvl42nEJsCE0ry1jHeZawARFEa7ccT6WRkJ8zmKl4h27fKUc1/FLdDpnxcqN565bazlc4jFTmH2IC/yN3mFPQFXCJCOBC/TFcV/fT7jlq4Z5HoKCSyhKBuujBzcJce9bXYobqaah9CwMHrWt4xH+tLN5znJZRGjPWLpVzdp/7+5lBVWQDCgXkceCAAF4FfhS5261rb8n/nkrHcjHTZrbbbuVeoe9EQtuiTZDgTljr9M0VtK3+PC613NcixMU6M3mJ6Bpn9bbSALUPtaPSs0HxBOXQtVIYxIDq1n++HOoHJUOj++eb1Ny9/Cns24+r1LbCR4SlrfBtZQvwYW2gbbHDkFexhq+Bg7OvB5lWDS4gnSN9zkCgm80fzkAawyM7EJNU7lLNAGeIdBI8cCe5Z30JHBia1qtI10dNEeZE5tQ3u5FkCUEqoPM0iNH/wH1zi8EzhaegPE/P6IYVcM4Q3KeDWABY9EJV6u+EhOUAxzB1fA8z5uY9gOZpHEf/foT7WgsQFIFSN4z+fJa17oisZVcTaeA9WBjS/HCf166OAT4n7Bu6RySxmknuA2ZvU4MBDZ/eFD+8E0y4lLJJtGYVmSiMQax6y8j/DJJ4WCoS8tjgXyZaoQyoaP8Vr3In6RO6YwVZzE/BYgJbcwHH5ih5foambODsJMYrKwK2jpsvs7oEFGHKEsR4SUPY6mBA2zohkI12lSyQuIr4jGiNomxw4pRGjqDe1YFStLoVK4DNZOJN84PQoTDSk92/+glQ37e5WIwxVviqTHKYVwDmi5gwEVP6kY7rc1HUecr2Ht+V3RvYJQpfquG1rcMdVvPScvoMmKM5+JIbkX13imxSvsDaznNHLBoPVR0o03yH8Nn5OoVxxF2m/P5Gjnx56lNBfuDKz2WgHdqsp0NyC2YwiMEiKLIi6o31P1yUzwcEbv6lKvBajwHavj5l3z+IPnepAsP1I9mTnXPQBvcq4xH9G1v1numo6/s4QVfTcwaUsQz3jfyE+UqkNNziZuP7FEF2hThTKYpobL8tQwS4Jg3+BQ1J5xEB8wgwNUeqbsg8vqLDGBqIPfMuPsIFUd3g7qszVZJGnUeurhq3NcL3g1w377BvG5vem+XxFTuTHv1ol7pc2lkPdyMxvoI8sSgTMoOdxY4JSpqCrfvkCEwBjVxpTlnCC7+DQBKweBdWwYeIg8CX1s1W5eRYGHzyng4FPfiIz+PPUR8yKPoPd8ESwGT4oHr/+CooQ3iFSg5JCEeg48GJqPkuDkRZfOsYSXJul7hikewvHbw5rI63spYG5LeIlrO8A8yMzEdBNwCZuZnya89zb2fUg7HXkaLyQHoQAOUwzvwrSStVG9ry0MgeXv8x9u1rqHtnpLj83Mva8nDQIQ1YJdizkZC2WZAtoFKwqoh6p1xWsWN6T72qgl8Qr5Z40C8dFHZg7GEf9sl9RzJyrBkGDxoHIhAKkY/xcWXFe5JWtn7As7IhkpLmPm1DyqIDpzxgG7/zsn94HbC2KEsK9NcyTyY5ShITbMcQdwpACsoBQrfyDkjhfMW1zy7S0mFL/sEs0qpCYlBRK14w6x1lqDrRNTA0isIH+Xyp83mtUKClgIFBylPcT2E8AVohJg5/UrqF2RpDdogmQRXKZrzOktXxnqNETsPZ6B3cotOCeQS0w0uoSuRFrxu/yRA+jpBcS2l4RjJXVTP68yLTh1NwtyaZ4QE0DpDnQx7/RVHc83UV3BVyic4o0kG7ol+xDzeMhQ3UFuw9YkfuWARw1ZCEWEMkiBiKgabmDxINLU2P5RuOn3tYiof/DUuhNzDljZdQKLh3a8tjgFbt7Bfww3ekMna62aJCe12Dg0Z3gaxT4qFLsS8HwsOncg8ZATrKdSbyyRpriqM6vBkXGyH/41fnXxgXZdmKIzBlYvhnPZbPernBV/3/q6rObejues2XfLZHfEtLgFBkWIooIRxyX/iJgTN7gD0m0ibxNxaQLYhI/7i44CwEUeKCkjCyd/4qEn8CgjmvIOPMeP6Q3uykdmxyPb2vVJhUmzYxDVe3btZgJy1KIogk7VhkDXxxWBv+LgCfISbbYCpP1LlpF/Fs44Ai70omT/jn6C9lXQ8iQ8cIOZAvfBrN+1Zy/v6rHZAzAyf7T7uhZDUOFJeiKbzqnEvJupG6g6HuZ37NWkvDvhs08U9ONf4OoGXylcFx4ZqzcDG0H3/xktj+bYLdywcuSjEf79sTgnAsvnJyQLirYUA5ZfbkDJFPFVKPeNpQgNf1NkBpD4CK6uFUhn8GsAKDDitcZG+5e9HLcrYJAtMJT2lTmz4W+hoxE0A6t7Y7+TxcXG2g4z8CgSnPYXwM4tNQBjq3WW2NAeDC5bQ81NFMr5JErO81rzE0du0SHsd+9brh3jDC+LpYwzGNUVi0nYtwJszqF6YB01b+nsxTMJLgWOQFElstf8eGEXs8bvNXeZ0eWMZFzlTm35y/YApUAlBkgTLih4+ULV7k+SYjnNEw3gsM10u4BoQFatjPJDSaKBQwt5JsOuj/bdAsNvIqepZb0liVrSCBDbtbpjz+uPzrwqmUKWagpR7OS1B9cx15uqVLRJUTb7pUCg2RPWz93OvCH1ViXlNwZwpmmld+0vQ7uYgn8G7Bo5vZ8/AE8QAPzf6WrJtej8QALeeVaDjYG+cOdHMsbTa9owoSn+0ieFVgoA3abon4tbskrOquxCN58iQarTM3LwWWSt5LLKnH9CaAARI7H+gdt8CXnfx+eJy9UAj2/LRL1HScmaYKZASN5jIL0V+rDoBaQ50yUmkM6bgan8fgsoAKTNV6AwATJmmia9oSdXV++s5e7F0jtPZ638KbYQ2OvjVz9w13vF9/xjpnUPXRPXgJ285qtlLn7JAV1B8aoxpIqeU5cCq5CCNtRRO0IhtFTuW/K65m0aHugjEzJM8viATnx0HzZ6YvoJEByjRKsEPJoHq8ictX7dsHTZ1ZbQgbUryO0/xhAzkG0i3XItSBwlFw5nSWzDFVpNbAAM4BkNFvpkgWFUNVh8pBQ4vXMKcm8eQ2k4BzQrMJsZY1AM0M0GDBU5vYIFkpuFjHn0MtZF2Ux3rvj0q4ccDTxotQNLOgikAF773VfGAO1TdodjGHJms75MZNb1s0S3IkSU8XyHIbBQdB6ycsk1/cdDMJ6iVFqdNmz/PQ5M/5zmJZnjXxvjmCQcbco6GmwfPDFctDbSW2lh4dfEF52KSUkjap3E4E42L8GrDjCE59ug3Yqp03d7hNFY3KlsNSqASSx9uu3pPI8pJTlQAAH0Hs28rCuEZsmdQB9kRKUYzC75FNogDNWl/GB8OmUKxqKMXCVJIHKs4beUxoJ2paMJLtZEILVzyG/owkAsEI2RQub8/7mvNWhJDtaMevH9goRexleXPMM4hHbnHvgm0W3Fyqfh9pyqQBWxxxEDvdF4ZBWjZWr5PH2f/QiQcFSEMCZHE508PvFdXZe1mr3BPfXcZas3ULKXrIdFTLjYGFbYohDQA5wTd0mEynktCN+2dMDA7SgCQth59M4BSqQMe3RjnGQeqduyXhsztzjhIvfsTnwd6FWFIkGYG+1DMiTFA9jj79YeG9xQ81OgqEoW5cmh8bOOJUW55p+891/SuKhJobjr3QQewXMIrGacvTpqydOGdYU2qm1VB8GlbQtU4ejdrAJwVotz/8zA+CAtIefuZ6zCxW9e2tsuNFefG8KsxnNgb7m5+F3viGDZ5gU1JpBl3hQlO8RYT3f7LYF6zh6THbsNrqccN8AKP+cstnvmbuiqTjr4XUss1Zhl+spyhpTH7/5VIdh1JAFYHgTu7Ve2kjWJM2vZxBQRKqITQ2e5OLh2GZG5N/KSpBiRZUImpRZwMstkMhHMlvttonF9fl8m/d7jyOPocWFku6BlbAAAEKjz75c57XsD8x41rvHi6j2LGsoYW8ocgWPgZ6wXSJhZSuqUtWY9kahioc73jlwpSHQGtJfR3e5JIdestn5vQzevRqcTtiz8ukM9ZbCtomk4VoS8eK+DMNvl9tZNFNSbrOrSpTSxWvo/t+fMFAcJhuYhH+akxbgw88JU06uTGL+7BNF3pRTbksTy3fPLSQWAREMVvYLZTU/w4V5dKLTNcyQAEKQEC24CBo5DVVBSyJJWiI0M7h5W4TF29ujnyfk0kgY3U5aHht65q2pvexh8goILqqVs32/u6sL16BugY3jF5sKruYqJMVbMFEgPF2JYDOekryX82bsr/74CNmPgKoe5pRN5eKMfVP8Vks00ZVaRQVTVMVeFuC9+GXIlvUQhUU/CztpFaQiig7VZAlQwZ9v/6627PO1nGvCe6vokFhreRL6y2RIxH0xros5lVqI+aR6YHiTIpROGoGxAeHJm+Pv+6BDYwffceCU92ZlfkAuLmf7jKywN1fVgMEtkByzw3TDnflBn2WbYZ3t5RVV9B5S6lc8e0aiWAjGbvogZG4qv1lNtcx3/AdwetkdbEXvIWBj8pHcHmKL8oKstSqQ2WAAfPsEZ9j+C4lQWTGM4f5dCFtfGHoBjgL3oxvK/CRlvYfwvaHbRpn/wzX66QW3kUq0dUVZQU4RS7FRGV/GhMFd9hNrXXlQwzcU1HFs9f8Zy0CFxLDcf2OD4IRPhOo+rf9cFlslouv6ZcYKap4JTq8ARJ0Rd5n534EHsEoDp8DvrSkh3+LOGu0/SN76U12v5MdMwTZek6OCPPxm+5iAEPMoKzw+th5eQzKTj6lEO74xH/dKbkJ5RlAgzaPkTm83n/oKAHHj+fCf0r0pV/G/KhGnsfU2zdlWe+dDODQtwhWuh/WFx5kUMmNW52CNkllSikQT8aYRJBIBFXNWyDXwjkNXtmehHmfYIqMGSQxYrU+kZAp+t5b9ao6owwXidVpK/GbBYBE2I6A3w2zMm9b13g3MtaMHAFkWqbSm+2AVEzBupIrhSfKLqjrgkO5kD321Gd1iu5g+LclG5Ns0L3rCDLNzSMTlLxXCYJcu4mNliZW4zQGu3wu4E+jUgykkB0e8Tmakzc8TAJ1PkCyR6fhuHqTi6CewCTEMs+PT/TZGY7WkAZvR2v6PS/YiHHiQca7oOQ8qZ+uCvmWHztKh5AZtbewNjp55k3kuMAA4T1Vb92rNW+XP6s7VbG/Qu15874cclMB5ENWvp6eyi+rau0jTgOuLt2iNIz7TjgvZEIzVSFD9KfVPoxE5P6NBmiMcGSRDpGd/AW74wDIacNLZFzSpZkWEIrtZ94ZWouPRO6VgY8M8B1nC2RDTTeU6v9/Zc+sftz9G+6nYp7jrNnSiDxXPlaKHCSmW4IqgJzsKIEcFsB/9DbIaY+gKaMkd2NGDjuYH94S4uELgtP+cg5wfZHLLka0eUPNn3J8f3Hpi/wecHdEMVbZZaqXdJOzC7lcBvX0N6nDvUG/0MpBTioGeV3MyRPOV4EWsGZOVIygjx39BRCwiQ1LJOlPMBPIKUGdSsR06bfgjk1XHJAtpQMOCC0Zj7Hq13mTQ90ROBMr3OvRuNtEvO61PwkzmTTAzDldsfTrb0OVPrMHBl0S+y3VN5ryIzqQ2au5+GudixVw7KFjkKQLbf//szJqNIaFcrGFDPqol8cfLt3PKYRcU0DEeMV7Sg0pxRQW4XfLY3N4tvJwwYNEmYzEYfIG1WmowT1m/364dO3zXzepoets0fRL350mURCCsXyn61pYzhRAZhx1LNFkY/4keu9cFI82defJN9Ce1hpM7J2qyAZeh89/okwwe5X+f1xsl7cLiXZ8OHpuA1OMMjJANk39xtA3eJw+GJdz1GaDB6gZhBMRafB7xf5khhc/HQd+M101Gifv3rIY91r0/DOQSS/UPNQITe9gAZFGSwAc4z8p9N5pbFSM7pOdqs06ww5osgC6DdL+uLNnn82SMDew5+EKupan4pGrVZHlQDUGJr/5VOkO8akUO3HdqS2CEBoeuPgxyAo6AZgSBpfCIFeyqYL4qYGf6JwahrtNdTSy9UvBuI6OWFI7RM0OgpZCZdyDdjf658ADKbktxwJJVZ9dX22Vq1EPcrs9JEXTgtMmb2zVWATxdI0RRpqqFQq1OEwqBpoOoQ3wCjOKyQmmz0V+1m7A75Gs0pEwR3QEnIHGhybXqK05mPg+MhODqGC5zlaq5G8TnHMM0n+m9bO0j/PVNCaLeiC7W7M88IvdRLEnTGdHz9xWUQvVoh2brNnnCQ8hN8PQqGWNPWQP1KxwLTrGAN9HuFdAcNZ+OC+CZUlYrY+amGeCWNCjziqXfrLsFm5xsJWYHdvcJZXarv1KV8nUvgZWw6xMijhXdzrYu9TSrtj5bsg5z/mjko3Qr+6LHePjRebPT8s9ZxPY+jiijWAlpmBJnbsBVQQfCJ1LCTdb76jmoYH6b5VcfXl9pNaflLfaa83xkH1kUXz5zIPWRu7orNgGgzzHMeeZSdtFo8MR/hxqkiKHzn8RMXyY7LNVKdAe39rZeShE/SUbhr9EAwiMsgsdtDWlIHMoJJr0YIOF+asZr4c6EPrxdls7Wsw5fsvagEykN2w8zaINKU79COIYCSGe0kzkjOMyirDPdamtBp/QbD9aMRifmgSv7ARy6o62a5C/FgRXQ0bkXsmfwIRfEukIHa5q3eI10avWPjj74A4EHXmNa8K7Gpqm65I2WsTAww8DU6cRw7cmAcxDiRYWydkWABYieNYq/J/luMxyjwahvKFXBRfIiQdHvprL125CWTTbZKYS06q1bnHyPrL2A/LIvpLfj6y2rnZoFxHqhlaXy/7VHSHa0ZM2fvzIEOwpRMVxs6v2RAF3hZIgE9tuYUSsm1hJ3Ybu96rzei+M/fOM+EVadVHb7GF5QvveXEy2qdBuFGRQ9PXmspKioZCh66LOcs20JmWPegeGc9HAvVQRuvGerjsbnlRu+lN3WddlhLgg39mQHNYfsQanUFnXGPnV1jJdxHQjJQjXjXjeEgdJM83o0C16MWrq2Sm3f94UNDLbd4IMbsOYgs0DBRdfBv/bzEkWWKQsA13EOG5MOdIhprHTT4fl6gzdcP9vE0/DdUUaDWOc46tSPWn7L8yMunsBoLsCQAdVVoMJLeVXNqOZvOOMrvn/ApttVSlE2510BgiNMOG8t2ziusotldDTtdB4jXJs5JUho1JAxWkxexSHgklOS1wZAO1MnrrVg8XF0C8/LyoZCk5ZOykMdpYeopmuqKM5UM69Lzk4IdSCSrhvp/ukDWYPpXMQyZn3UBcQliOdOb2ne+K6SIlYa49xmz4Ok3jGlqiE27dEQsCPjxj8hlG+FYLCvtcnQADaE9Y7RsT54JtvwMH0y+4UZ5u/P42OQNF7A112av9DqecBjMg5ldkYL4k0MYJ07bpI74YvGrTlNK83k03tATc2mq1iia5RKO03fXJfijl2BxowJB+kf4B/TS6QIMmRYwDn7WMik/W+uTfGdDPTCt8QesPrSlM8dLZflJhAS4rDOk3rBNc5+eTfRsW5EZkALbMlaKW1un6TRc3qT25zM1EahYR86oESX8hFQfJ/B3ynZEwID8w2si0HzICV2mLhSlR+0uSSKExAqNbcF5NvuNGL0dajJYnKu/FBXZK3KouQmhFGPdrN3H2avUTyTuEa5xN9E3edB/KVcsxeLjdiD0XoXHMhe/QylWjEZprkm3ilZTeGaFypq3wvxOgkeQDGRDtJxoaciRD8LSgh+BXpYpr1ePPOsku/K62WFqQVDjtLBrafKlofnIgDtjjhFetPKRXxKqoi9Qj24HRdoywSha+QLMfsaCu7L+cxGi1WouiSTpsoP+gpsRZD+dc7nN0kqCqrBtUIn72mFLRrMa/eV8MFZy0/z+aXmLwaeajcJmdhZ6KzxIJa5RwcFz9VxSMElx+s3xHCb+9Sumz/Xql139SbZdZdYpbPBvApQ1eUMpRtYr4QtAD17R5CUwBf/TpzPz+D33QCVy6u6OplH49Q+16sKwvmOWdYBfYKZiDhsebfPJ+cYKEG+fQvSWJDYJxVXpIAUIwnjFjp8Pyi3cXFOMqV/lGXYTbfIXQ13jT3CNdXAotkQNBMqxf2TmRw2HrNyknT2Eenzp2p6GIXPadyEpWiQDRteWFNXDY5LtHvYUwmnj/NFYXd/BjURwaFKqF0ZbY+ctPRg8SCTO4QjXtEi9NW1nJ6G7p0jH7zy+MSaMX1j19F+EHzTOhPNbNWCpbNIrzpQW8R8Aq5+5HkBLJOyBoQ25odEhm+Dh5FJ92QqJrdxnaHZu9Ri/z1U0H8IK7qUF2N7uItYZhKlOlZeFcUM5zMtodbdTj+BW2pEnWIid8gjOYGE4swdkqREsCVmEK4wK6jsM6xXAcu4Bmz4KJlMHbiboaP0MoYUijEEq+uk23hl7bjZyCa3fcnxvnsPAKZF/jNVPQ20oyIrWm6ue4RClOgMVepy1oUB3USzpcj71SKqCSJnhr6Rjf/U9wUUU7NtRWBmxhWM2mza3PIOz1ux38Cnwi2GkFHXfxv0qWYWRhJqp3CbXdgWCMG9VJ7yb32motEfZ6aJbs0cQ6C4OenICC5T/Ktuv8YaEYP1BCTl8+fBxSbRVUgMqLO6khvlfOzUj7n+Bj1JkJZS+A1QqyoRv8jYkSn5ruLXDpy7VQ20zl8aTnZLWAIZA0NjlDiW4kos9wiu3LhJYT6EWbMGsJu57zzVvnbYZ7khfTik5s2irFkVT/I0HqIVfS3Eob8olz2BENjEi+Uqrs8gH2o/nK92FgNZ2BD5dwTWg5/XWOTGyCBeQ/s03+4hMtU29RXpwU6N+9P9ruyayguCFyGlb8LbhzcM6nL/+yPLZl3kqRcEMVYjhNB9jOuCtM2Nj4vz7EZ5OF9FjOI2hWqnuKQkUI/4L7tZFs98JgMUrB/a4UferR19ImygmSGxw9qdfxlGIEzwDuB7Z0lgNJ0/sANqISO4KqwZ3GtFlKzOz537t/5hJ2nFb+w5AKD4CGh+6j9GOXoDcimYZ4DCwCsASQvhOvPmeiTGP7yfzBdTzcu5WtXgKmsE8mqbD9Y/4LqG4/RyGaRRSowwqsynWurxv0A8cOy8CV6tHKFm+/pJ9js1vX2Zu7z1j5VzUXavE0U5MSWl5YD3dzuS3t4RmEu5Nqq3Kb+PnWY0JkpY/a0M1niTWY9V/TudnYSHZhJXJl44MPctCmmgMjWoW5CPG0i7OjXp9953b9aXyvl1QhuYCsFBTA+uHA7efnWmKDDvG4PTZSJJs80uD+TMAkEOCthjlFJlR+XZ3Jj7qEPbWu8JWR8ku26ieXOo5DYYbgW6i8FPrj8qndG9Rh1Jtics7v9290obeA9MKRNa3HBKFJJEb9VoIihJbzRjvPTzl+fH/QdpY/8qTIPEKfyURyCtxwNXhtoodMv3pbXCHIckSLIeVNmXgFlmenLblf0HcVszFA9h6CUTGwj4QpgA/im2a49+LJjEfpKoaC2QlQsBRFjQ3OLcvnpzh9V8HU5xY+mEH4mispmaE+OsU+16wFZ8n1KKE7hi6EqSC18WI+1GHO5WxAVFUws9/AJKVMbkHFyyqoBSE0lo2eUEsZ7g2QOv25W3Z2q9pBl6WBXkZtv9r2IZB330FVxyeuFP2wg9c+Ea2NHB6tZJ5KqRPgalv9Nm1hZuARVuaQMpZULCDopFa6XjVP82iw63HmSC+wuoefYREJCy8KCtfdZYLtax8UE7XYPAsHq7fePRmHFmP3u0EkEb53RU+WrQu8fgOMqmFeDnF1opY2+IilBS+tbn0ozqCQP/cCwOWCuDf0aIPpaNu72fydFqO2SA/TpcsUAEySe7GB5OC+/mqfNLXoL4NTWeotZHQgznjcMeu1keP5YVz2NRcrDTTGYjboyrmlf39EeEBSNgJAEDeStssWUPqJWmycYnm3ymh4SH9vBM/twl1lWpCxE/C8JyP3cmn8T0NktcrV5fZtcJDX5YhKdHj1G/z+riAgceIGTbqXThNBT9uOmwIWFzgrBslPnFKxAKhdXqhsCwMc66VGa8wZ6PfX2GqkdWDrSFxJt8eIxoDi0FUZEBFAUQi01VbcyXyMtHT0+oMHw5qQg1zgcryY0GMDFgG583JjmUGRWcGsOGw3TvJu67jQWXaJi5Yt0U7FYmT6qoKW6EwSbeAxe7L2BeG6HHO4MD1hYCXlRADYQXD6oAHYXRCSwLBIj1wLt4VO1IN1fH++SlDQTYTeee6snm1es/3IRz6Zr6bQ3aDVcZXfP5+9A2Sn+cjkAIfVI2mbmcUxC47yMAUPqRVq5uxyCYkgKRh2Jp/G8z31e12LxY2PxKlkkYNZNeE6GsTL5UNdCHaht3/7CS/eg8mE2JBGPMLB+TYdTgIhSenoebnzKkqrMziKPFrgic3D6E7QGx+bChU/W0H8SEc+UlETF9OvkuXCtwo6lNNjqQlYvcrAaG4EZg4YsM0kul7/50RRNbGT04BhEnTydXJw44oOC4E1WUgz6mQaVYPEWr1gZ1otZaLVbAlcILyLK96zZ9GxNgvjUAKBUIzYaEcaqw0NE6fgCJ1b6I13xMTiyklEq3DKgSldFgdrPdG6q1kVHv2Gl9PrIPpHr/wMHspvmg4QHGwNcwMIEARrnbG0GZqlxCWeJlYMyyUdIkZkd40lUr22W0vAgiZdU+sqjfgQfBneTdcSvvbfoleeEYLtx+Rz0a4t7XDboE3E3fhDee2ir5alB2V38DYQV7tOcam+zOFrbb1uRMTCI/0/XcgaBQy+GHs08JEYhGgtGIpMQQvJHGQdKrT59wI9yeUaOjGGNxHbrnxPpHoDR6Xc2C2+YIAcZJ0ULa2AZQX1hwYmo9fBTqN9/a2721BAEBDPLH9R8G4Le5vpjYWUBtRiDBiUP2U2g72igegnr6tjxaFnQhKc4DqEedTcD20HZPH1RTfuFgUE6TlRPKCSq19a/Ood8Hey+oHReiY42nGA0ZWD+TRuCECtARxUbAzOhY6j+RRYAAADxMBQKwhotpP5WZjPammP5nmkO8mo2I193IFPdjAPXMKBhVVay2znSWWRGmzonIwUpUA65EbYU+h4yIoNU5nPj+IdMovYzCaawAzZDsQmuq+3ul4O8V8dBKT+JRn5wmsocbsWIdID3dpBCGstu/uunESAeaFA41k0Ccuc/pd+cjWXzFD33agTBx3KSWhitXEVEdL5pi9HA2alGSKdigBxuvfWkzZ/svBgf3Eu/85u0YP/PEnshXWOKNOql2GCuBKRHvMl2i9w0c5ww2PXCF1HZ80qSSdv+AgyzJLrMrfGN2/9xJM9zFrQrasIzf7L/3IET3WshLpG4qwQlD8ksgC9L3izo14bqLGRMdpVoT3ktp8v03ZjdnaBdOd5b32ASl9MUDkhqKHW+Q7GJC4l5Exsf1VFNlVj+x8yD2ynYK8/KiuGGZ2ryH16cdOfP2ukLxdlxz6MEbigi4ZOSDzOvMD5ku5gjAVqw8S3fkvjjHsEV6D0i3XkihObLjptqXoV+Oc1QoEChjCxxDT7iY9sVEdb920zOvlpoWcpLB1ngJpliYJctmi6Anw9oL+kl3/Je5pYsOEop+gFjmo4Ui7II2EPaeHRa1J3KBYbk3mc10WZv4xiQi4+odPRxqKZWOl1wlvO4Qg3SHe1ZzG6RxjRXsIQCBAKj9qDCsTAOKTZNCds9xlbXn0KTu60y+hhpbxDcGRkGwK9ULTsd3nTt2kqrQx6+1mpW0VBYZrI7xROyy3nEhFGBnqydsiGjX61Vvc56y1hfbopDZ5ZUqE2YbNxPsIrLzGAcxW1u4PkMEn6Pt7cQy8IOZOMcZX6v5jevmEIMPLJ0sDM+JnKs5b+TbPKzrHcQdmixS125V85cL0BEs+kswMgd41GGD63P3FgpjJ8c+ULLWuTJlU/l6+CRPX27ax6liptnAJSQD0myreNqn59fn4r61nwSOxibMPnsSZ8MlepD0NW1f+pRanxq40wFnEZlKI+YQcwl6ZblTQT5CqaMouw9DSH0JxkUNaKb/oMi6mJfCsUdIAeH6+4mvvmHNfyR9fadWYquZASd9kOA3n+P3gZcMy4jvmo0AYEfntLccCnQHFU2sQ1roDHJbu/3TCRKGsBN3pngXPXNjgwkp0dVsT/+Q9wn1SwFB2uApSDPKRO4JIddZr2uQVSM+mqmJ7Jhyo6SKPGq2Q3qk5HQzV2eDXsZ9ehXRr2fFuUhSI+KNbJlldI5Wnkc/5jUEJneZgkgPtrza/MHufAMCm6OgvE3tHd17Zt8n/f5YEMN7wSRZzAZLCSNknNRMUduKNpHKNty7A1jYg/rINp582m+mc0VtSw3qTBHjQq4uKjgQ5DIBo60stfzyMCme9OOSAXBh82+jVk/ACBS5EGmjYljRw9KDUgth+kyv9KwIBZBtcRTi2QD05SkUU4SnBKbJUY588RvKYhR4o6Z1ZT0MkYcWqkjDm57m980CL0WxUJvt14SVVhUmP9hTcEAK4Ef5b2h+MBLnVG9k2qzm9JnAG41pKW16f2pz+7x/8DhuCPUFYlBgIBJfRAxIMKlOesEXVbOkku+50bgh/NCCsmkjUXgbrQYnBF9FSoR8C3kVOUUEAad1wLcRSvx/17Rjg8UmGqThLni6F8+MnDzpWjeLel8iCQe65kWO08s+7sxHzp/29ppuXwgxDn1353K1vQ9VBnqD+gxv8ZoGPqeZ+EFnhLzzw9gtrh/Dj4TT9WIYdXNFRZ6Lf5DEe4xLZIAdhJKkrcZOn0OOniZoRUsrB6i7Ms1ohoVpGA/jdG2080I8tZiRoxnNNvpjHv1A+l8fLLCBshctxzDAe2aCS2aUF0BtAkG2ezluEei2HuSBeB/16LYsR71+7zTwadwi/8WqgLTXyyGpIOcJ/75r7kHDQwd0y/d5q9kgJg2+yUc2fyqQJNqU8bckptxj6QunoYH4C+ocnigeNWX9EDLMU9e4IkhvL7uoqT1gZIk4fQwhdS9qDx4bMQ02XNSxmeE1SS1lstGKKdyEPMl43c89etMXx9M5PFddCnDkGo7DfrVfr5pODpyOTPgz7O1+N5H6wPMYUyatecAuQimRFqKlqCJEQa7ZEvRwy1w43OTtI+HPrrJzTo4Y28T3oSu2TSK3zVrmys/v1p/mx47aiMtcuFxS+LBQIRAwLzptYlDyW+vPNhZgQSXRHUuNVwOmmK4Bmt+1HFNGedgQmxAWLG643tYIeLKso01cZdNIM62r6NAnA7mfJRbExCW4A7Uf3ythUfrvF4hivhpn6CEZybjJEWikS/ZqvEXfXUn6mnGmEjJJTML/Dr8PA4WrTac8YKnDFvcEMeP//Af9ztoPBTLX1iAhucaEoQNc5srY0kkzK+7D3/uqLd0pPe0ZdxwZdQ+GkDlg0iLbPMD1dFAaHpYzfWlMcMJlX08yeOOOpsuyhhfWMqW1fh5DE3qOxC25U72SnEmBeUff4eoyHa1FpDkkwjXs8OMzZUskOj9FQ188EpdyndCDBNxKRbYVQFTpkxIj/LvM7z71PIT2zPlNStDtW0hZhnsbrvDTa3jlEziwTo0KyutwnUzw8Au6V9jyGqq4wULlH6AXsCxj/s4vpDNOWxHHYwHpRLy8J/vc5/knT1Weho5Q3ZphSZWSlXw277M80/N6f3QGQICa0AU9FiopHQ0bkD+sL313dAwuypEo+tf5OodFDHteh//35MRNSd6Af8BpWTPpB0q5Nf+YfAOlrEMeVYEc7TQxtGHBlBiokftHIdr+IMFTGvk8ECpjP2yYmOQlKsCAZx42J6iFDcpW91pPLMhXC1hLOumPN2MiScERp48Z7tgKj2VegifO9AK4F/2bnnYNILE2VKF20UxmYcLh3XS4NdinJQOjXAMEriC2aX8ZKkoHN1K0GbwSWWhHde6w6GjF5+88pp/EFtqZMit3FVWwMCF6nmEvu0izcayn94QBJeuulirGE75Gg2Hf8ZNqAAtVg+ctfefUnuuIBUo/Icgx1skuyYjGdGugkhg2MFkrKDQ3CogvB77tbqocz0U2m64oCFb7xbraiCcln5+DnU5790Y8R08fui8W9QNEqRGkM5HOguBLi25M/TKRSsvBOaG3acCRyzrN/xhp6a0XtHSVatX9d4cPetWn7Zb62kZ8nWrc8e0nUvbQn7b9+BCjji6pa+5kkMiwTJuTTB7cg7aDBypm+GcEvpAgkPgHhQKrfCu0b7MkG3DOCPCsMWKlpwmWoxVseU0r2aD6OyCWAtdR9qMoO+qa3aq7DzUaRE4ucXocAI52970ieOg3UWojq+INOR5YkPO9BC10PAOagNfS7W4vX4dXM4bNnY++vmfO44RRLlYLF6PMfZEAZpIBwlEaXmtPBDS+ziHfR63ntCYQZyDlMBmghINyWBd8tQHmnkrprMDBGt2UC1PDRUJcBKiu2JFT+ApJxLhMwVCwGfJIABb8kUoy6fZ2sHnJ/kvnY51GOKrHPC1G7LoU5eks2vOjsBK8JlYBGuT+lysDFMJx1W9vsutfJ2CButgyGo2taQoRdxqlPcaoUQa0dLyG+MNHoysE0i4dCZbW7Gm/I67xxnPO5IhRQitzT+5d2yeIthIcZN6swjnEvyxNOdWq7Ah01nBSF3veyVTLJgqDrtn4/KcW59Q98lE3zpL4PyGjnosfPwc2rl4r8oFm/06CA2H+MOOyCGhnsVZd0kglwzxUDS6Qc65KXVoEGNuehpVCv25caNB9f8GG9+SBmAPMBl32+7dXsscEvZ7QNzOooaQFkpyEOA/TpHWuxqYIK8KM3FeQdaydY//r3ViECYtd0rJhr2c51u8Qfkg5H+bzoiOSMfDIObHkDDdBZ72HLpTBE78bVveDZo8RedENfkj6Ie0vXvRe4aF3LrDrBX6g8AAAAAA="};
+/* ================== Night Fishing · Grade 4 Project 5 · Early Electronics Kit 3D lab ================== */
+const $=id=>document.getElementById(id);
+const S=['Plan','Build','Light it','Test it','Math','Reflect','Challenges','Other designs'];
+const KEY='britus-g4-fishing';
+const st=(()=>{const d={done:[],pl:null,bs:null,dr:{},placed:0,bMist:0,on:0,touch:0,wet:0,dry:0,tq:null,r1:null,r2:null,yd:0,cups:{},r4:null,r5:{},voc:{},quiz:{},im:null,sc:null,rub:{},fbk:['','',''],finished:0,ch:{},fixed:0};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+function fb(id,ok,good,bad){const e=$(id);e.style.color=ok?'var(--ok)':'var(--warn)';e.textContent=ok?good:bad}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off';if(!SFX.on)stopTune()};
+function hud(h){$('hud').innerHTML=h}
+function banner(t){const b=$('banner');b.textContent=t;b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,4000)}
+
+/* ================== 3D scene ================== */
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[0.6,0.5,-2],r:20,aspect:.62,views:{
+ board:[0.25,0.95,12,[0.8,0.4,0]],top:[0,0.12,12,[0.8,0,0]],pond:[0.12,1.25,19,[-1,2.0,-8]],bait:[0.1,1.35,9,[-1,2.2,-8.8]],
+ fin:[0.3,1.1,24,[0,1.4,-4]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const G=1.3,PLY=0.3;/* grid step, plate top */
+const gx=c=>(c-2)*G,gz=r=>(r-2)*G;
+const BLUE=0x1f5fbf,GREEN=0x2e9e48,RED=0xd8322f,WHITE=0xf3f3f3,SILVER=0xc8ccd2,YEL=0xf2c230;
+const boardG=grp();
+/* mounting plate (book: "Mounting plate is a platform for mounting components") */
+(()=>{const w=6*G+0.6,d=5*G+0.6;K.RBox(w,PLY,d,0.12,M(0xf5f6f8,{roughness:.5}),boardG,gx(2.5),PLY/2,gz(2));
+ for(let c=-0.5;c<=5.5;c+=0.5)for(let r=-0.5;r<=4.5;r+=0.5)Cy(0.08,0.06,M(0xd6d9de),boardG,gx(c),PLY+0.03,gz(r),'y',6)})();
+function numTex(n,bg){return tex(64,40,(x,w,h)=>{x.fillStyle=bg||'#fff';x.fillRect(0,0,w,h);x.strokeStyle='#123';x.lineWidth=3;x.strokeRect(2,2,w-4,h-4);x.fillStyle='#123';x.font='bold 26px Arial';x.textAlign='center';x.fillText(String(n),w/2,30)})}
+function label(par,n,x,y,z,rot){const m=new THREE.Mesh(new THREE.PlaneGeometry(0.42,0.26),new THREE.MeshBasicMaterial({map:numTex(n)}));m.rotation.x=-Math.PI/2;m.rotation.z=rot||0;m.position.set(x,y,z);par.add(m);return m}
+function snap(par,x,y,z){Cy(0.17,0.12,M(SILVER,{metalness:.7,roughness:.3}),par,x,y+0.06,z,'y',14);Cy(0.09,0.1,M(0x8a8f96,{metalness:.6}),par,x,y+0.15,z,'y',10)}
+/* ---------- parts of the doorbell (book page 40) ---------- */
+const PL=[
+ {id:'ic',code:21,tray:'21 Musical IC',a:[0,2],b:[2,3],lv:0,q:'In this circuit, what does the musical IC do?',o:['It sends a flashing signal to the LED when C and D are joined','It stores water','It is a battery'],ok:'The musical IC drives the LED so it flashes.'},
+ {id:'bat',code:19,tray:'19 Battery compartment',a:[4,2],b:[4,4],lv:0,q:'What does the battery compartment give the circuit?',o:['Electrical energy (3 V)','Water','Light'],ok:'2 batteries × 1.5 V = 3 V.'},
+ {id:'w4',code:4,tray:'4 Wire with 4 contacts',a:[0,4],b:[3,4],lv:1,q:'What do the blue snap wires do?',o:['Carry the current from one part to another','Make the light','Store energy'],ok:'Wires are the path for the current.'},
+ {id:'w2a',code:2,tray:'2 Wire with 2 contacts',a:[3,4],b:[4,4],lv:1,q:'This wire joins the battery to…',o:['The wire 4 along the bottom','The LED','The fish'],ok:'Now the battery\'s − end is joined to the bottom wire.'},
+ {id:'w2b',code:2,tray:'2 Wire with 2 contacts',a:[0,3],b:[0,4],lv:1,q:'Where does this wire take the current?',o:['Back from the musical IC to the battery','Into the water','Into the LED'],ok:'Current always goes in a loop back to the battery.'},
+ {id:'w2c',code:2,tray:'2 Wire with 2 contacts',a:[2,3],b:[3,3],lv:1,q:'This short wire joins the musical IC to…',o:['The LED','The switch','The battery'],ok:'The IC sends its signal to the LED through this wire.'},
+ {id:'led',code:17,tray:'17 LED (red)',a:[3,1],b:[3,3],lv:2,q:'Which way round does the LED go?',o:['The + side at the top, like in the book','Any way','Upside down'],ok:'An LED lights only one way round: + at the top.'},
+ {id:'sw',code:15,tray:'15 Switch',a:[4,0],b:[4,2],lv:2,q:'Put the switch on OFF while you build. Why?',o:['So no current flows until the circuit is finished','So it is brighter','So the battery charges'],ok:'Safe building: switch OFF until you are done.'},
+ {id:'w3',code:3,tray:'3 Wire with 3 contacts',a:[1,0],b:[1,2],lv:3,q:'This wire gives the musical IC its…',o:['Power from the top wire','Light','Colour'],ok:'The IC needs power to work.'},
+ {id:'w2d',code:2,tray:'2 Wire with 2 contacts',a:[3,0],b:[3,1],lv:3,q:'This wire joins the LED to…',o:['The top wire','The bottom wire','The fish'],ok:'LED top → top wire.'},
+ {id:'w5',code:5,tray:'5 Wire with 5 contacts',a:[0,0],b:[4,0],lv:4,q:'Look at the book picture: which letters are next to the gap on the plate?',o:['C and D','A and B only','X and Y'],ok:'Terminals C and D are still open: that is where the sensor goes.'},
+ {id:'tp',code:12,tray:'12 Touch plate',a:[2,0],b:[2,2],lv:2,q:'Book: "Connect the touch plate to terminals C–D." What does the touch plate do?',o:['It lets current pass when skin or water touches it','It makes sound','It stores energy'],ok:'The circuit is finished! Now light it.'}];
+const PART={};PL.forEach(p=>PART[p.id]=p);
+const EXTRA=[['20 Loudspeaker','The bait must give light, not sound.'],['14 Button','Book: the touch plate goes on C–D, not the button. Water cannot press a button!'],['24 Electric motor','A motor makes things turn: not used in this bait.'],['13 Reed switch','A reed switch needs a magnet. This bait needs water.'],['16 Photoresistor','A photoresistor senses light, not water.'],['11 Piezo buzzer','A buzzer makes sound: this bait gives light.']];
+function pts(p){const [c0,r0]=p.a,[c1,r1]=p.b;const out=[];if(p.id==='ic')return [[1,2],[2,2],[0,3],[2,3]];const n=Math.max(Math.abs(c1-c0),Math.abs(r1-r0));for(let i=0;i<=n;i++)out.push([c0+Math.sign(c1-c0)*i,r0+Math.sign(r1-r0)*i]);return out}
+function ends(p){return p.id==='ic'?[[1,2],[2,2],[0,3],[2,3]]:[p.a,p.b]}
+const meshes={};let btnCap,swKnob,spkCone,ledBulb;
+/* ---------- realistic kit pieces: printed tops like the real Early Electronics Kit ---------- */
+const PX=150;
+function rr(x,X,Y,W,H,R){x.beginPath();x.moveTo(X+R,Y);x.arcTo(X+W,Y,X+W,Y+H,R);x.arcTo(X+W,Y+H,X,Y+H,R);x.arcTo(X,Y+H,X,Y,R);x.arcTo(X,Y,X+W,Y,R);x.closePath()}
+const KC={ledg:'#1f9d4b',wire:'#1d5fc4',btn:'#1f9d4b',sw:'#1f9d4b',spk:'#d8342c',bat:'#d8342c',ic:'#2a64c4',led:'#d8342c',touch:'#f2c230',reed:'#f4f4f4',photo:'#f4f4f4',buzz:'#f2c230'};
+function numBox(x,cx,cy,n,dark){const w=0.42*PX,h=0.26*PX;x.fillStyle='#fff';rr(x,cx-w/2,cy-h/2,w,h,6);x.fill();x.strokeStyle=dark||'#123a7a';x.lineWidth=3;x.stroke();x.fillStyle=dark||'#123a7a';x.font=`bold ${Math.round(h*0.8)}px Arial`;x.textAlign='center';x.textBaseline='middle';x.fillText(String(n),cx,cy+1)}
+function paintPiece(kind,Lf,wf,L,code){return tex(Math.round(Lf*PX),Math.round(wf*PX),(x,w,h)=>{const base=KC[kind];const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,255,255,.18)');g.addColorStop(1,'rgba(0,0,0,.12)');
+ x.clearRect(0,0,w,h);rr(x,2,2,w-4,h-4,Math.min(h/2-2,0.3*PX));x.fillStyle=base;x.fill();x.fillStyle=g;x.fill();x.lineWidth=4;x.strokeStyle='rgba(0,0,0,.28)';x.stroke();
+ const X=u=>(u+Lf/2)*PX,cy=h/2;const n=Math.round(L/G)+1;const pads=[];for(let i=0;i<n;i++)pads.push(X(-L/2+i*G));
+ const ink=kind==='reed'||kind==='photo'?'#222':'#fff';x.strokeStyle=ink;x.fillStyle=ink;x.lineWidth=0.045*PX;x.lineCap='round';
+ const ln=(a,b,c,d)=>{x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke()};
+ if(kind==='wire'){x.strokeStyle='rgba(150,200,255,.75)';x.lineWidth=0.06*PX;ln(pads[0],cy,pads[n-1],cy);numBox(x,w/2,cy,code);}
+ else{const a=pads[0]+0.26*PX,b=pads[n-1]-0.26*PX,m=(a+b)/2,span=b-a;
+  if(kind==='btn'){ln(a,cy,m-0.22*span,cy);ln(m+0.22*span,cy,b,cy);ln(m-0.24*span,cy-0.2*h,m+0.24*span,cy-0.2*h);ln(m,cy-0.2*h,m,cy-0.36*h);x.fillStyle='#f3e7b0';rr(x,a+0.04*span,cy+0.1*h,0.22*span,0.22*h,4);x.fill();numBox(x,b-0.05*span,cy-0.3*h,14,'#14632f')}
+  if(kind==='sw'){ln(a,cy,m-0.15*span,cy);ln(m-0.15*span,cy,m+0.15*span,cy-0.28*h);ln(m+0.2*span,cy,b,cy);x.fillStyle='#111';rr(x,a+0.02*span,cy+0.12*h,0.42*span,0.24*h,5);x.fill();x.fillStyle='#fff';x.font=`bold ${Math.round(0.14*h)}px Arial`;x.textAlign='left';x.textBaseline='middle';x.fillText('ON',a+0.04*span,cy+0.24*h);x.textAlign='right';x.fillText('OFF',a+0.42*span,cy+0.24*h);numBox(x,b-0.05*span,cy-0.3*h,15,'#14632f')}
+  if(kind==='spk'){ln(a,cy,m-0.2*span,cy);ln(m+0.2*span,cy,b,cy);x.strokeRect(m-0.2*span,cy-0.12*h,0.13*span,0.24*h);x.beginPath();x.moveTo(m-0.07*span,cy-0.12*h);x.lineTo(m+0.12*span,cy-0.3*h);x.lineTo(m+0.12*span,cy+0.3*h);x.lineTo(m-0.07*span,cy+0.12*h);x.closePath();x.stroke();numBox(x,m,cy+0.33*h,20,'#8a1c16')}
+  if(kind==='led'||kind==='ledg'){ln(a,cy,m-0.15*span,cy);ln(m+0.15*span,cy,b,cy);x.beginPath();x.moveTo(m-0.15*span,cy-0.25*h);x.lineTo(m+0.12*span,cy);x.lineTo(m-0.15*span,cy+0.25*h);x.closePath();x.stroke();ln(m+0.12*span,cy-0.25*h,m+0.12*span,cy+0.25*h);x.font=`bold ${Math.round(0.3*h)}px Arial`;x.fillText('+',a+0.05*span,cy-0.15*h);numBox(x,b-0.08*span,cy-0.3*h,kind==='ledg'?26:17,kind==='ledg'?'#14632f':'#8a1c16')}
+  if(kind==='touch'){x.strokeStyle='#c62828';ln(a,cy,m-0.25*span,cy);ln(m+0.25*span,cy,b,cy);x.beginPath();for(let i=0;i<=8;i++)x.lineTo(m-0.25*span+i*0.0625*span,cy+(i%2?-1:1)*0.2*h);x.stroke();numBox(x,b-0.08*span,cy-0.32*h,12,'#8a6a00')}
+  if(kind==='reed'){x.strokeStyle='#c62828';ln(a,cy,m-0.3*span,cy);ln(m+0.3*span,cy,b,cy);rr(x,m-0.3*span,cy-0.18*h,0.6*span,0.36*h,0.18*h);x.stroke();ln(m-0.3*span,cy,m+0.05*span,cy-0.05*h);ln(m-0.05*span,cy+0.05*h,m+0.3*span,cy);numBox(x,b-0.08*span,cy-0.33*h,13,'#8a1c16')}
+  if(kind==='photo'){ln(a,cy,m-0.25*span,cy);ln(m+0.25*span,cy,b,cy);x.strokeRect(m-0.25*span,cy-0.1*h,0.18*span,0.2*h);x.beginPath();x.arc(m+0.08*span,cy,0.22*h,0,7);x.fillStyle='#222';x.fill();x.beginPath();x.arc(m+0.08*span,cy,0.12*h,0,7);x.fillStyle='#e0763a';x.fill();numBox(x,b-0.08*span,cy-0.33*h,16,'#222')}
+  if(kind==='buzz'){x.strokeStyle='#c62828';ln(a,cy,m-0.12*span,cy);ln(m+0.12*span,cy,b,cy);ln(m-0.12*span,cy-0.3*h,m-0.12*span,cy+0.3*h);ln(m+0.12*span,cy-0.3*h,m+0.12*span,cy+0.3*h);x.strokeRect(m-0.07*span,cy-0.22*h,0.14*span,0.44*h);numBox(x,b-0.08*span,cy-0.32*h,11,'#8a6a00')}}
+ pads.forEach(px=>{x.beginPath();x.arc(px,cy,0.25*PX,0,7);x.fillStyle='rgba(255,255,255,.35)';x.fill()})})}
+function slab(W,D,th,r,m,par,x,y,z){const s=new THREE.Shape(),a=W/2,b=D/2;r=Math.min(r,a-0.01,b-0.01);s.moveTo(-a+r,-b);s.lineTo(a-r,-b);s.quadraticCurveTo(a,-b,a,-b+r);s.lineTo(a,b-r);s.quadraticCurveTo(a,b,a-r,b);s.lineTo(-a+r,b);s.quadraticCurveTo(-a,b,-a,b-r);s.lineTo(-a,-b+r);s.quadraticCurveTo(-a,-b,-a+r,-b);
+ const g=new THREE.ExtrudeGeometry(s,{depth:th-0.04,bevelEnabled:true,bevelThickness:0.02,bevelSize:0.02,bevelSegments:2,curveSegments:8});g.rotateX(-Math.PI/2);g.translate(0,0.02,0);return K.mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+function topPlane(par,t,Lf,wf,y){const m=new THREE.Mesh(new THREE.PlaneGeometry(Lf,wf),new THREE.MeshStandardMaterial({map:t,transparent:true,roughness:.55}));m.rotation.x=-Math.PI/2;m.position.y=y;par.add(m);return m}
+function piece(par,kind,a,b,lv,code){const g=grp(par);const y=PLY+0.02+lv*0.2;const A=V3(gx(a[0]),y,gz(a[1])),B=V3(gx(b[0]),y,gz(b[1]));const mid=A.clone().add(B).multiplyScalar(0.5);const L=A.distanceTo(B);const ang=Math.atan2(-(B.z-A.z),B.x-A.x);
+ const body=grp(g);body.position.copy(mid);body.rotation.y=ang;const wf=kind==='wire'?0.62:1.0,Lf=L+0.7,th=kind==='wire'?0.12:0.22;
+ slab(Lf,wf,th,Math.min(0.28,wf/2),M(new THREE.Color(KC[kind]).getHex(),{roughness:.5}),body,0,0,0);
+ topPlane(body,paintPiece(kind,Lf,wf,L,code),Lf,wf,th+0.012);
+ const n=Math.round(L/G)+1;for(let i=0;i<n;i++){if(kind!=='wire'&&i>0&&i<n-1)continue;snap(body,-L/2+i*G,th-0.05,0)}
+ g.userData={body,L,th,y};return g}
+function mkPart(p){
+ if(p.id==='ic'){const g=grp(boardG);const y=PLY+0.02;const x0=gx(0)-0.48,x1=gx(2)+0.48,z0=gz(2)-0.48,z1=gz(3)+0.48,W=x1-x0,D=z1-z0;
+  slab(W,D,0.24,0.14,M(0x2a64c4,{roughness:.5}),g,(x0+x1)/2,y,(z0+z1)/2);
+  topPlane(g,tex(Math.round(W*PX),Math.round(D*PX),(x,w,h)=>{x.fillStyle='#2a64c4';rr(x,2,2,w-4,h-4,18);x.fill();x.strokeStyle='rgba(0,0,0,.3)';x.lineWidth=4;x.stroke();x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=3;rr(x,w*0.3,h*0.3,w*0.42,h*0.42,6);x.stroke();x.fillStyle='#1b4a99';rr(x,w*0.33,h*0.33,w*0.36,h*0.36,4);x.fill();numBox(x,w*0.51,h*0.62,21);
+   [[1,2],[2,2],[0,3],[2,3],[0,2]].forEach(([c,r])=>{x.beginPath();x.arc((gx(c)-x0)*PX,(gz(r)-z0)*PX,0.25*PX,0,7);x.fillStyle='rgba(255,255,255,.35)';x.fill()})}),W,D,y+0.252).position.set((x0+x1)/2,y+0.252,(z0+z1)/2);
+  [[1,2],[2,2],[0,3],[2,3],[0,2]].forEach(([c,r])=>snap(g,gx(c),y+0.2,gz(r)));g.userData.y=y;return g}
+ if(p.id==='bat'){const g=grp(boardG);const y=PLY+0.02;const x0=gx(4)-0.48,x1=gx(5.45),z0=gz(2)-0.5,z1=gz(4)+0.5,W=x1-x0,D=z1-z0;
+  slab(W,D,0.4,0.16,M(0xd8342c,{roughness:.5}),g,(x0+x1)/2,y,(z0+z1)/2);
+  topPlane(g,tex(Math.round(W*PX),Math.round(D*PX),(x,w,h)=>{x.fillStyle='#d8342c';rr(x,2,2,w-4,h-4,18);x.fill();x.strokeStyle='rgba(0,0,0,.3)';x.lineWidth=4;x.stroke();x.fillStyle='#8f1d17';rr(x,w*0.33,h*0.06,w*0.62,h*0.88,10);x.fill();
+   x.fillStyle='#fff';x.font=`bold ${Math.round(0.34*PX)}px Arial`;x.textAlign='center';x.fillText('+',w*0.16,h*0.32);x.font=`bold ${Math.round(0.2*PX)}px Arial`;x.fillText('3V',w*0.16,h*0.2);
+   x.strokeStyle='#fff';x.lineWidth=5;[[0.4,0.08],[0.47,0.05],[0.54,0.08],[0.61,0.05]].forEach(([t,hw])=>{x.beginPath();x.moveTo(w*0.16-hw*w*1.6,h*t);x.lineTo(w*0.16+hw*w*1.6,h*t);x.stroke()});numBox(x,w*0.16,h*0.7,19,'#8a1c16')}),W,D,y+0.412).position.set((x0+x1)/2,y+0.412,(z0+z1)/2);
+  const cells=[];[gx(4.72),gx(5.12)].forEach(x=>{cells.push(Cy(0.24,2.3,M(0x2fb35a,{roughness:.35}),g,x,y+0.62,(z0+z1)/2,'z',20));Cy(0.245,0.18,M(SILVER,{metalness:.8,roughness:.25}),g,x,y+0.62,(z0+z1)/2+1.1,'z',20);Cy(0.09,0.1,M(SILVER,{metalness:.8}),g,x,y+0.62,(z0+z1)/2-1.2,'z',10);
+   [-1,1].forEach(k=>Cy(0.06,0.5,M(SILVER,{metalness:.8}),g,x,y+0.5,(z0+z1)/2+k*1.35,'x',8))});
+  [[4,2],[4,4]].forEach(([c,r])=>snap(g,gx(c),y+0.36,gz(r)));g.userData.y=y;g.userData.cells=cells;return g}
+ const kind=p.id.startsWith('w')?'wire':p.id==='tp'?'touch':p.id;const g=piece(boardG,kind,p.a,p.b,p.lv,p.code);const body=g.userData.body,th=g.userData.th;
+ if(p.id==='spk'){spkCone=grp(body);spkCone.position.y=th;}
+ if(p.id==='led'){Cy(0.26,0.12,M(0xe0e0e0,{metalness:.5}),body,0.05,th+0.06,0,'y',16);ledBulb=Sp(0.24,M(0xffd6d6,{roughness:.15}),body,0.05,th+0.2,0,16)}
+ if(p.id==='btn'){btnCap=grp(body);btnCap.position.set(-g.userData.L*0.5+0.73,th,0.21);Bx(0.46,0.12,0.22,M(0xf3e7b0,{roughness:.4}),btnCap,0.05,0.06,0)}
+ if(p.id==='sw'){const L=g.userData.L;swKnob=Bx(0.2,0.14,0.18,M(0xf2f2f2,{roughness:.4}),body,-L/2+0.42,th+0.07,0.24)}
+ g.userData.y=PLY+0.02+p.lv*0.2;return g}
+PL.forEach(p=>{meshes[p.id]=mkPart(p);meshes[p.id].visible=false});
+function setSwitch(on){if(!swKnob)return;swKnob.position.x=-G+(on?0.42:1.05)}/* slider: ON end (left) or OFF end (right) */
+/* extra kit parts for designs and challenges */
+const xtra={};
+(()=>{xtra.spk=piece(boardG,'spk',[3,1],[3,3],2,20);xtra.spk2=piece(boardG,'spk',[3.6,1],[3.6,3],3,20);xtra.ledg=piece(boardG,'ledg',[3,1],[3,3],2,26);
+ Object.values(xtra).forEach(g=>g.visible=false)})();
+
+/* ---------- the night pond ---------- */
+const pond=grp();pond.position.set(0,0,-10);const WATER_TOP=2.2;
+(()=>{const sky=tex(512,256,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#05081c');g.addColorStop(1,'#1a2a5c');x.fillStyle=g;x.fillRect(0,0,w,h);for(let i=0;i<140;i++){x.fillStyle=`rgba(255,255,255,${.3+Math.random()*.7})`;x.fillRect(Math.random()*w,Math.random()*h*0.8,1.5,1.5)}x.fillStyle='#f6f1c7';x.beginPath();x.arc(w*0.82,h*0.2,16,0,7);x.fill()});
+ const bg=new THREE.Mesh(new THREE.PlaneGeometry(26,11),new THREE.MeshBasicMaterial({map:sky}));bg.position.set(0,5.5,-3.2);pond.add(bg);
+ Bx(16,0.3,7,M(0x3d2f22,{roughness:.95}),pond,0,0.15,0);/* bank */
+ const tank=Bx(12,WATER_TOP-0.3,5,M(0x0b3d6b,{opacity:.6,transparent:true,roughness:.15}),pond,0,0.3+(WATER_TOP-0.3)/2,0);
+ Bx(12,0.04,5,M(0x2c6fae,{opacity:.55,transparent:true,roughness:.05,metalness:.2}),pond,0,WATER_TOP,0);
+ for(let i=0;i<10;i++){const r=Bx(0.15,0.8+Math.random()*0.9,0.15,M(0x2e7d32),pond,-5.5+Math.random()*11,0.7,-2+Math.random()*4);r.rotation.z=(Math.random()-.5)*0.4}})();
+/* fishing rod + line + fish bait prototype */
+const rod=grp(pond);rod.position.set(-7.5,0.3,1.8);(()=>{const r=Cy(0.08,7.5,M(0x6d4c2f),rod,0,0,0,'y',8);r.position.set(2.2,2.6,0);r.rotation.z=-1.05;Cy(0.22,0.25,M(0x333333),rod,0.6,1.1,0.2,'z',12)})();
+const bait=grp(pond);const BAIT_UP=4.6,BAIT_DOWN=1.15;bait.position.set(-1.0,BAIT_UP,1.2);
+const fishMat=M(0xff8f00,{roughness:.4});
+(()=>{const b=Sp(0.6,fishMat,bait,0,0,0,20);b.scale.set(1.7,0.85,0.7);const t=new THREE.Mesh(new THREE.ConeGeometry(0.5,0.8,3),fishMat);t.rotation.z=Math.PI/2;t.position.set(1.25,0,0);t.scale.set(1,1,0.3);bait.add(t);
+ Sp(0.12,M(0x111111),bait,-0.7,0.15,0.36,10);
+ const win=Bx(0.6,0.4,0.05,M(0xcfefff,{opacity:.45,transparent:true}),bait,0.05,0.05,0.42);bait.userData.win=win;
+ Bx(0.5,0.06,0.3,M(0xf2c230),bait,0,-0.5,0);/* touch plate on the belly */
+ Cy(0.04,0.4,M(0x888888,{metalness:.7}),bait,-0.1,0.6,0,'y',6)})();
+const baitLed=Sp(0.13,M(0xff3b3b,{emissive:0x000000}),bait,-0.82,0.18,0.3,12);const baitLight=new THREE.PointLight(0xff3333,0,7);baitLight.position.set(-0.9,0.1,0.4);bait.add(baitLight);
+const glowT=tex(128,128,(x,w,h)=>{const g=x.createRadialGradient(w/2,h/2,2,w/2,h/2,w/2);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(0.25,'rgba(255,255,255,.6)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,w,h)});
+function glowSprite(par,sc){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowT,color:0xff3030,transparent:true,opacity:0,depthTest:false,blending:THREE.AdditiveBlending}));s.scale.set(sc,sc,sc);par.add(s);return s}
+const baitGlow=glowSprite(bait,3.2);baitGlow.position.set(-0.7,0.1,0.3);
+const lineGeo=new THREE.BufferGeometry().setFromPoints([V3(0,0,0),V3(0,1,0)]);const line=new THREE.Line(lineGeo,new THREE.LineBasicMaterial({color:0xdddddd}));pond.add(line);
+function updLine(){const tip=V3(-7.5+2.2+3.2,0.3+2.6+1.8,1.8);const p=bait.position.clone().add(V3(-0.1,0.8,0));lineGeo.setFromPoints([tip,p])}
+/* fish in the pond */
+const fishes=[];for(let i=0;i<4;i++){const f=grp(pond);const m=M([0x90a4ae,0xb0bec5,0x78909c,0xa1887f][i],{roughness:.5});const b=Sp(0.4,m,f,0,0,0,14);b.scale.set(1.8,0.8,0.6);const t=new THREE.Mesh(new THREE.ConeGeometry(0.35,0.6,3),m);t.rotation.z=-Math.PI/2;t.position.set(-0.85,0,0);t.scale.set(1,1,0.3);f.add(t);
+ f.position.set(-5+i*3.2,0.8+Math.random()*0.8,-1.5+Math.random()*2.5);f.userData={home:f.position.clone(),ph:Math.random()*6};fishes.push(f)}
+let baitTarget=BAIT_UP,glowing=false,glowColor=0xff3333;
+K.hooks.push(dt=>{bait.position.y+=(baitTarget-bait.position.y)*Math.min(1,dt*3);bait.rotation.z=Math.sin(performance.now()/700)*0.08;updLine();
+ const T=performance.now()/1000;fishes.forEach(f=>{const u=f.userData;let tgt=u.home.clone().add(V3(Math.sin(T*0.5+u.ph)*1.2,Math.sin(T+u.ph)*0.15,0));if(glowing&&live.wet)tgt=bait.position.clone().add(V3(1.0+Math.sin(u.ph)*0.6,-0.2+Math.cos(u.ph)*0.3,Math.sin(u.ph*2)*0.6));
+  const d=tgt.clone().sub(f.position);f.position.add(d.multiplyScalar(Math.min(1,dt*0.9)));f.rotation.y=d.x>0.01?Math.PI:d.x<-0.01?0:f.rotation.y});
+ live.wet=bait.position.y<WATER_TOP-0.2&&!live.drySeal});
+
+/* ================== circuit simulation (snap points) ================== */
+const live={sw:false,touch:false,wet:false,loose:null,flat:false,mode:'book',liquid:'tap',drySeal:false};
+const LIQ={tap:{n:'Tap water',k:0.7},sea:{n:'Salty sea water',k:1.0},oil:{n:'Cooking oil',k:0},air:{n:'No liquid (dry)',k:0}};
+function present(id){return st.placed>PL.findIndex(p=>p.id===id)||cur>=2}
+function evalCircuit(o){o=o||{};const par={};const f=k=>{while(par[k]&&par[k]!==k)k=par[k];return k};const u=(a,b)=>{const ka=a.join(','),kb=b.join(',');const ra=f(ka),rb=f(kb);if(ra!==rb)par[ra]=rb};
+ const has=id=>(o.has?o.has(id):present(id))&&live.loose!==id;
+ PL.forEach(p=>{if(!has(p.id))return;if(p.id.startsWith('w')){const P=pts(p);for(let i=1;i<P.length;i++)u(P[0],P[i])}});
+ if(has('sw')&&live.sw)u([4,0],[4,2]);
+ const K_=a=>f(a.join(','));
+ const bat=has('bat')&&!live.flat,ic=has('ic');
+ const powered=bat&&ic&&K_([1,2])===K_([4,2])&&K_([0,3])===K_([4,4]);
+ const out=powered&&has('led')&&K_([3,1])===K_([4,2])&&K_([3,3])===K_([2,3]);
+ const cond=live.touch?1:live.wet?LIQ[live.liquid].k:0;
+ const trig=powered&&has('tp')&&K_([2,0])===K_([4,2])&&cond>0;
+ return {powered,out,trig,cond}}
+let litT=0,bright=0;let ledGlow=null;
+K.hooks.push(dt=>{const c=evalCircuit();const on=c.trig&&(c.out||live.mode!=='book');bright=on?c.cond:0;glowing=on;
+ const flick=on?(0.65+0.35*Math.sin(performance.now()/90)):0;const I=flick*bright;
+ if(ledBulb&&!ledGlow){ledGlow=glowSprite(ledBulb.parent,2.6);ledGlow.material.blending=THREE.NormalBlending;ledGlow.position.copy(ledBulb.position);ledGlow.position.y+=0.25}if(ledBulb)ledBulb.material=I>0.05?M(live.mode==='green'?0x66ff88:0xff5050,{emissive:live.mode==='green'?0x22ff44:0xff2020,emissiveIntensity:0.6+I*1.6,roughness:.15}):M(0xffd6d6,{roughness:.15});
+ baitLed.material=M(live.mode==='green'?0x33dd55:0xff3b3b,{emissive:live.mode==='green'?0x22ff44:0xff2222,emissiveIntensity:(c.trig&&live.wet?I:0)*2});baitLight.color.setHex(live.mode==='green'?0x33ff66:0xff3333);baitLight.intensity=(c.trig&&live.wet?I:0)*3;const gc=live.mode==='green'?0x33ff66:0xff3030;baitGlow.material.color.setHex(gc);baitGlow.material.opacity=c.trig&&live.wet?Math.min(1,I*1.1):0;if(ledGlow){ledGlow.material.color.setHex(live.mode==='green'?0x40ff70:0xff1a1a);ledGlow.material.opacity=Math.min(1,I*1.2)}
+ if(on){litT+=dt;if(live.mode==='alarm'||live.mode==='both'){if(!toneOn){toneOn=true;playTune()}}}else{if(toneOn){toneOn=false;stopTune()}}
+ hudLive(c)});
+function hudLive(c){if($('liveCtl').hidden)return;hud(`<div class="h">Switch <b>${live.sw?'ON':'OFF'}</b> · bait <b>${live.wet?'in the water':'out of the water'}</b> · LED <b>${glowing?'ON 💡':'off'}</b>${c.powered?'':' · no power'}</div>`)}
+/* sound only for the alarm designs (musical IC tune, Westminster chimes 1793) */
+let AC=null,tuneNodes=[],toneOn=false;
+const NOTES=[[415.3,0],[329.6,0.5],[370.0,1.0],[246.9,1.5],[329.6,2.33],[370.0,2.83],[415.3,3.33],[329.6,3.83]];
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function playTune(){const a=ac();if(!a||!SFX.on)return;const t0=a.currentTime+0.05;NOTES.forEach(([f,t])=>{const o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0.0001,t0+t);g.gain.exponentialRampToValueAtTime(0.14,t0+t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t0+t+0.45);o.connect(g).connect(a.destination);o.start(t0+t);o.stop(t0+t+0.5);tuneNodes.push(o)})}
+function stopTune(){tuneNodes.forEach(o=>{try{o.stop()}catch(e){}});tuneNodes=[]}
+function setSw(on){live.sw=on;setSwitch(on);$('swBtn').textContent='Switch 15: '+(on?'ON':'OFF');$('swBtn').classList.toggle('sel',on)}
+function setDip(down){baitTarget=down?BAIT_DOWN:BAIT_UP;$('dipBtn').textContent=down?'🎣 Lift out of the water':'🎣 Lower into the water'}
+$('swBtn').onclick=()=>{SFX.click();setSw(!live.sw);setTimeout(()=>onEvt('sw'),50)};
+$('touchBtn').onclick=()=>{SFX.click();live.touch=true;K.view('board');setTimeout(()=>{onEvt('touch');setTimeout(()=>{live.touch=false},1800)},250)};
+$('dipBtn').onclick=()=>{SFX.click();const down=baitTarget!==BAIT_DOWN;setDip(down);K.view('pond');setTimeout(()=>onEvt(down?'dip':'lift'),1400)};
+let onEvt=()=>{};
+
+/* ================== 1. Plan ================== */
+const VOC={fake:0,bait:0,rod:0};
+function drawPlan(){const v=st.voc||{};const vo=Object.keys(VOC).every(k=>v[k]==='ok');const any=Object.keys(v).length;
+ if(any)fb('vom',vo,'✔ Great vocabulary!',Object.keys(VOC).filter(k=>v[k]&&v[k]!=='ok').length?'One answer is not right yet: read the choices again.':'Answer all 3 words.');
+ document.querySelectorAll('[data-vo]').forEach(b=>{const [k,val]=b.dataset.vo.split(':');b.classList.toggle('sel',v[k]===val)});
+ if(st.bs)fb('bsm',st.bs==='water','✔ Water joins the two contacts and closes the circuit.','Think: what is special about water and electricity?');
+ document.querySelectorAll('[data-dr]').forEach(c=>c.checked=!!st.dr[c.dataset.dr]);
+ const ok=vo&&st.bs==='water'&&[0,1,2].every(i=>st.dr[i]);$('nPl').disabled=!ok;if(ok){msg('mPl','good','✔ Great plan, engineer! Now build the circuit.');done(0)}}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-vo]');if(a){const [k,val]=a.dataset.vo.split(':');st.voc=st.voc||{};st.voc[k]=val;save();val==='ok'?SFX.ok():SFX.bad();drawPlan()}const b=e.target.closest('[data-bs]');if(b){st.bs=b.dataset.bs;save();st.bs==='water'?SFX.ok():SFX.bad();drawPlan()}});
+document.addEventListener('change',e=>{const c=e.target.closest('[data-dr]');if(c){st.dr[c.dataset.dr]=c.checked?1:0;save();drawPlan()}});
+
+/* ================== SVG board (book top view) ================== */
+const SX=c=>50+c*62,SY=r=>40+r*62;
+const COLS={ic:'#1f5fbf',bat:'#d8322f',led:'#d8322f',tp:'#f2c230',sw:'#2e9e48'};
+function partSVG(p,opt){opt=opt||{};const off=opt.loose?'transform="translate(10,-12) rotate(-6 '+SX(p.a[0])+' '+SY(p.a[1])+')"':'';
+ if(p.id==='ic')return`<g data-pid="${p.id}" ${off} style="cursor:${opt.click?'pointer':'default'}"><rect x="${SX(0)-22}" y="${SY(2)-22}" width="${SX(2)-SX(0)+44}" height="${SY(3)-SY(2)+44}" rx="8" fill="#1f5fbf"/><text x="${SX(1)}" y="${SY(2.6)}" fill="#fff" font-size="15" font-weight="800" text-anchor="middle">21</text>${ends(p).map(([c,r])=>`<circle cx="${SX(c)}" cy="${SY(r)}" r="7" fill="#c8ccd2"/>`).join('')}</g>`;
+ if(p.id==='bat')return`<g data-pid="${p.id}" ${off}><rect x="${SX(4)-22}" y="${SY(2)-24}" width="96" height="${SY(4)-SY(2)+48}" rx="8" fill="${opt.flat?'#9a9a9a':'#d8322f'}"/><rect x="${SX(4.55)}" y="${SY(2)}" width="14" height="${SY(4)-SY(2)}" rx="6" fill="${opt.flat?'#cfcfcf':'#2fb35a'}"/><rect x="${SX(4.95)}" y="${SY(2)}" width="14" height="${SY(4)-SY(2)}" rx="6" fill="${opt.flat?'#cfcfcf':'#2fb35a'}"/><text x="${SX(4)+4}" y="${SY(3)+5}" fill="#fff" font-size="13" font-weight="800">19</text>${opt.flat?`<text x="${SX(4.8)}" y="${SY(3)}" fill="#333" font-size="11" font-weight="800" text-anchor="middle">EMPTY</text>`:''}<circle cx="${SX(4)}" cy="${SY(2)}" r="7" fill="#c8ccd2"/><circle cx="${SX(4)}" cy="${SY(4)}" r="7" fill="#c8ccd2"/></g>`;
+ const x1=SX(p.a[0]),y1=SY(p.a[1]),x2=SX(p.b[0]),y2=SY(p.b[1]);const w=p.id.startsWith('w')?16:30;const col=COLS[p.id]||'#1f5fbf';const mx=(x1+x2)/2,my=(y1+y2)/2;
+ const lab=p.id==='led'?'17 💡':p.id==='tp'?'12':p.id==='sw'?'15':String(p.code);
+ return`<g data-pid="${p.id}" ${off} style="cursor:${opt.click?'pointer':'default'}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>${pts(p).map(([c,r])=>`<circle cx="${SX(c)}" cy="${SY(r)}" r="7" fill="#c8ccd2" stroke="#7a8088"/>`).join('')}<rect x="${mx-15}" y="${my-9}" width="30" height="18" rx="3" fill="#fff" opacity=".92"/><text x="${mx}" y="${my+5}" font-size="12" font-weight="800" text-anchor="middle" fill="#123">${lab}</text></g>`}
+function boardSVG(el,placed,opt){opt=opt||{};let s='';for(let c=0;c<=5;c++)for(let r=0;r<=4;r++)s+=`<circle cx="${SX(c)}" cy="${SY(r)}" r="5" fill="#c3c8d0"/>`;
+ s+=`<text x="16" y="${SY(0)+5}" font-size="14" font-weight="800" fill="#556">A</text><text x="16" y="${SY(1)+5}" font-size="14" font-weight="800" fill="#556">B</text><text x="${SX(2)-26}" y="${SY(0.5)+5}" font-size="15" font-weight="800" fill="#c62828">C</text><text x="${SX(2)-26}" y="${SY(1.5)+5}" font-size="15" font-weight="800" fill="#c62828">D</text>`;
+ placed.forEach(p=>s+=partSVG(p,{click:opt.click,loose:opt.loose===p.id,flat:opt.flat&&p.id==='bat'}));
+ if(opt.dots){for(let c=0;c<=5;c++)for(let r=0;r<=4;r++){const sel=opt.sel&&opt.sel.some(q=>q[0]===c&&q[1]===r),hint=opt.hint&&opt.hint.some(q=>q[0]===c&&q[1]===r);s+=`<g class="dot" data-c="${c}" data-r="${r}"><circle cx="${SX(c)}" cy="${SY(r)}" r="16" fill="transparent"/><circle class="r" cx="${SX(c)}" cy="${SY(r)}" r="11" fill="${sel?'#5e35b1':hint?'#ffd54f':'rgba(94,53,177,.15)'}" stroke="${hint?'#e65100':'#5e35b1'}" stroke-width="${hint?3:1.5}">${hint?'<animate attributeName="r" values="9;14;9" dur="1s" repeatCount="indefinite"/>':''}</circle></g>`}}
+ el.innerHTML=s}
+/* ================== 2. Build ================== */
+let bSel=false,bTaps=[],bWrongDots=0,bStrike=0,bAsk=false;
+const TRAY=[...new Set(PL.map(p=>p.tray))].map(l=>({id:'t:'+l,lab:l})).concat(EXTRA.map((x,i)=>({id:'x'+i,lab:x[0]}))).sort((a,b)=>parseInt(a.lab)-parseInt(b.lab));
+function showParts(){PL.forEach((p,i)=>meshes[p.id].visible=i<st.placed)}
+function bOpts(i){const n=PL[i].o.length;const r=i%n;return [...Array(n).keys()].slice(r).concat([...Array(n).keys()].slice(0,r))}
+function targetSVG(i){const el=$('target');let s='';for(let c=0;c<=5;c++)for(let r=0;r<=4;r++)s+=`<circle cx="${SX(c)}" cy="${SY(r)}" r="5" fill="#c3c8d0"/>`;
+ PL.forEach((p,k)=>{if(k===i)return;s+=`<g opacity="${k<i?0.55:0.15}">${partSVG(p)}</g>`});
+ if(i<PL.length){const p=PL[i];s+=`<g>${partSVG(p)}<animate attributeName="opacity" values="1;0.35;1" dur="1.2s" repeatCount="indefinite"/></g>`;ends(p).filter((q,j)=>p.id!=='ic'||j===0||j===3).forEach(([c,r])=>s+=`<circle cx="${SX(c)}" cy="${SY(r)}" r="13" fill="none" stroke="#e65100" stroke-width="3"/>`)}
+ el.innerHTML=s}
+function drawBuild(){const n=PL.length,c=st.placed,want=PL[c];targetSVG(c);
+ $('nowPart').innerHTML=want?`${BOOKIMG['p'+want.code]?`<img src="${BOOKIMG['p'+want.code]}" alt="">`:''}<span>Part ${c+1} of ${n}: <b>${want.tray}</b></span>`:'✔ All parts are on the plate!';
+ $('bSteps').innerHTML=PL.map((p,i)=>i<=c?`<li class="${i<c?'dn':'cur'}">${i<c?`${p.tray} ✔`:`Find part <b>${p.code}</b> and snap it on.`}</li>`:'').join('');
+ const left=id=>{const lab=id.slice(2);return PL.some((p,i)=>i>=c&&p.tray===lab)};
+ $('tray').innerHTML=TRAY.map(p=>{const im=BOOKIMG['p'+parseInt(p.lab)];return`<button type="button" class="btn ${p.id.startsWith('t:')&&!left(p.id)?'used':''} ${bSel&&('t:'+want.tray)===p.id?'sel':''}" data-part="${p.id}">${im?`<img src="${im}" alt="">`:''}${p.lab}</button>`}).join('');
+ boardSVG($('board'),PL.slice(0,c),{dots:bSel&&!bAsk,sel:bTaps,hint:bWrongDots>=2&&want?[want.a,want.b]:null});
+ if(bAsk&&want){msg('mB','',`<b>${want.q}</b><div class="choices" style="margin-top:6px">${bOpts(c).map(j=>`<button type="button" class="btn" data-bo="${j}">${want.o[j]}</button>`).join('')}</div>`)}
+ hud(`<div class="h">Part <b>${Math.min(c+1,n)}</b> of ${n} · mistakes <b>${st.bMist||0}</b></div>`);
+ if(c>=n){msg('mB','good',`✔ Your water activated LED is built: ${n} parts with ${st.bMist||0} mistake${st.bMist===1?'':'s'}. It matches the book!`);$('nB').disabled=false;done(1)}}
+function bMiss(t){bStrike++;st.bMist=(st.bMist||0)+1;save();SFX.bad();msg('mB','bad',t+(bStrike>=3&&!bSel?`<br>💡 Hint: look for part <b>${PL[st.placed].tray}</b>.`:''))}
+$('tray').addEventListener('click',e=>{const el=e.target.closest('[data-part]');if(!el||st.placed>=PL.length||bAsk)return;const id=el.dataset.part,want=PL[st.placed];
+ if(id==='t:'+want.tray){bSel=true;bTaps=[];SFX.click();msg('mB','',`Right part: <b>${want.tray}</b>. Now tap the <b>2 dots</b> on the plate where its ends snap on${want.id==='ic'?' (its top-left and bottom-right corners)':''}. Look at the book picture if you need help.`);drawBuild();return}
+ bSel=false;const x=EXTRA[+id.slice(1)];bMiss(x?'Not in this circuit: '+x[1]:'Not this part yet. Look at the book picture: which part comes next?');drawBuild()});
+$('board').addEventListener('click',e=>{const d=e.target.closest('.dot');if(!d||!bSel)return;const c=+d.dataset.c,r=+d.dataset.r;bTaps.push([c,r]);SFX.click();
+ if(bTaps.length<2){drawBuild();return}const want=PL[st.placed];const W=want.id==='ic'?[[0,2],[2,3]]:[want.a,want.b];const eq=(p,q)=>p[0]===q[0]&&p[1]===q[1];
+ const ok=(eq(bTaps[0],W[0])&&eq(bTaps[1],W[1]))||(eq(bTaps[0],W[1])&&eq(bTaps[1],W[0]));
+ if(ok){bSel=false;bTaps=[];bWrongDots=0;bAsk=true;SFX.ok();const m=meshes[want.id];m.visible=true;dropIn(m,K.hooks,3);K.view('board')}
+ else{bTaps=[];bWrongDots++;bMiss(bWrongDots>=2?'Not there. The glowing yellow dots show where it snaps.':'Not there. Compare with the book picture: count the dots from the left and from the top.')}drawBuild()});
+$('mB').addEventListener('click',e=>{const el=e.target.closest('[data-bo]');if(!el)return;const want=PL[st.placed],j=+el.dataset.bo;
+ if(j===0){st.placed++;save();bAsk=false;bStrike=0;SFX.ok();drawBuild();if(st.placed<PL.length)msg('mB','good','✔ '+want.ok)}else{st.bMist=(st.bMist||0)+1;save();SFX.bad();banner('Not quite: try again!')}});
+
+
+
+/* ================== 3. Light it ================== */
+function drawTest(){const s=[1,live.sw||st.on,st.touch,st.wet&&st.dry];document.querySelectorAll('#tSteps li').forEach((li,i)=>li.className=s[i]?'dn':'');
+ msg('mT',st.dry&&st.wet?'good':'',!st.on?'Turn on switch 15. (Is the LED on? It should NOT light yet.)':!st.touch?'Touch the plate with your finger.':!st.wet?'Now lower the bait into the water. Watch the fish!':!st.dry?'Now lift the bait out of the water.':'✔ It lights only in the water! Answer the question.');
+ $('tQ').hidden=!(st.wet&&st.dry);if(st.tq)fb('tQm',st.tq==='cond','✔ Water conducts electricity, so it closes the gap between C and D.','Think: what joins terminals C and D in the water?');
+ if(st.wet&&st.dry&&st.tq==='cond'){$('nT').disabled=false;done(2)}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-tq]');if(b){st.tq=b.dataset.tq;save();st.tq==='cond'?SFX.ok():SFX.bad();drawTest()}});
+
+/* ================== 4. Evaluate ================== */
+function drawEval(){['r1','r2'].forEach(k=>document.querySelectorAll(`[data-${k}]`).forEach(b=>b.classList.toggle('sel',b.dataset[k]===st[k])));
+ if(st.yd)fb('ydm',true,'✔ 16.5 ÷ 3 = 5.5 yards.','');
+ $('cups').innerHTML=Object.keys(LIQ).map(k=>`<button class="btn ${live.liquid===k&&live.wet?'sel':''}" data-cup="${k}">🥤 ${LIQ[k].n}</button>`).join('');
+ st.cups=st.cups||{};$('cupTab').innerHTML='<tr><th>Liquid</th><th>Does the LED light?</th></tr>'+Object.keys(LIQ).map(k=>`<tr><td>${LIQ[k].n}</td><td class="${st.cups[k]==null?'':st.cups[k]>0?'ok':'no'}">${st.cups[k]==null?'?':st.cups[k]>=1?'Yes, bright 💡💡':st.cups[k]>0?'Yes 💡':'No'}</td></tr>`).join('');
+ if(st.r4)fb('r4m',st.r4==='cond','✔ Water carries a tiny current between the two contacts: the circuit is closed.','Think about what water does between C and D.');
+ const r5=st.r5||{};document.querySelectorAll('[data-r5]').forEach(c=>c.checked=!!r5[c.dataset.r5]);const goodN=['leak','rain','bath'].filter(k=>r5[k]).length;const r5ok=goodN>=2&&!r5.toast;
+ if(Object.keys(r5).some(k=>r5[k]))fb('r5m',r5ok,'✔ Great ideas: anywhere you need to know that water is there!',r5.toast?'A toaster has nothing to do with water!':'Choose at least 2 good ideas.');
+ const cupsDone=Object.keys(LIQ).every(k=>st.cups[k]!=null);
+ const ok=st.r1&&st.r2&&st.yd&&cupsDone&&st.r4==='cond'&&r5ok;$('nE').disabled=!ok;if(ok){msg('mE','good','✔ Record sheet complete!');done(3)}else msg('mE','',cupsDone?'Answer all 5 questions.':'Test all 4 cups, and answer all 5 questions.')}
+document.addEventListener('click',e=>{for(const k of ['r1','r2','r4']){const b=e.target.closest(`[data-${k}]`);if(b){st[k]=b.dataset[k];save();SFX.click();drawEval()}}
+ const c=e.target.closest('[data-cup]');if(c){const k=c.dataset.cup;live.liquid=k;setSw(true);setDip(false);K.view('pond');setTimeout(()=>{setDip(true);setTimeout(()=>{const v=evalCircuit();st.cups=st.cups||{};st.cups[k]=v.trig?LIQ[k].k:0;save();(v.trig?SFX.ok:SFX.click)();drawEval();msg('mE',v.trig?'good':'',`${LIQ[k].n}: ${v.trig?(LIQ[k].k>=1?'very bright! Salt helps water conduct.':'the LED lights.'):'no light. '+(k==='oil'?'Oil does not conduct electricity.':'Nothing joins C and D.')}`)},1500)},700)}});
+document.addEventListener('change',e=>{const c=e.target.closest('[data-r5]');if(c){st.r5=st.r5||{};st.r5[c.dataset.r5]=c.checked?1:0;save();drawEval()}});
+$('ydChk').onclick=()=>{const v=parseFloat($('yd').value);if(Math.abs(v-5.5)<0.01){st.yd=1;save();SFX.ok()}else{SFX.bad();fb('ydm',false,'',v===49.5?'You multiplied! Feet → yards: divide by 3.':'1 yard = 3 feet. How many 3s are in 16.5?')}drawEval()};
+
+/* ================== 5. Math ================== */
+const Q=[{q:'1 yard = how many feet?',o:['3 feet','12 feet','10 feet'],a:0,e:'1 yard = 3 feet.'},
+ {q:'The fishing line is 30 feet long. How many yards is that?',o:['10 yards','90 yards','33 yards'],a:0,e:'30 ÷ 3 = 10 yards.'},
+ {q:'The fish bait is 6 inches long. 2 baits in a row are how long?',o:['1 foot (12 inches)','2 feet','6 feet'],a:0,e:'6 + 6 = 12 inches = 1 foot.'},
+ {q:'Night fishing starts at 7:30 pm and ends at 9:15 pm. How long is it?',o:['1 hour 45 minutes','2 hours 15 minutes','1 hour 15 minutes'],a:0,e:'7:30 → 9:00 is 1 h 30 min, plus 15 min = 1 h 45 min.'},
+ {q:'One fake bait costs $2.50. How much do 4 baits cost?',o:['$10.00','$8.50','$6.50'],a:0,e:'2.50 × 4 = $10.00.'},
+ {q:'Which part gives the light in the bait?',o:['17 LED (red)','15 Switch','19 Battery compartment'],a:0,e:'The LED (light-emitting diode) gives the light.'},
+ {q:'Which part goes on terminals C–D and senses the water?',o:['12 Touch plate','21 Musical IC','5 Wire'],a:0,e:'Book: connect the touch plate to terminals C–D.'},
+ {q:'Which job studies and protects fish and where they live?',o:['Fisheries restoration biologist','Pilot','Chef'],a:0,e:'Book careers: Fisheries Restoration Biologist, Environmental Specialist and Fish Hatchery Owner.'}];
+function drawQuiz(){$('quiz').innerHTML=Q.map((x,i)=>{const c=st.quiz[i];const ord=[...x.o.keys()];const r=i%ord.length;const O=ord.slice(r).concat(ord.slice(0,r));return`<div class="q">${i+1}. ${x.q}</div><div class="choices">${O.map(j=>`<button type="button" class="btn ${c==null?'':j===x.a&&c===x.a?'right':j===c?'wrong':''}" data-q="${i}" data-o="${j}">${x.o[j]}</button>`).join('')}</div><div class="fb" style="color:${c===x.a?'var(--ok)':'var(--warn)'}">${c==null?'':c===x.a?'✔ '+x.e:'Try again.'}</div>`}).join('');
+ const ok=Q.every((x,i)=>st.quiz[i]===x.a);$('nQ').disabled=!ok;if(ok)done(4)}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const i=+b.dataset.q,o=+b.dataset.o;st.quiz[i]=o;save();o===Q[i].a?SFX.ok():SFX.bad();drawQuiz()});
+
+/* ================== 6. Reflect (book) ================== */
+const RUB=[['Rate how well you were able to understand this challenge.',['Even with the help I didn’t get it.','After a little help, I got it.','I need some more practice.','I need a challenge so I can help someone else.']],
+ ['Rate how well you presented and communicated.',['I feel it was difficult to present my STEM model.','I can present my model to my friends with a little support.','I can present my model to my friends and can communicate most of my ideas.','I can present my model effectively and can support others.']],
+ ['Rate how well you understand and build circuits in the kit.',['It is difficult for me to understand and build the circuit.','I need support and guidance to build the circuit.','I can understand and build the circuit without any support or guidance.','I understand how the circuit works very well and I can easily build the circuit.']],
+ ['Rate how you feel about this project.',['☹️','😐','🙂','😄']],
+ ['Rate the Sustainable Development Goal.',['I don’t think this project can help the goal.','I think this project can help the goal a little.','I think this project will help this goal a lot.','I think this project can help exceed the goal expectations.']]];
+function drawRub(){if(st.im)fb('imm',st.im==='seal','✔ Keep the battery and IC dry; only the touch plate meets the water.','What would happen to the battery if the whole circuit got wet?');
+ if(st.sc)fb('scm',st.sc==='fair','✔ Fishing fairly keeps enough fish for everyone, now and later (SDG 2).','Which choice leaves fish for the future?');
+ ['fb1','fb2','fb3'].forEach((id,i)=>{if(document.activeElement!==$(id))$(id).value=st.fbk[i]||''});
+ $('rub').innerHTML=RUB.map((r,i)=>`<div><div class="rq">${i+1}. ${r[0]}</div><div class="lv" role="radiogroup" aria-label="${r[0]}">${r[1].map((t,j)=>`<button type="button" role="radio" aria-checked="${st.rub[i]===j}" class="${st.rub[i]===j?'on':''}" data-r="${i}" data-l="${j}">${t}</button>`).join('')}</div></div>`).join('');
+ const n=Object.keys(st.rub).length;const ready=n>=RUB.length&&st.sc==='fair'&&st.im==='seal';$('finish').disabled=!ready;msg('mA','',n<RUB.length?`${n} of ${RUB.length} rubric rows done.`:!ready?'Answer the questions above.':'All done. Press Finish!')}
+['fb1','fb2','fb3'].forEach((id,i)=>$(id).addEventListener('input',()=>{st.fbk[i]=$(id).value;save()}));
+$('rub').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;st.rub[b.dataset.r]=+b.dataset.l;save();SFX.click();drawRub()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sc]');if(b){st.sc=b.dataset.sc;save();st.sc==='fair'?SFX.ok():SFX.bad();drawRub()}const c=e.target.closest('[data-im]');if(c){st.im=c.dataset.im;save();st.im==='seal'?SFX.ok():SFX.bad();drawRub()}});
+function showFin(){showParts();K.view('fin',true);setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false},600)}
+$('finish').onclick=()=>{st.finished=1;save();done(5);SFX.done();showFin();setTimeout(()=>$('fin').scrollIntoView({behavior:'smooth',block:'center'}),700)};
+
+/* ================== 7. Challenges ================== */
+function star(k,id,h){msg(id,'good',h);if(!st.ch[k]){st.ch[k]=1;save()}SFX.done();drawStars();banner('⭐ Challenge complete!')}
+function drawStars(){const n=['c1','c2','c3','c4'].filter(k=>st.ch[k]).length;$('stars').textContent=n;document.querySelectorAll('[data-st]').forEach(e=>{const on=!!st.ch[e.dataset.st];e.textContent=on?'★':'☆';e.closest('.ch').classList.toggle('won',on)})}
+$('c1run').onclick=()=>{const c=$('c1c').value,t=$('c1t').value,l=$('c1l').value,w=$('c1w').value;const L=[];
+ if(c!=='in')L.push(c?'Book rule: the circuit must be placed inside the fish. Keep it sealed and dry!':'Choose where the circuit goes.');
+ if(t!=='belly')L.push(t?'If the touch plate is sealed and dry, water can never join C and D.':'Choose where the touch plate goes.');
+ if(l!=='eye')L.push(l?'A hidden LED cannot attract fish.':'Choose where the LED goes.');
+ if(w!=='win')L.push(w?'Book rule: the prototype must show how the circuit works with water.':'Choose how to show it works.');
+ if(L.length){SFX.bad();msg('c1msg','bad',L.join(' '));return}
+ bait.userData.win.material=M(0xcfefff,{opacity:.6,transparent:true,emissive:0x335577});setSw(true);live.liquid='sea';K.view('pond');setDip(false);setTimeout(()=>setDip(true),800);
+ star('c1','c1msg','⭐ Your fish bait meets all 3 book rules: it lights only in water, the circuit is inside the fish, and the window shows how it works. Watch the fish come to the light!')};
+const FAULTS=[{loose:'w5',why:'The long top wire 5 is loose, so the switch cannot give power to the circuit.'},{loose:'w2a',why:'Wire 2 next to the battery is loose: the current cannot get back to the battery.'},{loose:'w3',why:'Wire 3 is loose: the musical IC gets no power.'},{loose:'w2c',why:'The short wire 2 is loose: the IC works, but its signal never reaches the LED.'},{flat:true,why:'The batteries are empty! Change them.'}];
+let fix=null,fixLast=-1;
+function drawFix(){boardSVG($('fixBoard'),PL,{click:true,loose:fix&&fix.loose,flat:fix&&fix.flat})}
+function resetFaults(){live.loose=null;live.flat=false;PL.forEach(p=>{meshes[p.id].position.y=0;meshes[p.id].rotation.z=0});if(meshes.bat.userData.cells)meshes.bat.userData.cells.forEach(c=>c.material=M(0x2fb35a))}
+$('c2new').onclick=()=>{let i;do{i=Math.floor(Math.random()*FAULTS.length)}while(i===fixLast);fixLast=i;fix=FAULTS[i];resetFaults();live.loose=fix.loose||null;live.flat=!!fix.flat;setSw(false);showParts();
+ if(fix.loose){meshes[fix.loose].position.y=0.5;meshes[fix.loose].rotation.z=0.08}if(fix.flat)meshes.bat.userData.cells.forEach(c=>c.material=M(0x9a9a9a));
+ drawFix();K.view('board');msg('c2msg','','Turn the switch ON and touch the plate. Does the LED light? Then tap the broken part.')};
+$('fixBoard').addEventListener('click',e=>{const g=e.target.closest('[data-pid]');if(!g||!fix)return;const id=g.dataset.pid;const right=fix.flat?id==='bat':id===fix.loose;
+ if(right){st.fixed=(st.fixed||0)+1;save();$('c2n').textContent=Math.min(3,st.fixed);const why=fix.why;fix=null;resetFaults();drawFix();
+  if(st.fixed>=3)star('c2','c2msg','⭐ '+why+' You fixed 3 baits: you are a real electrical technician!');else{SFX.ok();msg('c2msg','good','✔ '+why+' Fixed! Press "New broken bait" for the next one.')}}
+ else{SFX.bad();msg('c2msg','bad','That part is fine. Does the IC get power? Does the signal reach the LED?')}});
+$('c3chk').onclick=()=>{const v=+$('c3a').value;if(v===6)star('c3','c3msg','⭐ 6 yards = 18 feet. 18 ÷ 3 = 6 seconds.');else{SFX.bad();msg('c3msg','bad',v===2?'Careful: change the yards to feet first (1 yard = 3 feet).':'Change 6 yards into feet, then divide by 3 feet per second.')}};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c4]');if(!b)return;if(b.dataset.c4==='sea'){if(!(st.cups&&st.cups.sea!=null)){SFX.bad();msg('c4msg','bad','Test the salty sea water cup in Step 4 first!');return}star('c4','c4msg','⭐ Salt in sea water helps it carry electricity, so the bait glows brighter in the sea. That is why your cup test was brightest with salty water.')}else{SFX.bad();msg('c4msg','bad','Look at your cup test: which water made the LED brightest?')}});
+
+/* ================== 8. Other designs ================== */
+const DS={book:'Glowing fish bait (book)',alarm:'Water-leak alarm: loudspeaker 20',rain:'Rain detector',touch:'Touch light',green:'Green glow bait: LED 26',both:'Light and sound bait'};
+let rainT=0;const drops=[];
+function setDesign(d){live.mode=d;Object.values(xtra).forEach(g=>g.visible=false);meshes.led.visible=d!=='alarm';if(d==='alarm')xtra.spk.visible=true;if(d==='both')xtra.spk2.visible=true;if(d==='green'){meshes.led.visible=false;xtra.ledg.visible=true}
+ document.querySelectorAll('[data-ds]').forEach(b=>b.classList.toggle('sel',b.dataset.ds===d));setSw(true);live.liquid='tap';live.touch=false;hud('<div class="h">'+DS[d]+'</div>');stopTune();toneOn=false;
+ if(d==='touch'){setDip(false);K.view('board');setTimeout(()=>{live.touch=true;setTimeout(()=>live.touch=false,3500)},700);return}
+ if(d==='rain'||d==='alarm'){setDip(false);K.view('board');rainT=4;return}
+ K.view('pond');setDip(false);setTimeout(()=>setDip(true),700)}
+K.hooks.push(dt=>{if(rainT>0){rainT-=dt;if(Math.random()<dt*25){const s=Sp(0.06,M(0x66aaff,{opacity:.8,transparent:true}),K.sc,gx(2)+(Math.random()-.5)*0.8,4,gz(1)+(Math.random()-.5)*1.6,6);drops.push(s)}live.touch=rainT>0.3}
+ for(let i=drops.length-1;i>=0;i--){drops[i].position.y-=dt*8;if(drops[i].position.y<0.7){K.sc.remove(drops[i]);drops.splice(i,1)}}});
+document.querySelectorAll('[data-ds]').forEach(b=>b.onclick=()=>{ac();SFX.click();setDesign(b.dataset.ds)});
+$('dTry').onclick=()=>{ac();const s=$('dStart').value,o=$('dOut').value,u=$('dUse').value,pw=$('dPow').value;const L=[];let ok=true;
+ if(pw==='none'){ok=false;L.push('⚠ No battery = no energy. Every circuit needs the battery compartment 19.')}else L.push('✔ The battery gives 3 V of energy.');
+ if(s==='touch')L.push('✔ The touch plate on C–D senses water.');else if(s==='button'){ok=false;L.push('⚠ A button needs a finger: water cannot press it. Use the touch plate 12.')}else{ok=false;L.push('⚠ Nothing on C–D: the circuit can never close.')}
+ if(o==='none'){ok=false;L.push('⚠ No output: add the LED or the loudspeaker.')}else L.push(o==='led'?'✔ The LED gives light.':o==='spk'?'✔ The loudspeaker plays the alarm tune.':'✔ Light and sound together.');
+ if(u==='leak'&&o==='led')L.push('💡 For a leak alarm, sound is better: you may not be looking at the LED.');if(u==='fish'&&o==='spk')L.push('💡 Fish are attracted by light. Sound may scare them away!');
+ msg('dChk',ok?'good':'bad',L.join('<br>'));if(ok){setDesign(o==='spk'?'alarm':o==='both'?'both':u==='rain'?'rain':'book');SFX.ok()}else SFX.bad()};
+try{$('dPlan').value=localStorage.getItem(KEY+'-plan')||''}catch(e){}
+$('dSave').onclick=()=>{try{localStorage.setItem(KEY+'-plan',$('dPlan').value)}catch(e){}SFX.ok();$('dSaved').textContent='✔ Saved on this device.'};
+
+/* ================== live events per step ================== */
+onEvt=(k)=>{const c=evalCircuit();
+ if(cur===2){if(k==='sw'&&live.sw){st.on=1;save();banner(glowing?'The LED is on?!':'Switch ON: the LED is still off. Good!')}
+  if(k==='touch'){if(c.trig){st.touch=1;save();banner('💡 Your finger closed the circuit!')}else if(!live.sw)banner('Turn on the switch first.')}
+  if(k==='dip'){if(c.trig){st.wet=1;save();banner('💡 It glows in the water! Here come the fish!')}else if(!live.sw)banner('Turn on the switch first.')}
+  if(k==='lift'&&st.wet){st.dry=1;save();banner('Out of the water: the light goes off.')}drawTest()}};
+
+/* ================== navigation ================== */
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();
+ hud('');stopTune();toneOn=false;live.mode='book';live.touch=false;live.liquid='tap';fix=null;resetFaults();Object.values(xtra).forEach(g=>g.visible=false);rainT=0;bait.userData.win.material=M(0xcfefff,{opacity:.45,transparent:true});
+ setSw(false);setDip(false);$('liveCtl').hidden=!(i===2||i===6);showParts();
+ if(i===0){drawPlan();K.view('pond')}
+ if(i===1){bSel=false;bAsk=false;bTaps=[];drawBuild();K.view('top')}
+ if(i===2){drawTest();K.view('pond')}
+ if(i===3){drawEval();K.view('pond')}
+ if(i===4){drawQuiz();K.view('spin')}
+ if(i===5){drawRub();if(st.finished)showFin();else K.view('fin')}
+ if(i===6){drawStars();drawFix();$('c2n').textContent=Math.min(3,st.fixed||0);K.view('pond')}
+ if(i===7){setDesign('book')}
+ window.scrollTo(0,0)}
+$('bkCirc').src=BOOKIMG.circ;
+drawPlan();drawQuiz();drawRub();
+go(st.finished?5:Math.min(...[0,1,2,3,4,5].filter(i=>!st.done.includes(i)),6));
+
+</script>
+</body>
+</html>
