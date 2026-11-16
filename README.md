@@ -12,6 +12,7 @@ This project is made as a virtual lab for the **STEM Nexus Arabia curriculum**.
 |---|---|---|
 | 3 | Levers (Simple Machines, Project 6) | `labs/levers/` |
 | 3 | Little Lever Builder (homework) | `labs/little-lever-builder/` |
+| 3 | Pulleys (Simple Machines, Project 9) | `labs/pulley/` |
 | 4 | Power Up the Toys | `labs/power-toys/` |
 | 4 | Battery Builder (homework) | `labs/battery-builder/` |
 | 4 | Ring the Bell (Project 4, Early Electronics Kit) | `labs/bell/` |
@@ -24,6 +25,7 @@ This project is made as a virtual lab for the **STEM Nexus Arabia curriculum**.
 | 7 | Touchless Hand Wash Timer | `labs/handwash/` |
 | 7 | Touchless Inventions | `labs/touchless/` |
 | 7 | Conductivity Meter | `labs/conductivity/` |
+| 8 | Laser Security System (Activity 8) | `labs/laser/` |
 | 9 | Joints (Project 1) | `labs/joints/` |
 | 9 | Weight Machine (Project 2) | `labs/weightmachine/` |
 | 9 | Energy Wheel (Project 3) | `labs/energywheel/` |
@@ -33,7 +35,7 @@ This project is made as a virtual lab for the **STEM Nexus Arabia curriculum**.
 | 9 | Reflection (Project 10) | `labs/reflection/` |
 | 9 | Wind Turbines (Project 12) | `labs/windturbines/` |
 | 9 | Weather Seesaw (Project 13) | `labs/weatherseesaw/` |
-| 11 | Raspberry Pi Pico Lab (Lessons 1–3: Meet the Pico, Blinking LED, Temperature Sensor) | `labs/picolab/` |
+| 11 | Raspberry Pi Pico Lab (Lessons 1–4: Meet the Pico, Blinking LED, Temperature Sensor, Servo Motor) | `labs/picolab/` |
 
 Students sign in with two names (first name and father's name), their school, grade and the school's student password.
 

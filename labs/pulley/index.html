@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>/* Britus sign-in gate: a lab opens only after signing in on the main page */(function(){try{if(localStorage.getItem("britusStudent")||sessionStorage.getItem("britusTeacher"))return}catch(e){}location.replace("../../index.html?next="+encodeURIComponent(location.href))})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Pulleys</title>
+<style>
+/* Grade 3 · Project 9 · Pulley. LEGO Simple and Powered Machines; bright kid colours */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#1e6fd9;--acc-d:#0f4ea8;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #ff8a3d}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#ffb300,#1e6fd9 60%,#e53935);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+table.dt{width:100%;border-collapse:collapse;margin:8px 0}.dt th{background:#16233f;color:#fff;padding:7px;font-size:14px}.dt td{border:1px solid var(--line);height:34px;padding:5px 8px;font-weight:600;font-size:14px}
+.gsvg{width:100%;height:auto;display:block;background:var(--tray);border-radius:10px;margin:6px 0}
+.oled{background:#05070a;color:#e8f4ff;border-radius:8px;padding:8px 10px;font:600 13px Consolas,monospace;display:inline-block}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:15px}.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok)}
+.sl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.sl output{font:800 20px Consolas,monospace;min-width:64px;text-align:right}
+.gauge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.gauge div{background:var(--tray);border-radius:9px;padding:8px;text-align:center}.gauge b{display:block;font-size:24px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--surf)}
+.ex .tag{display:inline-block;background:var(--acc);color:var(--onacc);font:800 11.5px "Segoe UI",system-ui,sans-serif;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;margin-bottom:4px}
+.ex h3{margin-top:4px}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.pc div{background:var(--tray);border-radius:9px;padding:8px;font-size:14px}.pc b{display:block}
+@media(max-width:560px){.pc{grid-template-columns:1fr}}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}.cmp th,.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:left}.cmp th{background:var(--navy);color:#fff}
+.opt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.opt label{display:grid;gap:3px;font-weight:700;font-size:14px}
+.opt select,textarea{font:inherit;padding:7px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+textarea{width:100%;min-height:90px}
+@media(max-width:560px){.opt{grid-template-columns:1fr}}
+.tips{margin:6px 0;padding-left:22px}.tips li{margin:4px 0}
+.foil{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:360px;margin:8px auto;background:#b3261e;padding:10px;border-radius:10px}
+.foil button{aspect-ratio:1;border-radius:50%;border:3px solid #7a1712;cursor:pointer;font:700 12px inherit;color:#fff}
+.foil button.solid{border-radius:8px;background:#b3261e;border-color:#e57373}.foil button.hole{background:#fdf6e3;color:#7a1712}
+.heat{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:360px;margin:8px auto}.heat div{border-radius:6px;padding:6px 2px;text-align:center;font:700 12px/1.3 inherit;background:var(--tray)}
+svg.sim{width:100%;height:auto;display:block;background:#0f1626;border-radius:10px;margin:6px 0}
+.oledbox{background:#05070a;border-radius:10px;padding:10px;display:flex;justify-content:center;margin:8px 0}.oledbox canvas{image-rendering:pixelated;width:100%;max-width:512px;border:2px solid #f2c230;border-radius:4px}
+.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}.nums label{display:grid;gap:3px;font-weight:700;font-size:14px}.nums input,.mtab input{font:inherit;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink);width:100%}
+.mtab{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}.mtab th,.mtab td{border:1px solid var(--line);padding:6px;text-align:left}.mtab th{background:var(--navy);color:#fff}.mtab td.ok{background:rgba(46,125,50,.15)}.mtab td.no{background:rgba(198,40,40,.12)}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-right:4px;border:1px solid rgba(0,0,0,.25)}
+.ser{background:#0b0f18;color:#9ef0a8;border-radius:10px;padding:8px 10px;font:13px/1.5 Consolas,monospace;height:150px;overflow-y:auto;margin:8px 0;white-space:pre-wrap}
+.ser .t{color:#7f8ca6}.ser .hit{color:#ffd27a}
+.rem{display:grid;grid-template-columns:repeat(3,56px);gap:6px;justify-content:center;background:#1b1b1b;padding:12px;border-radius:18px;width:max-content;margin:8px auto}
+.rem button{height:48px;border-radius:50%;border:0;background:#1e40af;color:#ffeb3b;font:800 18px inherit;cursor:pointer;box-shadow:0 3px 0 #0b1a4a}.rem button.ok{background:#f2c230;color:#1b1b1b;box-shadow:0 3px 0 #8a6a00}.rem span{display:block}
+.rem button:active{transform:translateY(2px);box-shadow:none}
+.hex input{font:600 14px Consolas,monospace;text-transform:uppercase;width:100%;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+.hex td.ok input{border-color:var(--ok)}.hex td.no input{border-color:var(--warn)}
+.led{display:inline-block;width:14px;height:14px;border-radius:50%;background:#3a1010;vertical-align:middle;margin-right:6px;border:1px solid #000}.led.on{background:#ff3b30;box-shadow:0 0 10px #ff3b30}
+.wstrip{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;min-height:64px;padding:8px;border:2px dashed var(--line);border-radius:12px;background:var(--surf);margin:8px 0}
+.wb{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;height:54px;border-radius:9px;color:#fff;font:700 12px/1.1 inherit;padding:3px 6px;border:0;cursor:pointer;text-align:center}
+.wb .i{font-size:20px;line-height:1}.wb input{width:38px;margin-top:2px;font:700 12px inherit;text-align:center;border:0;border-radius:4px;padding:1px}
+.wb.st{background:#f2c230;color:#1b1b1b}.wb.mo{background:#1f8a3b}.wb.lp{background:#f2c230;color:#1b1b1b;outline:3px solid #f2c230;outline-offset:-1px}.wb.sn{background:#d8322f}.wb.wt{background:#e86f1c}
+.pal{display:flex;flex-wrap:wrap;gap:4px}.pal .wb{min-width:64px}
+.mtab td.ok{background:rgba(46,160,67,.15)}.mtab td.no{background:rgba(216,50,47,.12)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin:6px 0}.mgrid figure{margin:0}.mgrid img{width:100%;background:#fff;border:1px solid var(--line);border-radius:8px}.mgrid figcaption{font-size:11px;text-align:center;color:var(--mute)}
+.mdl{display:flex;gap:6px;flex-wrap:wrap}.mdl .btn.on{background:var(--acc);color:#fff}
+.bat{height:14px;border-radius:7px;background:var(--line);overflow:hidden}.bat i{display:block;height:100%;background:linear-gradient(90deg,#2ea043,#f2c230,#d8322f)}
+.vol{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin:6px 0}.vol figure{margin:0;text-align:center;font-weight:800}.vol svg{width:150px;height:auto;background:var(--tray);border-radius:10px}
+#board{width:100%;max-width:420px;display:block;margin:6px auto;background:#eef0f4;border-radius:12px;touch-action:manipulation}
+#board .dot{cursor:pointer}#board .dot:hover circle.r{stroke:var(--acc);stroke-width:3}
+.bookimg{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}.bookimg img{max-width:100%;border-radius:8px;border:1px solid var(--line)}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}.big{font-size:1.15rem;padding:12px 18px}
+.sw{font-weight:800}.timer{font:800 2rem/1 ui-monospace,Menlo,monospace;background:#1f2433;color:#7fffb0;padding:8px 14px;border-radius:10px;min-width:120px;text-align:center}
+.guide{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}.guide figure{margin:0;background:var(--tray,#f6f3ec);border-radius:10px;padding:6px}.guide figcaption{font-size:.9rem;margin-bottom:4px}.guide img,.guide svg{width:100%;display:block;border-radius:8px;background:#fff}
+@media(max-width:560px){.guide{grid-template-columns:1fr}}
+#nowPart{display:flex;align-items:center;gap:10px;background:#efe9fb;border:2px solid var(--acc);border-radius:10px;padding:8px 10px;margin:6px 0;font-weight:700}#nowPart img{height:56px}
+.tray .btn img{height:34px;display:block;margin:0 auto 3px}
+/* Grade 3: bigger, brighter, friendlier */
+body{font-size:17px}.btn{font-size:1rem;padding:10px 14px;border-radius:14px}.choices .btn{border-width:2px}
+.k{color:#e53935!important}.panel h2{font-size:1.45rem}
+.kid{display:flex;gap:10px;align-items:center;background:linear-gradient(90deg,#fff7d6,#e3f2fd);border:2px dashed #ffb300;border-radius:16px;padding:10px 12px;margin:8px 0;font-weight:700}
+.kid .em{font-size:2rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:8px 0}
+.pc2{background:#fff;border:3px solid #e0e6f0;border-radius:16px;padding:8px;text-align:center;cursor:pointer;font-weight:800;font-size:.95rem}
+.pc2 svg{width:100%;height:64px;display:block}.pc2.sel{border-color:#1e6fd9;background:#e8f1ff}.pc2.no{border-color:#e53935;background:#ffebee}
+.count{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}.count div{flex:1;min-width:130px;background:#fff;border-radius:14px;padding:8px;text-align:center;border:3px solid #e0e6f0;font-weight:800}
+.count b{font-size:2rem;display:block}.count .drv{border-color:#e53935}.count .dvn{border-color:#1e6fd9}
+.hunt{display:flex;gap:6px;flex-wrap:wrap}.hunt span{background:#fff;border:2px solid #e0e6f0;border-radius:999px;padding:6px 10px;font-weight:800}.hunt span.got{background:#c8f7d0;border-color:#2e7d32}
+.clock{width:150px;height:150px;display:block;margin:6px auto}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">🛞</div><div><h1>Pulleys</h1><p>Grade 3 · Project 9 · Simple Machines · Build LEGO pulleys and find them all around you</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Project steps"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D LEGO pulley model on a colourful table, with a school flagpole, a well, a crane, an elevator and window blinds behind it. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="model">My model</button><button class="btn" data-v="side">Wheels</button><button class="btn" data-v="town">Pulley town</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+ <div class="ctl" id="turnCtl" hidden><button class="btn big pri" id="turnBtn">🔄 Hold to turn the handle</button><button class="btn" id="resetBtn">↺ Count again</button></div>
+ <div class="count" id="counts" hidden><div class="drv">🔴 Handle wheel turns<b id="cA">0</b></div><div class="dvn">🔵 Other wheel turns<b id="cB">0</b></div></div>
+</div>
+<div>
+<!-- 1 Meet -->
+<section class="card panel" id="p0">
+ <div class="k">Step 1 · Meet the pulley</div>
+ <h2>What is a pulley? 🤔</h2>
+ <div class="kid"><span class="em">🏫</span><span>Book: <i>A pulley is a rope wrapped over a wheel to make it easier to lift heavy things. Pulling the rope <b>down</b> makes the load go <b>up</b>!</i></span></div>
+ <p>Try it with the school flag. Press the button and watch the flag.</p>
+ <div class="row"><button class="btn pri big" id="flagBtn">⬇️ Pull the rope down</button></div>
+ <div class="fb" id="flagm"></div>
+ <h3>Words to know (book)</h3>
+ <div id="vocab"></div>
+ <h3>🔍 Pulley hunt</h3>
+ <p class="small" style="margin-top:0">Book: <i>Engineers use pulleys in cranes, elevators, flagpoles, zip lines, bicycle chains, clotheslines, water well buckets, window blinds and boats.</i> Tap every picture that uses a pulley!</p>
+ <div class="cards" id="hunt"></div>
+ <div class="msg" id="m0">Pull the flag up, answer the words and find the pulleys.</div>
+ <div class="next"><button class="btn pri" data-go="1" id="n0" disabled>Next: build Type A ▶</button></div>
+</section>
+<section class="card panel" id="p1"></section>
+<section class="card panel" id="p2"></section>
+<section class="card panel" id="p3"></section>
+<section class="card panel" id="p4"></section>
+<!-- 6 Record -->
+<section class="card panel" id="p5">
+ <div class="k">Step 6 · Record sheet and math (book)</div>
+ <h2>What did you find out? 📝</h2>
+ <div class="q">1) Did you create your own models or use the examples?</div><div class="choices"><button class="btn" data-r1="yes">Yes, my own</button><button class="btn" data-r1="no">No, the examples</button></div>
+ <div class="q">2) Finish this sentence. Pulleys have _____ on their outer side.</div><div class="choices"><button class="btn" data-r2="teeth">Teeth</button><button class="btn" data-r2="grooves">Grooves</button></div><div class="fb" id="r2m"></div>
+ <div class="q">3) Where do you see pulleys in everyday life? <span class="small">(tap all you know)</span></div>
+ <div class="hunt" id="r3"></div>
+ <h3>⏰ Time math (book)</h3>
+ <div id="quiz"></div>
+ <div class="msg" id="m5">Answer the record sheet and the math.</div>
+ <div class="next"><button class="btn pri" data-go="6" id="n5" disabled>Next: extra challenge ▶</button></div>
+</section>
+<!-- 7 Extra challenge (book) -->
+<section class="card panel" id="p6">
+ <div class="k">Step 7 · Extra challenge (book)</div>
+ <h2>Lift the weight with a motor! 🏋️</h2>
+ <div class="kid"><span class="em">⚙️</span><span>Book: <i>Design a motorized pulley system that can lift 50 g (about 1 weight brick) from the ground to your table.</i></span></div>
+ <div class="q">Which pulley will you put on the motor?</div>
+ <div class="choices" id="exType"><button class="btn" data-ex="A">Type A (1:1)</button><button class="btn" data-ex="B">Type B (3:1): fast</button><button class="btn" data-ex="C">Type C (1:3): strong</button></div>
+ <div class="q">1) Estimate: how many seconds will it take to pull the weight brick from the ground to the table?</div>
+ <div class="row"><input type="number" id="exEst" min="1" max="99" style="width:100px;font:inherit;padding:8px" aria-label="Your estimate in seconds"><span>seconds</span></div>
+ <div class="row"><button class="btn pri big" id="exGo">▶ Start the motor and the timer</button><div class="timer" id="exT">0.0 s</div></div>
+ <div class="q">2) How close was your estimate? <span class="small">(the difference in seconds)</span></div>
+ <div class="row"><input type="number" id="exDiff" step="1" style="width:100px;font:inherit;padding:8px" aria-label="Difference in seconds"><button class="btn" id="exChk">✔ Check</button></div>
+ <div class="msg" id="m6">Choose a pulley, write your estimate, then start the motor.</div>
+ <div class="next"><button class="btn pri" data-go="7" id="n6" disabled>Next: reflect ▶</button></div>
+</section>
+<!-- 8 Reflect -->
+<section class="card panel" id="p7">
+ <div class="k">Step 8 · Improve, reflect and communicate (book)</div>
+ <h2>How did you do? 🌟</h2>
+ <div class="q">Improve (book): what could make your pulley model work better?</div><div class="choices"><button class="btn" data-im="tight">Make the rubber band tight so it does not slip</button><button class="btn" data-im="loose">Make the band very loose</button><button class="btn" data-im="none">Take the band off</button></div><div class="fb" id="imm"></div>
+ <div class="q">Reflection (book): what can you do to make cities and homes safe?</div><div class="choices"><button class="btn" data-sc="safe">Check that cranes and elevators are safe, and never play near moving machines</button><button class="btn" data-sc="ride">Ride on the crane hook</button><button class="btn" data-sc="none">Nothing</button></div><div class="fb" id="scm"></div>
+ <h3>Communication (book)</h3>
+ <table class="mtab"><tr><th>Positive feedback</th><th>Negative feedback</th><th>Suggested solutions</th></tr><tr><td><input id="fb1" aria-label="Positive feedback"></td><td><input id="fb2" aria-label="Negative feedback"></td><td><input id="fb3" aria-label="Suggested solutions"></td></tr></table>
+ <p class="small">Assessment rubric (book): choose one box in each row.</p>
+ <div class="lvh" aria-hidden="true"><span>Beginner</span><span>Emerging</span><span>Accomplished</span><span>Expanding</span></div>
+ <div class="rub" id="rub"></div>
+ <div class="msg" id="mA"></div>
+ <div class="next"><button class="btn pri" id="finish" disabled>Finish my project 🎉</button></div>
+ <div id="fin" hidden>
+  <h3>🎉 Project complete: Pulleys!</h3>
+  <p style="margin:0">You built all 4 LEGO pulleys from the book, saw which ones go faster, slower and backwards, and lifted a weight with a motor. Now look for pulleys everywhere!</p>
+  <img id="finImg" alt="Your LEGO pulley model in 3D">
+  <div class="row"><button class="btn pri" data-go="8">Try the challenges 🏆</button></div>
+ </div>
+</section>
+<!-- 9 Challenges -->
+<section class="card panel" id="p8">
+ <div class="k">Step 9 · Challenges</div>
+ <h2>Pulley challenges 🏆</h2>
+ <p style="margin-top:0">Stars: <b id="stars">0</b> / 4 ⭐ <span class="small">(the book's extra challenge counts too!)</span></p>
+ <div class="ch"><div class="chh"><span class="star" data-st="c0">☆</span><h3 style="margin:0">🏋️ Book extra challenge</h3></div><p>Lift the weight brick with a motor in Step 7.</p></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c1">☆</span><h3 style="margin:0">🚩 Raise the school flag</h3></div>
+  <p>It is morning assembly! Which way do you pull the rope to make the flag go <b>up</b>?</p>
+  <div class="choices"><button class="btn" data-c1="down">Pull down</button><button class="btn" data-c1="up">Pull up</button></div>
+  <div class="msg" id="c1msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c2">☆</span><h3 style="margin:0">🌀 The fastest fan</h3></div>
+  <p>A paper fan sits on the other wheel. Which pulley makes the fan spin the <b>fastest</b>?</p>
+  <div class="choices"><button class="btn" data-c2="A">Type A</button><button class="btn" data-c2="B">Type B</button><button class="btn" data-c2="C">Type C</button></div>
+  <div class="msg" id="c2msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c3">☆</span><h3 style="margin:0">🪣 The heavy well bucket</h3></div>
+  <p>The bucket is full of water and very heavy. Which pulley makes it <b>easiest</b> to lift?</p>
+  <div class="choices"><button class="btn" data-c3="A">Type A</button><button class="btn" data-c3="B">Type B</button><button class="btn" data-c3="C">Type C</button></div>
+  <div class="msg" id="c3msg"></div></div>
+ <div class="next"><button class="btn pri" data-go="9">Next: pulleys around us ▶</button></div>
+</section>
+<!-- 10 Pulleys around us -->
+<section class="card panel" id="p9">
+ <div class="k">Step 10 · Pulleys around us</div>
+ <h2>Pulleys in our town 🏙️</h2>
+ <p style="margin-top:0">Press each one to see how its pulley works.</p>
+ <div class="ex"><span class="tag">At school</span><h3>🚩 Flagpole</h3><p>A wheel at the top: you pull <b>down</b>, the flag goes <b>up</b>. The pulley changes the direction of your pull.</p><div class="row"><button class="btn" data-ds="flag">▶ Show me</button></div></div>
+ <div class="ex"><span class="tag">In the village</span><h3>🪣 Water well</h3><p>Turn the handle and the rope winds up. The bucket of water comes up from deep down.</p><div class="row"><button class="btn" data-ds="well">▶ Show me</button></div></div>
+ <div class="ex"><span class="tag">At the building site</span><h3>🏗️ Crane</h3><p>Big cranes use pulleys and strong ropes to lift heavy blocks high up.</p><div class="row"><button class="btn" data-ds="crane">▶ Show me</button></div></div>
+ <div class="ex"><span class="tag">At the mall</span><h3>🛗 Elevator</h3><p>A pulley at the top. When the elevator goes up, a heavy weight on the other side goes down to help.</p><div class="row"><button class="btn" data-ds="lift">▶ Show me</button></div></div>
+ <div class="ex"><span class="tag">At home</span><h3>🪟 Window blinds</h3><p>Pull the cord down and the blinds go up, over a little pulley at the top.</p><div class="row"><button class="btn" data-ds="blind">▶ Show me</button></div></div>
+ <div class="ex" id="dz"><span class="tag">Your turn</span><h3>Design your own pulley machine</h3>
+  <div class="opt">
+   <label>What will it move?<select id="dWhat"><option value="flag">A flag</option><option value="bucket">A heavy bucket</option><option value="fan">A fan</option><option value="toy">A toy box</option></select></label>
+   <label>Which pulley?<select id="dType"><option value="A">Type A (1:1)</option><option value="B">Type B (fast)</option><option value="C">Type C (strong)</option><option value="D">Type D (backwards)</option></select></label>
+   <label>Turned by<select id="dBy"><option value="hand">My hand</option><option value="motor">A motor</option></select></label>
+  </div>
+  <div class="row"><button class="btn pri" id="dTry">▶ Try my design</button></div>
+  <div class="msg" id="dChk">Choose and press Try my design.</div>
+  <h3>Tips</h3>
+  <ul class="tips"><li><b>Need speed?</b> Big wheel turns small wheel (Type B).</li><li><b>Need strength?</b> Small wheel turns big wheel (Type C).</li><li><b>Need it backwards?</b> Cross the band (Type D).</li><li><b>Band slipping?</b> Make it tighter.</li></ul>
+  <h3>Your team's plan (book team roles)</h3>
+  <p class="small" style="margin-top:0">Team Captain, Head Architect, Material Manager, Project Tester: write your idea and who does what.</p>
+  <textarea id="dPlan" aria-label="Your team's plan" placeholder="Our machine … It lifts … Captain: … Architect: … Material Manager: … Tester: …"></textarea>
+  <div class="row"><button class="btn" id="dSave">💾 Save our plan</button><span class="small" id="dSaved"></span></div>
+ </div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai · Models from the Britus STEM Resource Book, Grade 3 (Dome Publications / SKOOL21). LEGO® is a trademark of the LEGO Group.</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+const BOOK={"s1": "data:image/webp;base64,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", "a2": "data:image/webp;base64,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", "a3": "data:image/webp;base64,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", "b2": "data:image/webp;base64,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", "c2": "data:image/webp;base64,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", "hand": "data:image/webp;base64,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"};
+/* ================== Pulleys · Grade 3 Project 9 · LEGO Simple and Powered Machines ================== */
+const $=id=>document.getElementById(id);
+const S=['Meet pulleys','Type A','Type B','Type C','Type D','Record','Extra challenge','Reflect','Challenges','Pulleys around us'];
+const KEY='britus-g3-pulley';
+const st=(()=>{const d={done:[],flag:0,voc:{},hunt:{},m:{A:{},B:{},C:{},D:{}},bMist:0,r1:null,r2:null,r3:{},quiz:{},ex:null,exEst:null,exT:null,exOk:0,im:null,sc:null,rub:{},fbk:['','',''],finished:0,ch:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+function fb(id,ok,good,bad){const e=$(id);e.style.color=ok?'var(--ok)':'var(--warn)';e.textContent=ok?good:bad}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off'};
+function hud(h){$('hud').innerHTML=h}
+function banner(t){const b=$('banner');b.textContent=t;b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,3500)}
+
+/* ================== 3D scene ================== */
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[0,2,0],r:20,aspect:.62,views:{
+ model:[0.55,1.05,15,[-1.5,2.2,0.4]],side:[0.05,1.4,9,[-3.2,1.8,1.5]],town:[0.1,1.2,40,[4,4,-12]],
+ flag:[0.15,1.25,20,[-9,6,-14]],well:[0.2,1.15,13,[-3,2.5,-13]],crane:[0.15,1.2,22,[4,6,-15]],lift:[0.1,1.25,18,[13,5,-14]],blind:[0.05,1.35,12,[19,4,-12]],ex:[0.6,1.25,16,[3,2.6,1]],card:[0.42,1.2,19,[-1,1.6,0.6]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const parts={};
+/* ===== Lego kit parts (same kit and colours as the Joints lab): Technic beams with holes, bricks with studs ===== */
+const LG=c=>M(c,{roughness:.32,metalness:0});
+const BLU=0x2457c5;
+const holeM=M(0x1c1c1c,{roughness:.8});
+function hole(par,x,y,z,ax,depth,col){/* round Technic hole: dark hole + raised rim ring on both faces */
+ const h=Cy(0.2,depth+0.02,holeM,par,x,y,z,ax,14);h.castShadow=false;
+ [-1,1].forEach(s=>{const r=new THREE.Mesh(new THREE.TorusGeometry(0.25,0.055,6,16),LG(col));r.position.set(x,y,z);if(ax==='z')r.position.z+=s*depth/2;if(ax==='x'){r.position.x+=s*depth/2;r.rotation.y=Math.PI/2}par.add(r)})}
+/* Technic beam: dir 'y' upright or 'x' along x. Holes go through z (the face you see). */
+function tbeam(par,x,y,z,len,dir,col,rim){const w=dir==='y'?[0.72,len,0.8]:[len,0.72,0.8];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8;hole(par,dir==='x'?x+t:x,dir==='y'?y+t:y,z,'z',0.8,rim||col)}}
+/* Lego brick with studs on top; dir 'x' or 'z'. Optional Technic holes on the side */
+function brick(par,x,y,z,len,dir,col,holes){const w=dir==='x'?[len,0.96,0.8]:[0.8,0.96,len];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8,sx=dir==='x'?x+t:x,sz=dir==='z'?z+t:z;Cy(0.24,0.18,LG(col),par,sx,y+0.57,sz,'y',16);
+  if(holes&&i<n-1){const hx=dir==='x'?sx+0.4:x,hz=dir==='z'?sz+0.4:z;hole(par,hx,y-0.05,hz,dir==='x'?'z':'x',0.8,col)}}}
+/* base plate */
+parts.plate=grp();(()=>{Bx(30,0.5,16,M(0x7c8186,{roughness:.45}),parts.plate,-1,0.25,0);for(let i=0;i<15;i++)for(let k=0;k<8;k++)Cy(0.3,0.22,M(0x8d9297,{roughness:.4}),parts.plate,-15+i*2,0.6,-7+k*2,'y',14)})();
+
+parts.plate.visible=false;
+const BLUE=0x2457c5,LGREY=0xe4e6e9,DGREY=0x4b4f54,RED=0xd32f2f,YEL=0xf6c20f,BLACK=0x1c1c1c;
+/* colourful play mat: classroom floor with a town road behind */
+(()=>{const big=K.sc.children.find(o=>o.isMesh&&o.geometry.parameters&&o.geometry.parameters.width===80);
+ if(big){const g=tex(1024,512,(x,w,h)=>{x.fillStyle='#a5d66f';x.fillRect(0,0,w,h);for(let i=0;i<900;i++){x.fillStyle=`rgba(60,120,30,${Math.random()*.25})`;x.fillRect(Math.random()*w,Math.random()*h,2,6)}
+   x.fillStyle='#78909c';x.fillRect(0,h*0.18,w,h*0.07);x.fillStyle='#fff';for(let i=0;i<w;i+=60)x.fillRect(i,h*0.21,30,4)});big.material=new THREE.MeshStandardMaterial({map:g,roughness:.95})}
+ const t=tex(512,256,(x,w,h)=>{x.fillStyle='#fff3c4';x.fillRect(0,0,w,h);const c=['#ff8a80','#80d8ff','#b9f6ca','#ffd180','#ea80fc'];for(let i=0;i<10;i++)for(let k=0;k<5;k++){x.fillStyle=c[(i+k)%5];x.fillRect(i*w/10+3,k*h/5+3,w/10-6,h/5-6)}});
+ const g=new THREE.Mesh(new THREE.BoxGeometry(20,0.12,11),new THREE.MeshStandardMaterial({map:t,roughness:.85}));g.position.set(0,0.06,1.2);g.receiveShadow=true;K.sc.add(g)})();
+
+/* ---------- the LEGO pulley model (book page 88 to 92): 2 blue Technic bricks 1x16, black pins, axles, crank, red handle, pulleys, yellow band ---------- */
+const MY=2.4;/* height of the model frame (on two stands) */
+const model=grp();model.position.set(0,0,0);
+const frame=grp(model);
+(()=>{brick(frame,-1,MY,0,12.8,'x',BLUE,true);brick(frame,-1,MY,0.8,12.8,'x',BLUE,true);
+ [-7.0,5.0].forEach(x=>{Cy(0.16,1.7,M(BLACK),frame,x+0.6,MY-0.05,0.4,'z',10)});
+ [-5.5,3.5].forEach(x=>{Bx(1.4,MY-0.5,1.6,M(0xbdbdbd,{roughness:.6}),frame,x,(MY-0.5)/2,0.4)})})();
+const HX=i=>-1-6.4+0.8+i*0.8;/* hole centre x */
+const X1=HX(1),X2=HX(5),HY=MY-0.05;
+function pulleyBig(par,mc){const g=grp(par);Cy(1.12,0.32,M(LGREY,{roughness:.45}),g,0,0,0,'z',36);const gv=new THREE.Mesh(new THREE.TorusGeometry(1.05,0.07,8,40),M(0xb0b4b8));g.add(gv);
+ for(let i=0;i<6;i++){const a=i*Math.PI/3;Cy(0.2,0.34,M(0x9ea3a8),g,Math.cos(a)*0.62,Math.sin(a)*0.62,0,'z',12)}Cy(0.2,0.36,M(0x777b80),g,0,0,0,'z',8);
+ const mk=Cy(0.12,0.36,M(mc||0xe53935,{emissive:mc?0x001144:0x550000}),g,0,0.88,0,'z',10);return g}
+function pulleySmall(par,mc){const g=grp(par);Cy(0.38,0.3,M(YEL,{roughness:.4}),g,0,0,0,'z',24);const gv=new THREE.Mesh(new THREE.TorusGeometry(0.34,0.05,8,24),M(0xc79a00));g.add(gv);Cy(0.12,0.32,M(0x9a7a00),g,0,0,0,'z',8);Cy(0.07,0.33,M(mc||0x1565c0,{emissive:0x001144}),g,0,0.25,0,'z',8);return g}
+const RB=1.02,RS=0.34;/* belt radii (in the grooves) */
+const mech=grp(model);let wheelA=null,wheelB=null,crank=null,band=null,curType='A';
+function axle(par,x){Cy(0.1,3.0,M(BLACK,{roughness:.6}),par,x,HY,0.5,'z',8)}
+function bandMesh(type,ra,rb,xa,xb,z){const pts=[];if(type==='D'){/* crossed band: figure 8 */
+  for(let i=0;i<=24;i++){const t=Math.PI/2+i/24*Math.PI;pts.push(V3(xa+Math.cos(t)*ra,HY+Math.sin(t)*ra,z+(i<12?0.05:-0.05)))}
+  for(let i=0;i<=24;i++){const t=-Math.PI/2+i/24*Math.PI;pts.push(V3(xb+Math.cos(t)*rb,HY-Math.sin(t)*rb,z))}
+ }else{const ang=Math.asin((ra-rb)/(xb-xa));
+  for(let i=0;i<=24;i++){const t=Math.PI/2+ang+i/24*(Math.PI-2*ang);pts.push(V3(xa+Math.cos(t)*ra,HY+Math.sin(t)*ra,z))}
+  for(let i=0;i<=24;i++){const t=-Math.PI/2+ang+i/24*(Math.PI-2*ang);pts.push(V3(xb+Math.cos(t)*rb,HY+Math.sin(t)*rb,z))}}
+ return K.mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),120,0.06,6,true),M(YEL,{roughness:.6}),mech)}
+const show={axles:false,band:false};
+function buildModel(type,stage){curType=type;frame.visible=stage>=1;while(mech.children.length)mech.remove(mech.children[0]);wheelA=wheelB=crank=band=null;
+ if(stage<2)return;const ra=type==='C'?RS:RB,rb=type==='B'?RS:RB;
+ axle(mech,X1);axle(mech,X2);
+ wheelA=grp(mech);wheelA.position.set(X1,HY,1.55);type==='C'?pulleySmall(wheelA,0xe53935):pulleyBig(wheelA);
+ wheelB=grp(mech);wheelB.position.set(X2,HY,1.55);type==='B'?pulleySmall(wheelB):pulleyBig(wheelB,0x1565c0);
+ Cy(0.18,0.2,M(YEL),mech,X2,HY,-0.55,'z',12);/* yellow bush holds the second axle */
+ crank=grp(mech);crank.position.set(X1,HY,-0.6);Bx(0.4,1.6,0.25,M(DGREY,{roughness:.5}),crank,0,0.65,0);const h=Cy(0.17,0.7,M(RED,{roughness:.4}),crank,0,1.35,-0.4,'z',14);
+ if(stage>=3)band=bandMesh(type,ra,rb,X1,X2,1.55)}
+let ang=0;const RATIO={A:1,B:3,C:1/3,D:-1};
+function setAngle(a){ang=a;if(!wheelA)return;wheelA.rotation.z=-a;crank.rotation.z=-a;wheelB.rotation.z=-a*RATIO[curType]}
+
+function mkRope(par,col){return Cy(0.045,1,M(col,{roughness:.8}),par,0,0,0,'y',6)}
+/* ---------- pulley town (everyday pulleys) ---------- */
+const town=grp();town.position.set(0,0.1,-14);const TW={};
+(()=>{/* school flagpole */const f=grp(town);f.position.set(-9,0,0);Cy(0.12,11,M(0xcfd8dc,{metalness:.6,roughness:.3}),f,0,5.5,0,'y',10);const top=Cy(0.3,0.15,M(0x90a4ae),f,0,11.05,0,'z',16);
+ const fl=grp(f);fl.position.set(0.15,1.2,0);const t=tex(192,128,(x,w,h)=>{x.fillStyle='#1e88e5';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 46px Arial';x.textAlign='center';x.fillText('SCHOOL',w/2,80)});
+ const fm=new THREE.Mesh(new THREE.PlaneGeometry(2.4,1.6),new THREE.MeshStandardMaterial({map:t,side:THREE.DoubleSide,roughness:.7}));fm.position.set(1.25,0,0);fl.add(fm);TW.flag=fl;
+ TW.flagRope=mkRope(f,0xfafafa);TW.flagG=f;
+ Bx(1.6,0.4,1.6,M(0x8d6e63),f,0,0.2,0);
+ /* well */const w=grp(town);w.position.set(-3,0,1);Cy(1.4,1.4,M(0xb0bec5,{roughness:.95}),w,0,0.7,0,'y',20);Cy(1.15,1.45,M(0x0d47a1),w,0,0.72,0,'y',20);[-1.3,1.3].forEach(x=>Bx(0.2,3,0.2,M(0x8d6e63),w,x,2.2,0));const ax=Cy(0.12,2.8,M(0x6d4c41),w,0,3.4,0,'x',8);
+ const roof=Bx(3.4,0.15,2,M(0xc62828),w,0,3.9,0);roof.rotation.z=0;const wc=grp(w);wc.position.set(1.5,3.4,0);Bx(0.15,0.8,0.15,M(0x6d4c41),wc,0,-0.4,0);TW.wellCrank=wc;
+ const bk=grp(w);bk.position.set(0,0.6,0);Cy(0.35,0.5,M(0x8d6e63),bk,0,0,0,'y',14);TW.bucket=bk;TW.wellRope=mkRope(w,0xd7b98a);TW.wellG=w;
+ /* crane */const c=grp(town);c.position.set(4,0,-1);for(let i=0;i<10;i++){Bx(0.8,1,0.8,M(0xffb300,{roughness:.5}),c,0,0.5+i,0)}Bx(7,0.5,0.6,M(0xffb300),c,2.4,10.2,0);Bx(1.4,1,1.2,M(0x455a64),c,-1.2,9.6,0);
+ const hk=grp(c);hk.position.set(4.8,2,0);Bx(1.4,1.2,1.4,M(0x8e24aa,{roughness:.5}),hk,0,-0.7,0);Cy(0.1,0.3,M(0x333333),hk,0,0.1,0,'y',8);TW.hook=hk;TW.craneRope=mkRope(c,0x333333);TW.craneG=c;
+ Cy(0.35,0.3,M(0x90a4ae),c,4.8,10,0,'z',14);
+ /* elevator tower */const l=grp(town);l.position.set(13,0,-1);Bx(3.4,10,0.3,M(0xeceff1,{opacity:.35,transparent:true}),l,0,5,0.9);[-1.7,1.7].forEach(x=>Bx(0.2,10,2,M(0x78909c),l,x,5,0));Cy(0.5,0.4,M(0x546e7a),l,0,10.2,0,'z',18);
+ const car=grp(l);car.position.set(-0.6,1,0);Bx(1.6,1.8,1.6,M(0x29b6f6,{roughness:.4}),car,0,0,0);TW.car=car;const cw=grp(l);cw.position.set(1.1,8,0);Bx(0.6,1.2,0.6,M(0x37474f),cw,0,0,0);TW.cw=cw;
+ TW.liftRope=mkRope(l,0x333333);TW.liftG=l;
+ /* window with blinds */const b=grp(town);b.position.set(19,0,1);Bx(4,8,0.3,M(0xffccbc),b,0,4,-0.3);Bx(3,3.4,0.1,M(0xb3e5fc,{roughness:.1}),b,0,5,-0.1);const bl=grp(b);bl.position.set(0,6.6,0.05);for(let i=0;i<10;i++)Bx(3.1,0.28,0.06,M(0xffffff),bl,0,-i*0.32,0);TW.blind=bl;Cy(0.15,0.2,M(0x9e9e9e),b,1.5,6.8,0.1,'z',10);
+ const cd=Cy(0.03,3,M(0xffffff),b,1.5,5.3,0.12,'y',6);TW.cord=cd})();
+/* motorised pulley for the extra challenge (motor + battery box on the table edge, string to the weight brick on the floor) */
+const exG=grp();exG.position.set(4,3.6,1);exG.visible=false;const EX={};
+(()=>{Bx(8,0.3,6,M(0xffb74d,{roughness:.6}),exG,-1.8,-0.15,-1.6);[[-5.4,-4.2],[1.8,-4.2],[-5.4,1.0],[1.8,1.0]].forEach(([x,z])=>Cy(0.2,3.5,M(0x8d6e63),exG,x,-1.85,z,'y',10));brick(exG,0,0.48,0,6.4,'x',BLUE,true);Bx(1.6,1.6,2.4,M(0x9e9e9e,{roughness:.5}),exG,-2.4,1.5,-1.2);Bx(2.2,1.4,3.0,M(0x616161,{roughness:.5}),exG,-1.2,0.7,-3.2);
+ const t=tex(128,64,(x,w,h)=>{x.fillStyle='#616161';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('BATTERY',8,40)});const p=new THREE.Mesh(new THREE.PlaneGeometry(2.0,0.6),new THREE.MeshBasicMaterial({map:t}));p.rotation.x=-Math.PI/2;p.position.set(-1.2,1.42,-3.2);exG.add(p);
+ Cy(0.1,3,M(BLACK),exG,2.2,0.43,0.2,'z',8);const sp=grp(exG);sp.position.set(2.2,0.43,1.5);Cy(0.5,0.4,M(LGREY),sp,0,0,0,'z',20);EX.spool=sp;
+ const wt=grp(exG);wt.position.set(2.7,-3.05,1.5);Bx(1.6,0.9,0.8,M(0x263238,{roughness:.4,metalness:.3}),wt,0,0,0);{const lt=tex(128,64,(x,w,h)=>{x.fillStyle='#263238';x.fillRect(0,0,w,h);x.fillStyle='#ffd54f';x.font='bold 34px Arial';x.textAlign='center';x.fillText('50 g',w/2,45)});const lp=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.6),new THREE.MeshBasicMaterial({map:lt}));lp.position.set(0,0,0.41);wt.add(lp)}EX.wt=wt;
+ EX.str=mkRope(exG,0xffffff)})();
+function setGeo(r,a,b){r.position.set((a.x+b.x)/2,(a.y+b.y)/2,(a.z+b.z)/2);r.scale.y=Math.max(0.01,a.distanceTo(b))}
+/* animation state for town */
+const TA={flag:0,flagT:0,well:0,wellT:0,crane:0,craneT:0,lift:0,liftT:0,blind:0,blindT:0};
+K.hooks.push(dt=>{for(const k of ['flag','well','crane','lift','blind']){TA[k]+=(TA[k+'T']-TA[k])*Math.min(1,dt*1.2)}
+ TW.flag.position.y=1.4+TA.flag*8.6;setGeo(TW.flagRope,V3(0.15,11,0),V3(0.15,TW.flag.position.y+0.8,0));
+ TW.bucket.position.y=0.6+TA.well*2.0;TW.wellCrank.rotation.x=TA.well*12;setGeo(TW.wellRope,V3(0,3.4,0),V3(0,TW.bucket.position.y+0.25,0));
+ TW.hook.position.y=1.4+TA.crane*7.4;setGeo(TW.craneRope,V3(4.8,10,0),V3(4.8,TW.hook.position.y+0.25,0));
+ TW.car.position.y=1+TA.lift*7;TW.cw.position.y=8.4-TA.lift*7;setGeo(TW.liftRope,V3(-0.6,10.2,0),V3(-0.6,TW.car.position.y+0.9,0));
+ TW.blind.scale.y=1-TA.blind*0.85;TW.blind.position.y=6.6;TW.cord.scale.y=1+TA.blind*0.5});
+
+/* ================== turning the handle ================== */
+let holding=false,turnCB=null,spinFor=0;
+function startHold(){holding=true;SFX.click()}function stopHold(){holding=false}
+['pointerdown','touchstart'].forEach(ev=>$('turnBtn').addEventListener(ev,e=>{e.preventDefault();startHold()}));['pointerup','pointerleave','touchend','pointercancel'].forEach(ev=>$('turnBtn').addEventListener(ev,stopHold));
+document.addEventListener('keydown',e=>{if(e.key===' '&&!$('turnCtl').hidden&&document.activeElement===$('turnBtn')){e.preventDefault();startHold()}});document.addEventListener('keyup',e=>{if(e.key===' ')stopHold()});
+$('resetBtn').onclick=()=>{setAngle(0);updCounts()};
+function turns(){return {a:Math.floor(Math.abs(ang)/(2*Math.PI)+1e-6),b:Math.floor(Math.abs(ang*RATIO[curType])/(2*Math.PI)+1e-6)}}
+function updCounts(){const t=turns();$('cA').textContent=t.a;$('cB').textContent=t.b}
+let lastA=0;
+K.hooks.push(dt=>{if((holding||spinFor>0)&&wheelA&&band){spinFor-=dt;setAngle(ang+dt*2.2);const t=turns();if(t.a!==lastA){lastA=t.a;SFX.tick();if(turnCB)turnCB(t)}updCounts()}});
+
+/* ================== 1. Meet ================== */
+const VOC=[['Force','A push or pull of an object',['A kind of colour','A push or pull of an object','A big wheel']],['Motion','A change in position compared to a place',['A change in position compared to a place','Staying still','A sound']],['Friction','The resistance of motion',['The resistance of motion','A kind of rope','A fast car']],['Gravity','The invisible force that pulls objects toward Earth',['The wind','The invisible force that pulls objects toward Earth','A magnet']],['Energy','The ability to do work',['The ability to do work','A pulley wheel','Sleep']]];
+const HUNT=[['flag','🚩','Flagpole',1],['lift','🛗','Elevator',1],['crane','🏗️','Crane',1],['blind','🪟','Window blinds',1],['well','🪣','Well bucket',1],['bike','🚲','Bicycle chain',1],['spoon','🥄','Spoon',0],['pencil','✏️','Pencil',0],['ball','⚽','Ball',0],['cloth','👕','Clothesline',1]];
+function drawMeet(){if(st.flag)fb('flagm',true,'✔ You pulled DOWN and the flag went UP! The pulley changed the direction of your pull.','');
+ $('vocab').innerHTML=VOC.map(([w,a,o],i)=>`<div class="q">${['💪','🏃','🧱','🌍','⚡'][i]} <b>${w}</b> means…</div><div class="choices">${o.map(x=>`<button class="btn ${st.voc[i]===x?(x===a?'right':'wrong'):''}" data-voc="${i}" data-a="${x}">${x}</button>`).join('')}</div>`).join('');
+ $('hunt').innerHTML=HUNT.map(([k,e,n,y])=>`<div class="pc2 ${st.hunt[k]?(y?'sel':'no'):''}" data-hunt="${k}" role="button" tabindex="0"><div style="font-size:2.4rem">${e}</div>${n}${st.hunt[k]?(y?' ✔':' ✘'):''}</div>`).join('');
+ const vok=VOC.every((v,i)=>st.voc[i]===v[1]);const hok=HUNT.filter(h=>h[3]&&st.hunt[h[0]]).length>=5&&!HUNT.some(h=>!h[3]&&st.hunt[h[0]]);
+ const ok=st.flag&&vok&&hok;$('n0').disabled=!ok;if(ok){msg('m0','good','✔ Super! You are ready to build pulleys.');done(0)}else msg('m0','',`${st.flag?'✔':'⬜'} Flag · ${vok?'✔':'⬜'} Words · ${hok?'✔':'⬜'} Find at least 5 pulleys (and no mistakes)`)}
+$('flagBtn').onclick=()=>{TA.flagT=TA.flagT>0.5?0:1;K.view('flag');SFX.ok();if(TA.flagT===1){st.flag=1;save()}$('flagBtn').textContent=TA.flagT?'⬆️ Let the rope go up':'⬇️ Pull the rope down';drawMeet()};
+document.addEventListener('click',e=>{const v=e.target.closest('[data-voc]');if(v){const i=+v.dataset.voc;st.voc[i]=v.dataset.a;save();st.voc[i]===VOC[i][1]?SFX.ok():SFX.bad();drawMeet()}
+ const h=e.target.closest('[data-hunt]');if(h){const k=h.dataset.hunt;st.hunt[k]=st.hunt[k]?0:1;save();const it=HUNT.find(x=>x[0]===k);if(st.hunt[k]){it[3]?SFX.ok():SFX.bad();if(it[3]&&TA[k+'T']!=null){TA[k+'T']=1;K.view(k)}}drawMeet()}});
+
+/* ================== 2-5. Types A, B, C, D ================== */
+const ICON={brick:'<rect x="6" y="22" width="88" height="20" rx="3" fill="#2457c5"/>'+[...Array(8)].map((_,i)=>`<rect x="${10+i*10.5}" y="16" width="7" height="6" fill="#2457c5"/><circle cx="${15+i*10.5}" cy="32" r="3" fill="#0d2a6b"/>`).join(''),
+ pin:'<rect x="30" y="26" width="40" height="12" rx="5" fill="#1c1c1c"/><rect x="46" y="22" width="6" height="20" fill="#1c1c1c"/>',
+ handle:'<rect x="34" y="20" width="32" height="22" rx="8" fill="#d32f2f"/><rect x="62" y="27" width="16" height="8" fill="#b71c1c"/>',
+ bush:'<circle cx="50" cy="32" r="18" fill="#f6c20f"/><circle cx="50" cy="32" r="6" fill="#9a7a00"/>',
+ axle:'<rect x="14" y="28" width="72" height="8" fill="#1c1c1c"/><circle cx="84" cy="32" r="4" fill="#fff"/>',
+ pulley:'<circle cx="50" cy="32" r="26" fill="#e4e6e9" stroke="#9ea3a8" stroke-width="3"/>'+[...Array(6)].map((_,i)=>`<circle cx="${50+Math.cos(i*1.047)*15}" cy="${32+Math.sin(i*1.047)*15}" r="5" fill="#9ea3a8"/>`).join('')+'<circle cx="50" cy="32" r="4" fill="#555"/>',
+ crank:'<rect x="44" y="8" width="12" height="48" rx="5" fill="#4b4f54"/><circle cx="50" cy="14" r="4" fill="#222"/><circle cx="50" cy="50" r="4" fill="#222"/>',
+ band:'<ellipse cx="50" cy="32" rx="34" ry="20" fill="none" stroke="#f6c20f" stroke-width="5"/>',
+ gear:'<circle cx="50" cy="32" r="22" fill="#9e9e9e"/>'+[...Array(12)].map((_,i)=>`<rect x="47" y="4" width="6" height="8" fill="#9e9e9e" transform="rotate(${i*30} 50 32)"/>`).join('')+'<circle cx="50" cy="32" r="5" fill="#555"/>',
+ tyre:'<circle cx="50" cy="32" r="26" fill="#212121"/><circle cx="50" cy="32" r="14" fill="#e0e0e0"/>',
+ string:'<path d="M15 40 C 30 10, 50 55, 85 22" fill="none" stroke="#795548" stroke-width="4"/>'};
+const NAME={brick:'Blue brick 1×16',pin:'Black pin',handle:'Red handle',bush:'Yellow bush',axle:'Axle',pulley:'Big pulley wheel',crank:'Grey crank',band:'Rubber band',gear:'Gear',tyre:'Wheel with tyre',string:'String'};
+const TYPES={A:{name:'Type A (1:1)',plan:'Two wheels the <b>same size</b>.',img:'a2',s2:{handle:1,bush:1,axle:1,pulley:2,crank:1},ask:'Turn the handle and describe the speeds of the drive and pulley wheels. What did you observe?',o:['Both wheels turn at the same speed, the same way','The other wheel does not move','The other wheel turns much faster'],
+  obs:'Same size wheels = same speed. 1 turn makes 1 turn.',cnt:[3,3]},
+ B:{name:'Type B (3:1)',plan:'A <b>big</b> wheel turns a <b>small</b> wheel.',img:'b2',s2:{handle:1,bush:1,axle:1,pulley:1,crank:1},ask:'Compared to Type A, what did you observe?',o:['The small wheel turns 3 times faster: 3 turns for every 1 turn of the handle','It is the same as Type A','The small wheel turns slower'],obs:'Big turns small = FAST! 1 turn makes 3 turns.',cnt:[2,6]},
+ C:{name:'Type C (1:3)',plan:'A <b>small</b> wheel turns a <b>big</b> wheel.',img:'c2',s2:{handle:1,bush:1,axle:1,pulley:1,crank:1},ask:'Compared to Type B, what did you observe?',o:['Now the big wheel turns slowly: 3 turns of the handle make 1 turn, but it is strong','It is faster than Type B','The wheels do not move'],obs:'Small turns big = SLOW but STRONG. 3 turns make 1 turn.',cnt:[6,2]},
+ D:{name:'Type D (inverse)',plan:'Two same wheels with the band <b>crossed</b> like an 8.',img:'a2',s2:{handle:1,bush:1,axle:1,pulley:2,crank:1},ask:'Compared to Type A, what did you observe?',o:['Same speed, but the other wheel turns the opposite way','The other wheel turns faster','It is exactly the same as Type A'],obs:'A crossed band makes the wheels turn opposite ways!',cnt:[3,3]}};
+const PICS={A:'<svg viewBox="0 0 120 60"><circle cx="30" cy="30" r="20" fill="#e4e6e9" stroke="#555" stroke-width="2"/><circle cx="90" cy="30" r="20" fill="#e4e6e9" stroke="#555" stroke-width="2"/><path d="M30 10 L90 10 M30 50 L90 50" stroke="#f6c20f" stroke-width="4"/></svg>',
+ B:'<svg viewBox="0 0 120 60"><circle cx="30" cy="30" r="22" fill="#e4e6e9" stroke="#555" stroke-width="2"/><circle cx="92" cy="30" r="8" fill="#f6c20f" stroke="#555" stroke-width="2"/><path d="M30 8 L92 22 M30 52 L92 38" stroke="#f6c20f" stroke-width="4"/></svg>',
+ C:'<svg viewBox="0 0 120 60"><circle cx="28" cy="30" r="8" fill="#f6c20f" stroke="#555" stroke-width="2"/><circle cx="90" cy="30" r="22" fill="#e4e6e9" stroke="#555" stroke-width="2"/><path d="M28 22 L90 8 M28 38 L90 52" stroke="#f6c20f" stroke-width="4"/></svg>',
+ D:'<svg viewBox="0 0 120 60"><circle cx="30" cy="30" r="20" fill="#e4e6e9" stroke="#555" stroke-width="2"/><circle cx="90" cy="30" r="20" fill="#e4e6e9" stroke="#555" stroke-width="2"/><path d="M30 10 L90 50 M30 50 L90 10" stroke="#f6c20f" stroke-width="4"/></svg>'};
+const TRAYP=['brick','pin','handle','bush','axle','pulley','crank','band','gear','tyre','string'];
+function stepNeed(T,s){return s===1?{brick:2,pin:2}:s===2?TYPES[T].s2:{band:1}}
+const pick={};
+function panelHTML(T,idx){const t=TYPES[T];return`<div class="k">Step ${idx+1} · Build ${t.name} (book)</div><h2>${t.name} pulley ${T==='A'?'🛞':T==='B'?'⚡':T==='C'?'💪':'🔄'}</h2>
+ <div class="kid"><span class="em">💡</span><span>${t.plan}</span></div>
+ <div class="q">Plan (book): which picture shows a ${t.name} pulley?</div><div class="cards" id="plan${T}">${['A','B','C','D'].map(k=>`<div class="pc2" data-plan="${T}:${k}" role="button" tabindex="0">${PICS[k]}</div>`).join('')}</div><div class="fb" id="planm${T}"></div>
+ <div id="build${T}"></div>
+ <div id="turn${T}" hidden><div class="kid"><span class="em">👐</span><span>Hold the big <b>🔄 Hold to turn the handle</b> button under the 3D model. Watch the 🔴 red dot and the 🔵 other wheel. Count the turns!</span></div>
+ <div class="q" id="cntQ${T}"></div><div class="choices" id="cntC${T}"></div><div class="fb" id="cntm${T}"></div>
+ <div class="q">Evaluation (book): ${t.ask}</div><div class="choices">${t.o.map((o,j)=>`<button class="btn" data-obs="${T}:${j}">${o}</button>`).join('')}</div><div class="fb" id="obsm${T}"></div></div>
+ <div class="msg" id="mm${T}"></div>
+ <div class="next"><button class="btn pri" data-go="${idx+1}" id="nn${T}" disabled>Next ▶</button></div>`}
+function drawType(T){const m=st.m[T],t=TYPES[T];
+ document.querySelectorAll(`[data-plan^="${T}:"]`).forEach(c=>{const k=c.dataset.plan.split(':')[1];c.classList.toggle('sel',m.plan===k&&k===T);c.classList.toggle('no',m.plan===k&&k!==T)});
+ if(m.plan)fb('planm'+T,m.plan===T,'✔ '+t.plan.replace(/<[^>]+>/g,''),'Look again at the wheel sizes and the band.');
+ const s=m.step||0;const bd=$('build'+T);
+ if(m.plan===T){const need=s<3?stepNeed(T,s+1):null;
+  bd.innerHTML=`<h3>Build it! (book steps)</h3><div class="bookimg"><img src="${BOOK[s===0?'s1':s===1?t.img:'a3']}" alt="Book building step ${Math.min(3,s+1)}" style="max-width:340px"></div>
+  ${s<3?`<div class="kid"><span class="em">🧩</span><span>Step ${s+1} of 3: tap the parts you need, then press <b>Build it!</b></span></div><div class="cards">${TRAYP.map(p=>`<div class="pc2 ${pick[T+p]?'sel':''}" data-pick="${T}:${p}" role="button" tabindex="0"><svg viewBox="0 0 100 64">${ICON[p]}</svg>${NAME[p]}${need[p]?` <span class="small">${pick[T+p]?'×'+need[p]:''}</span>`:''}</div>`).join('')}</div><div class="row"><button class="btn pri big" data-bld="${T}">🔨 Build it!</button></div>`:'<div class="kid"><span class="em">✅</span><span>Your model is built! Now turn the handle.</span></div>'}`}else bd.innerHTML='';
+ $('turn'+T).hidden=s<3;
+ if(s>=3){const[c1,c2]=t.cnt;$('cntQ'+T).innerHTML=`Turn the handle <b>${c1}</b> times. How many times did the 🔵 other wheel turn?`;$('cntC'+T).innerHTML=[c2,c1,c2===c1?c1+2:Math.abs(c2-c1)+1].filter((v,i,a)=>a.indexOf(v)===i).sort((a,b)=>a-b).map(v=>`<button class="btn" data-cnt="${T}:${v}">${v}</button>`).join('');
+  if(m.cnt!=null)fb('cntm'+T,m.cnt===c2,`✔ ${c1} turns of the handle → ${c2} turns of the other wheel. ${t.obs}`,'Hold the button and count again. Watch the dot on the other wheel!');
+  if(m.obs!=null)fb('obsm'+T,m.obs===0,'✔ '+t.obs,'Turn the handle again and watch closely.')}
+ const ok=m.plan===T&&s>=3&&m.cnt===t.cnt[1]&&m.obs===0;$('nn'+T).disabled=!ok;
+ msg('mm'+T,ok?'good':'',ok?`✔ Great job! ${t.obs}`:m.plan!==T?'Choose the right picture first.':s<3?`Build step ${s+1} of 3. Mistakes: ${st.bMist||0}`:'Turn the handle, count, and answer.');if(ok)done(['A','B','C','D'].indexOf(T)+1)}
+document.addEventListener('click',e=>{const p=e.target.closest('[data-plan]');if(p){const [T,k]=p.dataset.plan.split(':');st.m[T].plan=k;save();k===T?SFX.ok():SFX.bad();drawType(T);if(k===T){buildModel(T,st.m[T].step||0);K.view('model')}}
+ const q=e.target.closest('[data-pick]');if(q){const [T,k]=q.dataset.pick.split(':');pick[T+k]=!pick[T+k];SFX.click();drawType(T)}
+ const b=e.target.closest('[data-bld]');if(b){const T=b.dataset.bld,s=st.m[T].step||0,need=stepNeed(T,s+1);const chosen=TRAYP.filter(k=>pick[T+k]);const miss=Object.keys(need).filter(k=>!pick[T+k]),extra=chosen.filter(k=>!need[k]);
+  if(!miss.length&&!extra.length){st.m[T].step=s+1;save();TRAYP.forEach(k=>pick[T+k]=false);SFX.ok();buildModel(T,s+1);if(s+1>=3){setAngle(0);updCounts();$('turnCtl').hidden=false;$('counts').hidden=false;K.view('side')}else K.view('model');banner(s+1>=3?'🎉 Built! Now turn the handle.':'✔ Step '+(s+1)+' done!');drawType(T)}
+  else{st.bMist=(st.bMist||0)+1;save();SFX.bad();msg('mm'+T,'bad',(extra.length?`Oops! We don't need: <b>${extra.map(k=>NAME[k]).join(', ')}</b>. `:'')+(miss.length?`You still need: <b>${miss.length}</b> more kind${miss.length>1?'s':''} of part. Look at the book picture!`:''))}}
+ const c=e.target.closest('[data-cnt]');if(c){const [T,v]=c.dataset.cnt.split(':');st.m[T].cnt=+v;save();+v===TYPES[T].cnt[1]?SFX.ok():SFX.bad();drawType(T)}
+ const o=e.target.closest('[data-obs]');if(o){const [T,j]=o.dataset.obs.split(':');st.m[T].obs=+j;save();+j===0?SFX.ok():SFX.bad();drawType(T)}});
+
+/* ================== 6. Record + time math ================== */
+const R3=['Flagpole','Elevator','Crane','Window blinds','Well bucket','Bicycle','Clothesline','Zip line','Boat sail'];
+function clockSVG(h,m){const a=(m/60)*360,b=((h%12)/12)*360+m/2;return`<svg class="clock" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#fff" stroke="#1e6fd9" stroke-width="5"/>${[...Array(12)].map((_,i)=>`<text x="${50+Math.sin(i*Math.PI/6)*36}" y="${54-Math.cos(i*Math.PI/6)*36}" font-size="9" font-weight="800" text-anchor="middle">${i||12}</text>`).join('')}<line x1="50" y1="50" x2="${50+Math.sin(b*Math.PI/180)*22}" y2="${50-Math.cos(b*Math.PI/180)*22}" stroke="#e53935" stroke-width="5" stroke-linecap="round"/><line x1="50" y1="50" x2="${50+Math.sin(a*Math.PI/180)*34}" y2="${50-Math.cos(a*Math.PI/180)*34}" stroke="#1c1c1c" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="50" r="3"/></svg>`}
+const Q=[{q:'What time does the clock show? The class starts building pulleys.',fig:clockSVG(9,25),o:['9:25','5:45','9:05'],a:0,e:'The short hand is just after 9, the long hand is on 5 = 25 minutes.'},
+ {q:'Building started at 10:15 and finished at 10:45. How long did it take?',o:['30 minutes','15 minutes','45 minutes'],a:0,e:'From 10:15 to 10:45 is 30 minutes.'},
+ {q:'Lifting the weight brick took 8 seconds. You do it 3 times. How long is that?',o:['24 seconds','11 seconds','83 seconds'],a:0,e:'8 + 8 + 8 = 24 seconds.'},
+ {q:'Type B: 1 turn of the handle makes 3 turns. You turn the handle 4 times. How many turns does the small wheel make?',o:['12 turns','7 turns','4 turns'],a:0,e:'4 × 3 = 12 turns.'},
+ {q:'Type C: 3 turns of the handle make 1 turn of the big wheel. You turn the handle 9 times. How many turns does the big wheel make?',o:['3 turns','9 turns','27 turns'],a:0,e:'9 ÷ 3 = 3 turns.'},
+ {q:'Which job designs machines like pulleys?',o:['Mechanical engineer','Baker','Doctor'],a:0,e:'Book careers: Mechanical Engineer, Construction Engineer and Water Engineer.'}];
+function drawRec(){['r1','r2'].forEach(k=>document.querySelectorAll(`[data-${k}]`).forEach(b=>b.classList.toggle('sel',b.dataset[k]===st[k])));
+ if(st.r2)fb('r2m',st.r2==='grooves','✔ Pulleys have grooves. Gears have teeth!','Look at the pulley wheel: is it smooth with a groove, or does it have teeth?');
+ $('r3').innerHTML=R3.map(n=>`<span role="button" tabindex="0" class="${st.r3[n]?'got':''}" data-r3="${n}">${st.r3[n]?'✔ ':''}${n}</span>`).join('');
+ $('quiz').innerHTML=Q.map((x,i)=>{const c=st.quiz[i];return`<div class="q">${i+1}. ${x.q}</div>${x.fig||''}<div class="choices">${x.o.map((o,j)=>`<button type="button" class="btn ${c==null?'':j===x.a&&c===x.a?'right':j===c?'wrong':''}" data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div><div class="fb" style="color:${c===x.a?'var(--ok)':'var(--warn)'}">${c==null?'':c===x.a?'✔ '+x.e:'Try again.'}</div>`}).join('');
+ const ok=st.r1&&st.r2==='grooves'&&Object.values(st.r3).filter(Boolean).length>=3&&Q.every((x,i)=>st.quiz[i]===x.a);$('n5').disabled=!ok;if(ok){msg('m5','good','✔ Record sheet and math done!');done(5)}else msg('m5','','Answer the record sheet (choose at least 3 places) and the math.')}
+document.addEventListener('click',e=>{for(const k of ['r1','r2']){const b=e.target.closest(`[data-${k}]`);if(b){st[k]=b.dataset[k];save();k==='r2'&&st.r2!=='grooves'?SFX.bad():SFX.ok();drawRec()}}
+ const r=e.target.closest('[data-r3]');if(r){const n=r.dataset.r3;st.r3[n]=st.r3[n]?0:1;save();SFX.click();drawRec()}
+ const q=e.target.closest('[data-q]');if(q){const i=+q.dataset.q,o=+q.dataset.o;st.quiz[i]=o;save();o===Q[i].a?SFX.ok():SFX.bad();drawRec()}});
+
+/* ================== 7. Extra challenge (book) ================== */
+let exRun=null;const EXT={A:6,B:0,C:12};
+function drawEx(){document.querySelectorAll('[data-ex]').forEach(b=>b.classList.toggle('sel',b.dataset.ex===st.ex));if(st.exEst!=null&&document.activeElement!==$('exEst'))$('exEst').value=st.exEst;if(st.exT!=null)$('exT').textContent=st.exT.toFixed(1)+' s';
+ $('n6').disabled=!st.exOk;if(st.exOk){done(6)}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(b){st.ex=b.dataset.ex;save();SFX.click();drawEx()}});
+function setWeight(k){/* k: 0 floor .. 1 table */EX.wt.position.y=-3.05+k*3.5;EX.spool.rotation.z=-k*14;setGeo(EX.str,V3(2.7,0.43,1.5),V3(2.7,EX.wt.position.y+0.45,1.5))}
+$('exGo').onclick=()=>{const est=parseFloat($('exEst').value);if(!st.ex){SFX.bad();msg('m6','bad','Choose a pulley first.');return}if(!(est>0)){SFX.bad();msg('m6','bad','Write your estimate first (in seconds).');return}
+ st.exEst=est;save();K.view('ex');setWeight(0);const T=EXT[st.ex];const t0=performance.now();
+ if(!T){exRun={t0,stall:true};msg('m6','bad','The motor spins fast… but the weight is too heavy for the small wheel! The band slips. 😬 Try a stronger pulley.');SFX.bad();return}
+ exRun={t0,T};msg('m6','','The motor is lifting… ⏱')};
+K.hooks.push(()=>{if(!exRun)return;const t=(performance.now()-exRun.t0)/1000;if(exRun.stall){EX.spool.rotation.z+=0.02;if(t>2.5)exRun=null;return}
+ $('exT').textContent=t.toFixed(1)+' s';const k=Math.min(1,t/exRun.T);setWeight(k);
+ if(k>=1){const T=exRun.T;exRun=null;st.exT=T;save();SFX.ok();msg('m6','good',`✔ The weight brick reached the table in <b>${T} seconds</b>. You estimated ${st.exEst} seconds. Now write the difference.`);drawEx()}});
+$('exChk').onclick=()=>{if(st.exT==null){msg('m6','bad','Lift the weight first!');return}const d=Math.abs(st.exT-st.exEst);const v=parseFloat($('exDiff').value);
+ if(Math.abs(v-d)<0.6){st.exOk=1;if(!st.ch.c0){st.ch.c0=1}save();SFX.done();msg('m6','good',`⭐ ${Math.max(st.exT,st.exEst)} − ${Math.min(st.exT,st.exEst)} = ${d} seconds. ${d<=2?'Wow, a great estimate!':'Next time you will be even closer!'}`);banner('⭐ Book extra challenge complete!');drawEx()}
+ else{SFX.bad();msg('m6','bad',`Take the smaller number away from the bigger one: ${st.exT} and ${st.exEst}.`)}};
+
+/* ================== 8. Reflect (book) ================== */
+const RUB=[['Rate how well you were able to understand this challenge.',['Even with the help I didn’t get it.','After a little help, I got it.','I need some more practice.','I need a challenge so I can help someone else.']],
+ ['Rate how well you recorded your data.',['I did not record my data at all.','I recorded some of my data.','I recorded most of my data.','I recorded everything.']],
+ ['Rate how well you did your work.',['I did not do my work correctly at all.','Little of my work is done correctly.','Most of my work is done correctly.','All of my work was done correctly.']],
+ ['Rate how you feel about this project.',['☹️','😐','🙂','😄']],
+ ['Rate the Sustainable Development Goal.',['I don’t think this project can help the goal.','I think this project can help the goal a little.','I think this project will help this goal a lot.','I think this project can help exceed the goal expectations.']]];
+function drawRub(){if(st.im)fb('imm',st.im==='tight','✔ A tight band grips the grooves and does not slip.','What happens if the band is loose?');
+ if(st.sc)fb('scm',st.sc==='safe','✔ Safe machines make safe cities (SDG 11).','Which choice keeps people safe?');
+ ['fb1','fb2','fb3'].forEach((id,i)=>{if(document.activeElement!==$(id))$(id).value=st.fbk[i]||''});
+ $('rub').innerHTML=RUB.map((r,i)=>`<div><div class="rq">${i+1}. ${r[0]}</div><div class="lv" role="radiogroup" aria-label="${r[0]}">${r[1].map((t,j)=>`<button type="button" role="radio" aria-checked="${st.rub[i]===j}" class="${st.rub[i]===j?'on':''}" data-r="${i}" data-l="${j}">${t}</button>`).join('')}</div></div>`).join('');
+ const n=Object.keys(st.rub).length;const ready=n>=RUB.length&&st.sc==='safe'&&st.im==='tight';$('finish').disabled=!ready;msg('mA','',n<RUB.length?`${n} of ${RUB.length} rubric rows done.`:!ready?'Answer the questions above.':'All done. Press Finish!')}
+['fb1','fb2','fb3'].forEach((id,i)=>$(id).addEventListener('input',()=>{st.fbk[i]=$(id).value;save()}));
+$('rub').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;st.rub[b.dataset.r]=+b.dataset.l;save();SFX.click();drawRub()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sc]');if(b){st.sc=b.dataset.sc;save();st.sc==='safe'?SFX.ok():SFX.bad();drawRub()}const c=e.target.closest('[data-im]');if(c){st.im=c.dataset.im;save();st.im==='tight'?SFX.ok():SFX.bad();drawRub()}});
+function showFin(){buildModel('A',3);K.view('model',true);setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false},600)}
+$('finish').onclick=()=>{st.finished=1;save();done(7);SFX.done();showFin();setTimeout(()=>$('fin').scrollIntoView({behavior:'smooth',block:'center'}),700)};
+
+/* ================== 9. Challenges ================== */
+function star(k,id,h){msg(id,'good',h);if(!st.ch[k]){st.ch[k]=1;save()}SFX.done();drawStars();banner('⭐ Challenge complete!')}
+function drawStars(){const n=['c0','c1','c2','c3'].filter(k=>st.ch[k]).length;$('stars').textContent=n;document.querySelectorAll('[data-st]').forEach(e=>{const on=!!st.ch[e.dataset.st];e.textContent=on?'★':'☆';e.closest('.ch').classList.toggle('won',on)})}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-c1]');if(a){K.view('flag');if(a.dataset.c1==='down'){TA.flagT=1;star('c1','c1msg','⭐ Pull DOWN and the flag goes UP. The pulley at the top changes the direction of the pull!')}else{TA.flagT=0;SFX.bad();msg('c1msg','bad','Look at the wheel at the top of the pole. The rope goes over it…')}}
+ const b=e.target.closest('[data-c2]');if(b){buildModel(b.dataset.c2,3);K.view('side');spinFor=3;if(b.dataset.c2==='B')star('c2','c2msg','⭐ Big wheel turns small wheel = 3 times faster! That is how fans and blenders spin fast.');else{SFX.bad();msg('c2msg','bad','Watch the blue wheel. Which one spun the most turns?')}}
+ const c=e.target.closest('[data-c3]');if(c){K.view('well');TA.wellT=c.dataset.c3==='C'?1:0.3;if(c.dataset.c3==='C')star('c3','c3msg','⭐ Small wheel turns big wheel = slow but STRONG. You turn more, but it is easier!');else{SFX.bad();msg('c3msg','bad','Too hard! The bucket only went up a little. Which pulley is strong?')}}});
+
+/* ================== 10. Pulleys around us ================== */
+document.querySelectorAll('[data-ds]').forEach(b=>b.onclick=()=>{const k=b.dataset.ds;SFX.click();K.view(k);TA[k+'T']=TA[k+'T']>0.5?0:1;document.querySelectorAll('[data-ds]').forEach(x=>x.classList.toggle('sel',x===b))});
+$('dTry').onclick=()=>{const w=$('dWhat').value,t=$('dType').value,by=$('dBy').value;const L=[];const best={flag:['A','D'],bucket:['C'],fan:['B'],toy:['C','A']}[w];
+ L.push(best.includes(t)?`✔ Type ${t} is a good choice to move ${({flag:'a flag',bucket:'a heavy bucket',fan:'a fan',toy:'a toy box'})[w]}.`:`💡 Try Type ${best[0]}: ${best[0]==='B'?'big turns small = fast':best[0]==='C'?'small turns big = strong':'same speed'}.`);
+ L.push(by==='motor'?'⚙️ A motor turns it for you, like in the book\'s extra challenge.':'👐 Your hand turns the handle.');
+ if(t==='D')L.push('🔄 The crossed band makes it turn backwards.');
+ msg('dChk',best.includes(t)?'good':'',L.join('<br>'));buildModel(t,3);K.view('side');spinFor=2.5;SFX.ok()};
+try{$('dPlan').value=localStorage.getItem(KEY+'-plan')||''}catch(e){}
+$('dSave').onclick=()=>{try{localStorage.setItem(KEY+'-plan',$('dPlan').value)}catch(e){}SFX.ok();$('dSaved').textContent='✔ Saved on this device.'};
+
+/* ================== navigation ================== */
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+['A','B','C','D'].forEach((T,i)=>{$('p'+(i+1)).innerHTML=panelHTML(T,i+1)});
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();hud('');holding=false;spinFor=0;turnCB=null;exG.visible=i===6;model.visible=i!==6;
+ $('turnCtl').hidden=true;$('counts').hidden=true;
+ if(i===0){drawMeet();K.view('town')}
+ if(i>=1&&i<=4){const T='ABCD'[i-1];const s=st.m[T].step||0;buildModel(T,st.m[T].plan===T?s:0);if(s>=3){$('turnCtl').hidden=false;$('counts').hidden=false;setAngle(0);updCounts()}drawType(T);K.view(s>=3?'side':'model');hud(`<div class="h">${TYPES[T].name}</div>`)}
+ if(i===5){drawRec();buildModel('A',3);K.view('model')}
+ if(i===6){drawEx();setWeight(st.exT!=null?1:0);K.view('ex')}
+ if(i===7){drawRub();if(st.finished)showFin();else{buildModel('A',3);K.view('model')}}
+ if(i===8){drawStars();buildModel('A',3);K.view('town')}
+ if(i===9){buildModel('A',3);K.view('town')}
+ window.scrollTo(0,0)}
+drawMeet();
+go(Math.min(...[0,1,2,3,4,5,6,7].filter(i=>!st.done.includes(i)),8));
+
+</script>
+</body>
+</html>
