@@ -237,6 +237,7 @@ const SLIDES=[
  {id:'joints',grade:'Grade 9 · Project 1',title:'Joints',text:'A hinge joint that bends like a knee, driven by a servo.',glow:'#1f4f9a',acc:'#7fb2ff'},
  {id:'handwash',grade:'Grade 7 · Activity 3',title:'Touchless Hand Wash Timer',text:'Build it in 3D: soap, sensor and a 20-second servo timer.',glow:'#8a6420',acc:'#ffc46b'},
  {id:'touchless',grade:'Grade 7 · IR sensor + servo',title:'Touchless Inventions',text:'A trash can, a parking gate and a candy dispenser.',glow:'#5a3aa8',acc:'#c9b2ff'},
+ {id:'laser',grade:'Grade 8 · Activity 8',title:'Laser Security System',text:'A laser tripwire guards a popsicle stick safe house.',glow:'#b71c1c',acc:'#ff8a80'},
  {id:'conductivity',grade:'Grade 7 · Activity 5',title:'Conductivity Meter',text:'Salt water conducts electricity better!',glow:'#1f6f9a',acc:'#7fd3f2'},
  {id:'pollinators',grade:'Grade 5 · Project 3',title:'Plants and Pollinators',text:'A robot bee that visits the flower.',glow:'#7a8b1e',acc:'#c8e86a'},
  {id:'ocean',grade:'Grade 5 · Project 4',title:'Cleaning the Ocean',text:'Three WeDo machines take plastic out of the sea.',glow:'#00838f',acc:'#7fe3ea'},
@@ -246,7 +247,8 @@ const SLIDES=[
  {id:'bell',grade:'Grade 4 · Project 4',title:'Ring the Bell',text:'Snap together a musical doorbell and ring it.',glow:'#5e35b1',acc:'#c3b0ff'},
  {id:'fishing',grade:'Grade 4 · Project 5',title:'Night Fishing',text:'A fish bait that glows only in water.',glow:'#1565c0',acc:'#9fd0ff'},
  {id:'diaper',grade:'Grade 4 · Project 6',title:'Wet Diaper Alarm',text:'A light and sound alarm for a wet diaper.',glow:'#e65100',acc:'#ffcc80'},
- {id:'levers',grade:'Grade 3 · Simple Machines',title:'Levers',text:'First, second and third class levers.',glow:'#1d5aa8',acc:'#8cc0ff'}
+ {id:'levers',grade:'Grade 3 · Simple Machines',title:'Levers',text:'First, second and third class levers.',glow:'#1d5aa8',acc:'#8cc0ff'},
+ {id:'pulley',grade:'Grade 3 · Project 9',title:'Pulleys',text:'Build the book\'s LEGO pulleys and find pulleys in town.',glow:'#1e6fd9',acc:'#ffd54f'}
 ];
 const GRADES=['KG','1','2','3','4','5','6','7','8','9','10','11','12'];
 /* Projects per grade, in the order students must complete them.
@@ -254,7 +256,8 @@ const GRADES=['KG','1','2','3','4','5','6','7','8','9','10','11','12'];
 const COLORS=['c-blue','c-green','c-orange','c-purple','c-pink','c-teal','c-navy','c-red'];
 const PROJECTS={
  '3':[{id:'levers',chips:['Physics','Build','Test'],color:'c-blue',path:'labs/levers/index.html',title:'Levers',tag:'Simple Machines · Project 6',desc:'Build first, second and third class levers, test them and find levers in everyday life.',art:'levers'},
-      {id:'little-lever',chips:['Build','3D','Homework'],color:'c-orange',path:'labs/little-lever-builder/index.html',title:'Little Lever Builder',tag:'Homework',desc:'Build the three levers again, see them in 3D, test them and earn your Lever Engineer certificate.',art:'little'}],
+      {id:'little-lever',chips:['Build','3D','Homework'],color:'c-orange',path:'labs/little-lever-builder/index.html',title:'Little Lever Builder',tag:'Homework',desc:'Build the three levers again, see them in 3D, test them and earn your Lever Engineer certificate.',art:'little'},
+      {id:'pulley',chips:['Simple machines','Build','Everyday life'],color:'c-blue',path:'labs/pulley/index.html',title:'Pulleys',tag:'Simple Machines · Project 9',desc:'Build the book\'s blue LEGO pulley models A, B, C and D in 3D, turn the handle and count the turns, lift a weight with a motor and find pulleys around town.'}],
  '4':[{id:'power-toys',chips:['Circuits','Build','Test'],color:'c-red',path:'labs/power-toys/index.html',title:'Power Up the Toys',tag:'Electricity',desc:'Build series and parallel circuits, measure the voltage and design a toy that uses batteries.',art:'toys'},
       {id:'battery-builder',chips:['Circuits','Homework'],color:'c-teal',path:'labs/battery-builder/index.html',title:'Battery Builder',tag:'Homework',desc:'Build battery circuits on the snap board and power up a toy car, robot and fan.',art:'battery'},
       {id:'bell',chips:['Circuits','Build','Sound'],color:'c-purple',path:'labs/bell/index.html',title:'Ring the Bell',tag:'Project 4',desc:'Snap the book\'s musical doorbell circuit together in 3D, ring it for a visitor, time the tune and fix broken doorbells.'},
@@ -267,6 +270,7 @@ const PROJECTS={
  '7':[{id:'handwash',chips:['Health','3D','Code'],color:'c-orange',path:'labs/handwash/index.html',title:'Touchless Hand Wash Timer',tag:'Activity 3 · Touchless Soap Dispenser',desc:'Build it in 3D: an IR sensor sees your hand, soap comes out and a servo counts 20 seconds of washing.',art:'handwash'},
       {id:'touchless',chips:['IR sensor','Servo','3D'],color:'c-purple',path:'labs/touchless/index.html',title:'Touchless Inventions',tag:'IR sensor + servo · 3 builds',desc:'Use the same idea to build a touchless trash can, a smart parking gate and a candy dispenser, then design your own invention.',art:'touchless'},
       {id:'conductivity',chips:['Chemistry','3D','Code'],color:'c-teal',path:'labs/conductivity/index.html',title:'Conductivity Meter',tag:'Activity 5 · Water + Salt',desc:'Build it in 3D: dip the probe in salt water and tap water, watch the RGB LED glow and read the Serial Monitor.',art:'conductivity'}],
+ '8':[{id:'laser',chips:['Light','Arduino','Security'],color:'c-red',path:'labs/laser/index.html',title:'Laser Security System',tag:'Activity 8 · Safe house',desc:'Build the book\'s popsicle stick safe house, wire the laser, LDR module and buzzer to the Arduino, line up the beam, code it and catch the burglar. Then design museum, school and VIP security.'}],
  '9':[{id:'joints',chips:['Biology','Build','Code'],color:'c-blue',path:'labs/joints/index.html',title:'Joints',tag:'Project 1',desc:'Build a hinge joint, wire the servo to the smart hub, code it to bend from 0° to 180° and test it.',art:'joint'},
       {id:'weightmachine',chips:['Health','Build','Code'],color:'c-orange',path:'labs/weightmachine/index.html',title:'Weight Machine',tag:'Project 2',desc:'Build a pulley tower in 3D, wire the 270° servo to port 13, code the OLED and lift a weight safely for older adults.'},
       {id:'energywheel',chips:['Ecosystems','Build','Code'],color:'c-green',path:'labs/energywheel/index.html',title:'Energy Wheel',tag:'Project 3',desc:'Build a Lego Ferris wheel with a 360° servo and a button. Label the bins to show how energy and matter cycle in an ecosystem.'},
@@ -276,7 +280,7 @@ const PROJECTS={
       {id:'reflection',chips:['Physics','Light','Code'],color:'c-purple',path:'labs/reflection/index.html',title:'Reflection',tag:'Project 10',desc:'Bounce an invisible infrared signal off a Lego mirror stand, record the remote\'s hex codes and prove the law of reflection.'},
       {id:'windturbines',chips:['Energy','Build','Code'],color:'c-teal',path:'labs/windturbines/index.html',title:'Wind Turbines',tag:'Project 12',desc:'Build the kit windmill with two chains, control its speed with a dial and make an LED glow with its power.'},
       {id:'weatherseesaw',chips:['Climate','Sensor','Servo'],color:'c-blue',path:'labs/weatherseesaw/index.html',title:'Weather Seesaw',tag:'Project 13',desc:'A temperature sensor tips a Lego seesaw between warm periods and ice ages, then replays 800,000 years of climate.'}],
- '11':[{id:'picolab',chips:['Raspberry Pi','MicroPython','Sensors'],color:'c-green',path:'labs/picolab/index.html',title:'Raspberry Pi Pico Lab',tag:'Lessons 1–3',desc:'Explore a 3D Pico part by part, then write real MicroPython in a Thonny editor: blink the LED and read a DHT11 temperature sensor.'}]
+ '11':[{id:'picolab',chips:['Raspberry Pi','MicroPython','Servo'],color:'c-green',path:'labs/picolab/index.html',title:'Raspberry Pi Pico Lab',tag:'Lessons 1–4',desc:'Explore a 3D Pico part by part, then write real MicroPython in a Thonny editor: blink the LED, read a DHT11 temperature sensor and sweep a servo motor on the shield.'}]
 };
 const BANNER={};
 
