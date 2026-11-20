@@ -828,5 +828,24 @@ drawBuild();drawWires();drawCode();drawQuiz();drawRub();drawFoil(st.foil);
 go(st.finished?7:Math.min(...[0,1,2,3,4,5,6,7].filter(i=>!st.done.includes(i)),8));
 
 </script>
+<script>
+/* Britus Virtual STEM Lab: saves this student's progress for the portal and the teacher dashboard (v2: step number, stars, mistakes, time) */
+(function(){var LAB='goldfoil',K='britusLab:v1';
+ function stu(){try{return JSON.parse(localStorage.getItem('britusStudent')||'null')}catch(e){return null}}
+ var STEPS=(typeof S!=='undefined'&&S)||[];var core=STEPS.indexOf('Challenges');if(core<0)core=STEPS.length;
+ function extra(l){try{if(typeof st!=='undefined'&&st){if(st.ch)l.stars=Object.keys(st.ch).filter(function(k){return st.ch[k]}).length;var m=st.bMist!=null?st.bMist:st.mist;if(m!=null)l.mist=m}}catch(e){}}
+ function rec(i,done){var s=stu();if(!s)return;try{var p=JSON.parse(localStorage.getItem(K)||'{}');p[s.id]=p[s.id]||{labs:{}};var l=p[s.id].labs[LAB]||{};var now=new Date();
+  if(!l.first)l.first=now.toISOString();l.n=core;l.names=STEPS.slice(0,core);
+  if(i!=null&&i<core&&!(l.done&&!done)){l.i=Math.max(i,l.i||0);l.step='Step '+(i+1)+' of '+core+': '+STEPS[i]}
+  if(i!=null&&i>=core&&!l.done)l.step=STEPS[i];
+  if(done){l.done=true;l.i=core;l.step='Finished'}
+  extra(l);var d=now.toISOString().slice(0,10);l.days=l.days||{};l.days[d]=(l.days[d]||0)+1;var ks=Object.keys(l.days).sort();while(ks.length>30)delete l.days[ks.shift()];
+  l.updated=now.toISOString();p[s.id].labs[LAB]=l;localStorage.setItem(K,JSON.stringify(p))}catch(e){}}
+ function tick(){var s=stu();if(!s||document.hidden)return;try{var p=JSON.parse(localStorage.getItem(K)||'{}');var l=p[s.id]&&p[s.id].labs[LAB];if(!l)return;l.min=(l.min||0)+1;extra(l);localStorage.setItem(K,JSON.stringify(p))}catch(e){}}
+ try{var g=window.go;if(typeof g==='function'){window.go=function(i){var r=g.apply(this,arguments);rec(+i,false);return r}}
+  var f=document.getElementById('fin');if(f){if(!f.hidden)rec(null,true);new MutationObserver(function(){if(!f.hidden)rec(null,true)}).observe(f,{attributes:true,attributeFilter:['hidden']})}
+  if(typeof cur!=='undefined')rec(cur,false);setInterval(tick,60000)}catch(e){}
+})();
+</script>
 </body>
 </html>
