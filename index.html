@@ -129,6 +129,96 @@ footer .b{font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:.2px}foo
 @media (max-width:640px){.cert{aspect-ratio:auto}.cert .mid{grid-template-columns:1fr;padding:16px 20px}.cert .bot{padding:0 20px 20px;flex-wrap:wrap}.cert .top{padding:12px 18px}}
 @media print{@page{size:A4 landscape;margin:8mm}body{background:#fff}.bar,footer,.cert-tools,#vSignin,#vProjects,#vTeacherLogin,#vDash{display:none!important}main{padding:0}#vCert{display:block!important}.cert{box-shadow:none;max-width:none;width:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 @media (prefers-reduced-motion:reduce){.proj,.slide,.slide img,.proj .model img{transition:none}}
+/* ---------- teacher dashboard v2 ---------- */
+.td{--tb:#f4f7fc;--tc:#fff;--tl:#e6ebf3;--tm:#6b7587;--tor:#f07a1a;--tor2:#ff9a3c;--tblue:#2f6fed;--tgreen:#22a35a;--tred:#e0453a;--tyel:#f5a524;--tpurp:#7c5cff;--sh:0 4px 18px rgba(30,50,90,.07);
+ position:relative;left:50%;transform:translateX(-50%);width:min(1440px,calc(100vw - 24px));display:grid;grid-template-columns:232px 1fr;gap:0;background:var(--tb);border:1px solid var(--tl);border-radius:18px;overflow:hidden;color:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .td{--tb:#171b21;--tc:#1f242b;--tl:#2f3640;--tm:#9aa3b2;--sh:none}}
+:root[data-theme="dark"] .td{--tb:#171b21;--tc:#1f242b;--tl:#2f3640;--tm:#9aa3b2;--sh:none}
+.td-side{background:var(--tc);border-right:1px solid var(--tl);padding:20px 14px;display:flex;flex-direction:column;gap:6px;min-height:760px}
+.td-brand{display:flex;align-items:center;gap:10px;padding:2px 8px 18px;border-bottom:1px solid var(--tl);margin-bottom:10px}
+.td-brand .ic{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--tor2),var(--tor));display:grid;place-items:center;color:#fff;font-size:20px}
+.td-brand b{display:block;font-size:16px}.td-brand small{color:var(--tm);font-size:12px}
+.td-nav{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;color:var(--ink);font:600 14.5px var(--f);padding:11px 14px;border-radius:12px;cursor:pointer;text-align:left}
+.td-nav:hover{background:var(--tb)}.td-nav.on{background:linear-gradient(135deg,var(--tor2),var(--tor));color:#fff;box-shadow:0 6px 14px rgba(240,122,26,.28)}
+.td-nav .n{margin-left:auto;font-size:12px;background:var(--tb);color:var(--tm);border-radius:999px;padding:1px 8px}.td-nav.on .n{background:#ffffff33;color:#fff}
+.td-side .sp{flex:1}
+.td-me{display:flex;align-items:center;gap:10px;border-top:1px solid var(--tl);padding:14px 8px 4px}
+.td-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--f);color:#fff;flex:none;background:var(--c,#7c5cff)}
+.td-me b{display:block;font-size:13.5px}.td-me small{color:var(--tm);font-size:12px}
+.td-main{padding:24px 26px 30px;min-width:0}
+.td-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.td-head h1{display:flex;align-items:center;gap:10px;margin:0;font-size:28px}.td-head h1 .hi{color:var(--tor)}
+.td-head p{margin:4px 0 0;color:var(--tm)}
+.td-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.td-tools select{width:auto;min-width:150px;border-radius:10px;border-color:var(--tl);background:var(--tc);font-weight:600;font-size:14px;padding:9px 12px}
+.td-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--tl);background:var(--tc);color:var(--ink);border-radius:10px;padding:9px 14px;font:600 14px var(--f);cursor:pointer;box-shadow:var(--sh)}
+.td-btn:hover{border-color:var(--tblue)}.td-btn.pri{background:var(--tblue);border-color:var(--tblue);color:#fff}.td-btn.or{background:transparent;border-color:var(--tor);color:var(--tor)}
+.td-card{background:var(--tc);border:1px solid var(--tl);border-radius:16px;padding:18px 20px;box-shadow:var(--sh);min-width:0}
+.td-card h3{font-size:16px;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.td-card h3 a,.td-link{font:600 13.5px var(--f);color:var(--tblue);text-decoration:none;cursor:pointer;background:none;border:0;padding:0}
+.td-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.td-kpi{display:flex;align-items:center;gap:14px}
+.td-kpi .ico{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:23px;background:var(--tb);flex:none}
+.td-kpi .v{font:800 30px/1 var(--f);color:var(--k,var(--tblue))}.td-kpi .l{font-weight:600;font-size:14px;margin-top:5px}.td-kpi .s{font-size:12.5px;color:var(--tm);margin-top:2px}
+.td-kpi .s.up{color:var(--tgreen)}.td-kpi .ring{margin-left:auto;flex:none}
+.td-row{display:grid;gap:16px;margin-bottom:16px}
+.td-r3{grid-template-columns:1fr 1.55fr 1.25fr}.td-r2{grid-template-columns:1.55fr 1fr}
+@media (max-width:1180px){.td-kpis{grid-template-columns:1fr 1fr}.td-r3{grid-template-columns:1fr 1fr}.td-r3>:first-child{grid-column:1/-1}}
+@media (max-width:860px){.td{grid-template-columns:1fr;border-radius:12px}.td-side{min-height:0;flex-direction:row;flex-wrap:wrap;padding:10px}.td-brand,.td-side .sp,.td-me{display:none}.td-nav{width:auto;padding:9px 12px}.td-main{padding:16px}.td-r3,.td-r2{grid-template-columns:1fr}}
+@media (max-width:560px){.td-kpis{grid-template-columns:1fr}}
+.td-plan{text-align:center;background:linear-gradient(180deg,#fff3e6,var(--tc));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.td-plan .crown{width:58px;height:58px;border-radius:50%;background:var(--tc);display:grid;place-items:center;font-size:28px;box-shadow:var(--sh)}
+.td-plan b{font-size:17px}.td-plan p{margin:0;color:var(--tm);font-size:13.5px}
+.td-legend{list-style:none;margin:0;padding:0;display:grid;gap:12px;font-size:14px;flex:1}
+.td-legend li{display:flex;align-items:center;gap:10px;white-space:nowrap}.td-legend i{width:10px;height:10px;border-radius:50%;flex:none}.td-legend span{margin-left:auto;font-weight:700}
+.td-ov{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.td-alert{display:flex;align-items:center;gap:14px;background:#fff6ec;border:1px solid #ffd2a6;border-radius:16px;padding:14px 18px;margin-bottom:16px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .td-alert{background:#2e2318;border-color:#5a3d22}:root:not([data-theme="light"]) .td-plan{background:var(--tc)}}
+.td-alert .bang{width:40px;height:40px;border-radius:50%;border:2px solid var(--tor);color:var(--tor);display:grid;place-items:center;font-weight:800;flex:none}
+.td-alert>div>b{color:var(--tor);display:block}.td-alert p{margin:2px 0 0;font-size:14px}.td-alert .td-btn{margin-left:auto}
+.td-alert.ok{background:#ecf8f1;border-color:#bfe6cf}.td-alert.ok .bang{border-color:var(--tgreen);color:var(--tgreen)}.td-alert.ok>div>b{color:var(--tgreen)}
+.td-classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.td-class{border:1px solid var(--tl);border-radius:14px;padding:14px;background:var(--tc);cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:8px;transition:transform .15s,border-color .15s}
+.td-class:hover{transform:translateY(-2px);border-color:var(--tblue)}
+.td-class .top{display:flex;align-items:center;gap:10px}.td-class .gb{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font:800 16px var(--f);color:#fff;background:var(--c)}
+.td-class b{font-size:16px}.td-class small{color:var(--tm)}
+.td-bar{height:8px;border-radius:99px;background:var(--tb);overflow:hidden;display:flex}.td-bar i{display:block;height:100%}
+.td-stack{height:12px}
+.td-avs{display:flex}.td-avs .td-av{width:28px;height:28px;font-size:11px;border:2px solid var(--tc);margin-right:-7px}
+.td-act{list-style:none;margin:0;padding:0}
+.td-act li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--tl)}.td-act li:last-child{border-bottom:0}
+.td-act .ai{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none;font-size:17px;background:var(--tb)}
+.td-act b{font-size:14px;display:block}.td-act small{color:var(--tm);font-size:12.5px}.td-act time{margin-left:auto;color:var(--tm);font-size:12.5px;white-space:nowrap}
+.td-empty{text-align:center;padding:26px 10px;color:var(--tm)}.td-empty .big{font-size:40px}
+.td-tbl{overflow-x:auto;border:1px solid var(--tl);border-radius:12px}
+.td-tbl table{min-width:760px;background:var(--tc)}
+.td-tbl th{background:var(--tb);position:sticky;top:0}
+.td-tbl td{vertical-align:middle}
+.td-tbl tr.click{cursor:pointer}.td-tbl tr.click:hover td{background:var(--tb)}
+.td-cell{display:inline-flex;flex-direction:column;gap:4px;min-width:84px;font-size:12.5px;font-weight:600}
+.td-cell .td-bar{height:6px;width:84px}
+.td-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font:700 12px var(--f);white-space:nowrap}
+.b-done{background:#e3f6ea;color:#17803f}.b-ok{background:#e7efff;color:#2559c9}.b-help{background:#fdeaea;color:#c2352b}.b-none{background:var(--tb);color:var(--tm)}.b-lock{background:var(--tb);color:var(--tm)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .b-done{background:#173a29;color:#7fd8a4}:root:not([data-theme="light"]) .b-ok{background:#1b2c4d;color:#9cbcff}:root:not([data-theme="light"]) .b-help{background:#3e1f1d;color:#ff9b92}}
+.td-name{display:flex;align-items:center;gap:10px}.td-name b{font-size:14px}
+.td-back{margin-bottom:12px}
+.td-steps{display:flex;align-items:center;gap:0;margin:10px 0 4px}
+.td-steps .d{width:24px;height:24px;flex:none;border-radius:50%;display:grid;place-items:center;font:700 12px var(--f);background:var(--tb);color:var(--tm);border:2px solid var(--tl)}
+.td-steps .d.done{background:var(--tgreen);border-color:var(--tgreen);color:#fff}.td-steps .d.now{background:var(--tc);border-color:var(--tblue);color:var(--tblue);box-shadow:0 0 0 4px #2f6fed22}
+.td-steps .ln{flex:1;min-width:3px;max-width:22px;height:3px;background:var(--tl)}.td-steps .ln.done{background:var(--tgreen)}
+.td-pcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.td-pcard{border:1px solid var(--tl);border-radius:14px;padding:14px;background:var(--tc);display:flex;gap:12px}
+.td-pcard img{width:84px;height:62px;object-fit:contain;flex:none}
+.td-pcard h4{margin:0;font-size:15px}.td-pcard .meta{display:flex;gap:12px;flex-wrap:wrap;color:var(--tm);font-size:12.5px;margin-top:6px}
+.td-sample{display:inline-flex;align-items:center;gap:6px;background:#fff1c2;color:#7a5600;border-radius:999px;padding:4px 12px;font:700 12.5px var(--f)}
+.td-note{font-size:13px;color:var(--tm);margin-top:6px;line-height:1.5}
+.td-search{width:220px!important}
+.td-prow{display:grid;grid-template-columns:minmax(150px,1.3fr) 2fr 150px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--tl)}.td-prow:last-child{border-bottom:0}
+.td-prow img{width:46px;height:32px;object-fit:contain;vertical-align:middle;margin-right:8px}
+.td-prow .t{font-weight:600;font-size:14px;display:flex;align-items:center}.td-prow small{color:var(--tm);font-size:12.5px;white-space:nowrap}
+@media (max-width:620px){.td-prow{grid-template-columns:1fr}}
+.td-ideas{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.td-ideas div{border:1px dashed var(--tl);border-radius:12px;padding:12px;font-size:13.5px}.td-ideas b{display:block;margin-bottom:3px}
 </style>
 </head>
 <body>
@@ -190,19 +280,27 @@ footer .b{font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:.2px}foo
 
 <!-- Teacher dashboard -->
 <section id="vDash" hidden>
- <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h1 style="margin:0">Teacher dashboard</h1><div class="muted" id="dashSchool"></div></div>
-  <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="btnCsv">Download Excel list</button><button class="btn ghost" id="btnDashOut">Log out</button></div></div>
- <div class="card" style="margin-top:16px">
-  <div class="dash-filters">
-   <div><label for="fSchool">School</label><select id="fSchool"></select></div>
-   <div><label for="fGrade">Grade</label><select id="fGrade"></select></div>
-   <div><label for="fStatus">Status</label><select id="fStatus"><option value="">All students</option><option value="done">Finished all projects</option><option value="prog">In progress</option><option value="none">Not started</option></select></div>
-   <div><label for="fSearch">Search name</label><input id="fSearch" placeholder="Type a name"></div>
+<div class="td">
+ <aside class="td-side" aria-label="Teacher menu">
+  <div class="td-brand"><div class="ic" aria-hidden="true">🧪</div><div><b>STEM Lab</b><small>Teacher dashboard</small></div></div>
+  <button type="button" class="td-nav on" data-tv="home">▦ <span>Dashboard</span></button>
+  <button type="button" class="td-nav" data-tv="classes">👥 <span>Classes</span><em class="n" id="navCls"></em></button>
+  <button type="button" class="td-nav" data-tv="students">🎓 <span>Students</span><em class="n" id="navStu"></em></button>
+  <button type="button" class="td-nav" data-tv="projects">🧩 <span>Projects</span></button>
+  <button type="button" class="td-nav" id="btnCsv">⬇ <span>Download Excel</span></button>
+  <div class="sp"></div>
+  <button type="button" class="td-nav" id="btnDashOut">⎋ <span>Log out</span></button>
+  <div class="td-me"><div class="td-av" id="meAv" style="--c:#f07a1a">T</div><div><b id="meName">Teacher</b><small id="dashSchool"></small></div></div>
+ </aside>
+ <div class="td-main">
+  <div class="td-head">
+   <div><h1 id="tdTitle"><span class="hi">▦</span> Dashboard</h1><p id="tdSub">Here's how your students are progressing today.</p></div>
+   <div class="td-tools"><span class="td-sample" id="sampleTag" hidden>Sample class: not real students</span><select id="fSchool" aria-label="School"></select><select id="fGrade" aria-label="Class"></select></div>
   </div>
-  <div class="stats" id="stats"></div>
-  <div class="tbl-wrap"><table><thead><tr><th>Student</th><th>School</th><th>Grade</th><th>Projects</th><th>Last active</th></tr></thead><tbody id="tBody"></tbody></table></div>
-  <div class="note" id="dataNote"></div>
+  <div id="tdBody"></div>
+  <div class="td-note" id="dataNote"></div>
  </div>
+</div>
 </section>
 </main>
 <footer><div class="b">Britus Education</div><div class="s">© 2026 Fatma Alruffai</div></footer>
@@ -376,24 +474,133 @@ $('fTeacher').onsubmit=e=>{e.preventDefault();const sc=$('inTSchool').value,pw=$
  const ok=sc==='*'?pw===SETTINGS.adminPassword:SETTINGS.schools.some(s=>s.name===sc&&normPw(s.password)===normPw(pw));
  if(ok){TEACHER=sc;try{sessionStorage.setItem('britusTeacher',sc);sessionStorage.setItem('britusTeacherName',tn)}catch(_){}showDash()}else{$('passErr').textContent='Wrong password for this school. Please try again.'}};
 $('btnDashOut').onclick=()=>{TEACHER=false;try{sessionStorage.removeItem('britusTeacher')}catch(_){}home()};
-function schoolFilter(){const all=TEACHER==='*';$('fSchool').innerHTML=all?'<option value="">All schools</option>'+SETTINGS.schools.map(s=>`<option>${esc(s.name)}</option>`).join(''):`<option>${esc(TEACHER)}</option>`;$('fSchool').disabled=!all}
-$('fGrade').innerHTML='<option value="">All grades</option>'+GRADES.map(g=>`<option value="${g}">${gradeName(g)}</option>`).join('');
-['fSchool','fGrade','fStatus','fSearch'].forEach(id=>$(id).addEventListener('input',renderDash));
-let ROWS=[];
-async function showDash(){view('vDash');schoolFilter();let tnm='';try{tnm=sessionStorage.getItem('britusTeacherName')||''}catch(_){}$('dashSchool').textContent=(tnm?tnm+' · ':'')+(TEACHER==='*'?'All schools':TEACHER);
- const mine=r=>TEACHER==='*'||r.student.school===TEACHER;ROWS=(await Data.classList()).filter(mine);renderDash();
+function schoolFilter(){const all=TEACHER==='*';$('fSchool').innerHTML=all?'<option value="">All schools</option>'+SETTINGS.schools.map(s=>`<option>${esc(s.name)}</option>`).join(''):`<option>${esc(TEACHER)}</option>`;$('fSchool').hidden=!all}
+let ROWS=[],REAL=[];
+const TV={v:'home',grade:'',sid:null,sample:false,q:'',st:''};
+const DAY=864e5,GCOL=['#7c5cff','#f07a1a','#2f6fed','#22a35a','#e0453a','#0f9fb0','#c2449a','#8a6400','#3d5f99','#2cc2ad','#ef6a4f','#4f9bff','#a47cff'];
+const gcol=g=>GCOL[Math.max(0,GRADES.indexOf(g))%GCOL.length];
+const ST={done:['Finished all','b-done','#22a35a'],ok:['On track','b-ok','#2f6fed'],help:['Needs help','b-help','#e0453a'],none:['Not started','b-none','#b8c0cc']};
+const initials=n=>String(n).split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const avcol=n=>{let h=0;for(const c of String(n))h=(h*31+c.charCodeAt(0))>>>0;return GCOL[h%GCOL.length]};
+const av=(n,cls)=>`<span class="td-av ${cls||''}" style="--c:${avcol(n)}" aria-hidden="true">${esc(initials(n))}</span>`;
+function ago(t){if(!t)return '–';const d=(Date.now()-new Date(t))/1000;if(d<60)return 'just now';if(d<3600)return Math.round(d/60)+' min ago';if(d<86400)return Math.round(d/3600)+' h ago';const n=Math.round(d/86400);return n===1?'yesterday':n+' days ago'}
+function ring(pct,col,size,label){size=size||64;const r=size/2-6,c=2*Math.PI*r,v=Math.max(0,Math.min(1,pct));return`<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${Math.round(v*100)}%"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--tl)" stroke-width="7"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*v} ${c}" transform="rotate(-90 ${size/2} ${size/2})"/>${label!=null?`<text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-size="${size/4.4}" font-weight="800" fill="currentColor">${label}</text>`:''}</svg>`}
+function donut(parts,total,size){size=size||150;const r=size/2-12,c=2*Math.PI*r;let off=0;const segs=parts.filter(p=>p.v>0).map(p=>{const len=total?c*p.v/total:0;const s=`<circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${p.c}" stroke-width="14" stroke-dasharray="${Math.max(0,len-3)} ${c}" stroke-dashoffset="${-off}" transform="rotate(-90 ${size/2} ${size/2})"/>`;off+=len;return s}).join('');
+ return`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${total} students"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--tl)" stroke-width="14"/>${segs}<text x="50%" y="46%" text-anchor="middle" font-size="30" font-weight="800" fill="currentColor">${total}</text><text x="50%" y="62%" text-anchor="middle" font-size="13" fill="var(--tm)">Students</text></svg>`}
+
+/* ---------- progress model ---------- */
+function labProg(l){if(!l)return{state:'none',pct:0,i:0,n:0,label:''};
+ let n=l.n||0,i=l.i;if(i==null){const m=/Step (\d+)(?: of (\d+))?/.exec(l.step||'');i=m?+m[1]-1:0;if(!n&&m&&m[2])n=+m[2]}
+ if(l.done)return{state:'done',pct:1,i:n,n,label:'Finished'};
+ const stale=l.updated&&Date.now()-new Date(l.updated)>3*DAY;
+ return{state:stale||(l.mist||0)>=8?'help':'prog',pct:n?Math.min(.95,(i+.5)/n):.3,i,n,label:l.step||'Started',stale}}
+const INFO=new Map();
+function info(r){if(INFO.has(r))return INFO.get(r);const list=PROJECTS[r.student.grade]||[];
+ const per=list.map((p,k)=>{const l=r.labs[p.id];const pr=labProg(l);const prev=k===0||(r.labs[list[k-1].id]||{}).done;if(pr.state==='none'&&!prev)pr.state='lock';return{p,l:l||{},pr}});
+ const done=per.filter(x=>x.pr.state==='done').length,pct=list.length?per.reduce((a,x)=>a+x.pr.pct,0)/list.length:0;
+ const any=per.some(x=>x.pr.state!=='none'&&x.pr.state!=='lock'),help=per.some(x=>x.pr.state==='help');
+ const status=list.length&&done===list.length?'done':!any?'none':help?'help':'ok';
+ const cur=per.find(x=>x.pr.state==='prog'||x.pr.state==='help')||per.find(x=>x.pr.state==='none');
+ const ups=Object.values(r.labs).map(x=>x.updated).filter(Boolean).sort();
+ const o={list,per,done,pct,status,cur,last:ups[ups.length-1]||'',stars:Object.values(r.labs).reduce((a,x)=>a+(x.stars||0),0),min:Object.values(r.labs).reduce((a,x)=>a+(x.min||0),0)};INFO.set(r,o);return o}
+function rows(){const fs=$('fSchool').value,fg=$('fGrade').value;return ROWS.filter(r=>(!fs||r.student.school===fs)&&(!fg||r.student.grade===fg))}
+function gradesShown(){const fg=$('fGrade').value;if(fg)return[fg];const set=new Set(ROWS.map(r=>r.student.grade));return GRADES.filter(g=>set.has(g))}
+
+/* ---------- sample class (preview only, never saved) ---------- */
+function sampleRows(){const names=['Sara Ahmed','Omar Khalid','Lina Hassan','Yousef Ali','Maryam Saleh','Hamad Nasser','Noura Fahad','Adam Salem','Reem Majed','Faisal Hamad','Jana Waleed','Ali Mansour','Huda Saeed','Zaid Omar','Layan Tariq','Khalid Rami','Dana Samir','Tamim Badr','Aisha Mohammed','Bader Yasser','Lulwa Adel'];
+ let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;const school=(SETTINGS.schools[0]||{name:'LIS'}).name;const out=[];let k=0;
+ [['3',6],['4',8],['5',7]].forEach(([g,cnt])=>{const list=PROJECTS[g]||[];for(let s=0;s<cnt;s++){const name=names[k++%names.length];const labs={};const reach=Math.floor(rnd()*(list.length+1));
+  list.forEach((p,i)=>{if(i>reach)return;const n=6+(i%3);const t=Date.now()-Math.floor(i<reach?rnd()*14:(rnd()<.78?rnd()*2.5:4+rnd()*3))*DAY-Math.floor(rnd()*20)*36e5;const days={};for(let d=0;d<7;d++)if(rnd()<.5)days[new Date(Date.now()-d*DAY).toISOString().slice(0,10)]=1+Math.floor(rnd()*4);
+   if(i<reach)labs[p.id]={done:true,i:n,n,step:'Finished',updated:new Date(t).toISOString(),stars:Math.floor(rnd()*5),mist:Math.floor(rnd()*6),min:20+Math.floor(rnd()*50),days};
+   else if(rnd()<.85){const si=Math.floor(rnd()*n);labs[p.id]={i:si,n,step:'Step '+(si+1)+' of '+n,updated:new Date(t).toISOString(),stars:0,mist:Math.floor(rnd()*10),min:5+Math.floor(rnd()*30),days}}});
+  out.push({student:{id:'sample__'+g+'__'+s,name,school,grade:g},labs})}});return out}
+
+/* ---------- views ---------- */
+function setNav(v){document.querySelectorAll('[data-tv]').forEach(b=>b.classList.toggle('on',b.dataset.tv===v||(v==='class'&&b.dataset.tv==='classes')||(v==='student'&&b.dataset.tv==='students')))}
+function tdHead(icon,t,sub){$('tdTitle').innerHTML=`<span class="hi">${icon}</span> ${esc(t)}`;$('tdSub').innerHTML=sub}
+function emptyCard(){return`<div class="td-card td-empty"><div class="big">🧑‍🏫</div><h3 style="justify-content:center">No students yet</h3><p>Students appear here after they sign in and open a project.</p><button class="td-btn pri" id="btnSample">👀 Preview with a sample class</button></div>`}
+function kpi(ico,v,l,s,col,ringHtml,sCls){return`<div class="td-card td-kpi" style="--k:${col}"><div class="ico" aria-hidden="true">${ico}</div><div><div class="v">${v}</div><div class="l">${l}</div><div class="s ${sCls||''}">${s}</div></div>${ringHtml||''}</div>`}
+function kpis(R){const now=Date.now();const I=R.map(info);const active=I.filter(x=>x.last&&now-new Date(x.last)<7*DAY).length;
+ const tot=I.reduce((a,x)=>a+x.list.length,0),fin=I.reduce((a,x)=>a+x.done,0);const finWeek=R.reduce((a,r)=>a+Object.values(r.labs).filter(l=>l.done&&now-new Date(l.updated)<7*DAY).length,0);
+ const avg=I.length?I.reduce((a,x)=>a+x.pct,0)/I.length:0,help=I.filter(x=>x.status==='help').length;
+ return`<div class="td-kpis">${kpi('👥',R.length,'Students',`${active} active this week`,'#2f6fed',ring(R.length?active/R.length:0,'#2f6fed',58))}${kpi('🏆',fin,'Projects finished',`↑ ${finWeek} this week`,'#22a35a',ring(tot?fin/tot:0,'#22a35a',58),'up')}${kpi('📈',Math.round(avg*100)+'%','Average progress','of all projects in the class','#7c5cff',ring(avg,'#7c5cff',58))}${kpi('🆘',help,'Need help','stuck 3+ days or many mistakes','#e0453a',ring(R.length?help/R.length:0,'#e0453a',58))}</div>`}
+function weekChart(R){const days=[];for(let d=6;d>=0;d--){const t=new Date(Date.now()-d*DAY);days.push({k:t.toISOString().slice(0,10),l:t.toLocaleDateString('en-GB',{weekday:'short'})})}
+ days.forEach(d=>d.v=R.reduce((a,r)=>a+Object.values(r.labs).reduce((b,l)=>b+((l.days||{})[d.k]||0),0),0));
+ const W=520,H=190,pl=34,pb=26,max=Math.max(4,...days.map(d=>d.v));const X=i=>pl+i*(W-pl-12)/6,Y=v=>H-pb-(v/max)*(H-pb-14);
+ const grid=[0,.25,.5,.75,1].map(f=>`<line x1="${pl}" x2="${W-6}" y1="${Y(max*f)}" y2="${Y(max*f)}" stroke="var(--tl)"/><text x="${pl-6}" y="${Y(max*f)+4}" font-size="11" text-anchor="end" fill="var(--tm)">${Math.round(max*f)}</text>`).join('');
+ const pts=days.map((d,i)=>`${X(i)},${Y(d.v)}`).join(' ');
+ return`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Steps done by students in the last 7 days">${grid}<polygon points="${pl},${Y(0)} ${pts} ${X(6)},${Y(0)}" fill="#2f6fed14"/><polyline points="${pts}" fill="none" stroke="#2f6fed" stroke-width="2.5" stroke-linejoin="round"/>${days.map((d,i)=>`<circle cx="${X(i)}" cy="${Y(d.v)}" r="4.5" fill="#2f6fed"><title>${d.l}: ${d.v} steps</title></circle><text x="${X(i)}" y="${H-6}" font-size="11.5" text-anchor="middle" fill="var(--tm)">${d.l}</text>`).join('')}</svg><div class="td-note" style="text-align:center;margin:0">● Steps done by students</div>`}
+function overview(R){const c={done:0,ok:0,help:0,none:0};R.forEach(r=>c[info(r).status]++);const n=R.length;
+ return`<div class="td-ov">${donut(['done','ok','help','none'].map(k=>({v:c[k],c:ST[k][2]})),n)}<ul class="td-legend">${['done','ok','help','none'].map(k=>`<li><i style="background:${ST[k][2]}"></i>${ST[k][0]}<span>${c[k]} (${n?Math.round(c[k]/n*100):0}%)</span></li>`).join('')}</ul></div>`}
+function suggestion(R){const help=R.filter(r=>info(r).status==='help');
+ if(help.length){const by={};help.forEach(r=>{const c=info(r).cur;if(c){const k=c.p.title+' · '+(c.pr.label.split(':')[0]||'');by[k]=(by[k]||0)+1}});const top=Object.entries(by).sort((a,b)=>b[1]-a[1])[0];
+  return`<div class="td-alert"><div class="bang">!</div><div><b>Suggested next step</b><p>${help.length} student${help.length>1?'s':''} need${help.length>1?'':'s'} help.${top?` Most are stuck on <b>${esc(top[0])}</b>.`:''} Check in with them in class.</p></div><button class="td-btn or" data-goto="students:help">👤 Show students ›</button></div>`}
+ const none=R.filter(r=>info(r).status==='none');
+ if(none.length)return`<div class="td-alert"><div class="bang">!</div><div><b>Suggested next step</b><p>${none.length} student${none.length>1?'s have':' has'} not started the first project yet. Give them time in class to open it.</p></div><button class="td-btn or" data-goto="students:none">👤 Show students ›</button></div>`;
+ return`<div class="td-alert ok"><div class="bang">✓</div><div><b>Great work!</b><p>Everyone is on track. Try the challenges and other designs to stretch your fast finishers.</p></div></div>`}
+function classCards(R){const gs=gradesShown();if(!gs.length)return'<div class="td-empty">No classes yet.</div>';
+ return`<div class="td-classes">${gs.map(g=>{const G=R.filter(r=>r.student.grade===g),I=G.map(info);const c={done:0,ok:0,help:0,none:0};I.forEach(x=>c[x.status]++);const avg=I.length?I.reduce((a,x)=>a+x.pct,0)/I.length:0;
+  return`<button type="button" class="td-class" data-class="${g}"><div class="top"><span class="gb" style="--c:${gcol(g)}">${g}</span><div><b>${gradeName(g)}</b><br><small>${G.length} student${G.length===1?'':'s'} · ${(PROJECTS[g]||[]).length} projects</small></div></div>
+  <div class="td-bar td-stack">${['done','ok','help','none'].map(k=>`<i style="width:${G.length?c[k]/G.length*100:0}%;background:${ST[k][2]}" title="${ST[k][0]}: ${c[k]}"></i>`).join('')}</div>
+  <small>${Math.round(avg*100)}% average progress · ${c.done} finished all${c.help?` · <span style="color:#e0453a;font-weight:700">${c.help} need help</span>`:''}</small><div class="td-avs">${G.slice(0,7).map(r=>av(r.student.name)).join('')}${G.length>7?`<span class="td-av" style="--c:#8b929e">+${G.length-7}</span>`:''}</div></button>`}).join('')}</div>`}
+function recent(R,max){const ev=[];R.forEach(r=>Object.entries(r.labs).forEach(([id,l])=>{if(!l.updated)return;const p=(PROJECTS[r.student.grade]||[]).find(x=>x.id===id);ev.push({r,l,t:l.updated,p})}));ev.sort((a,b)=>b.t<a.t?-1:1);
+ if(!ev.length)return'<div class="td-empty">No activity yet.</div>';
+ return`<ul class="td-act">${ev.slice(0,max||6).map(e=>`<li><span class="ai">${e.l.done?'🏆':'🧩'}</span><div><b>${esc(e.r.student.name)} ${e.l.done?'finished':'is working on'} ${esc(e.p?e.p.title:'a project')}</b><small>${gradeName(e.r.student.grade)}${e.l.done?'':' · '+esc(e.l.step||'Started')}</small></div><time>${ago(e.t)}</time></li>`).join('')}</ul>`}
+function projRows(R,g){const list=PROJECTS[g]||[];const G=R.filter(r=>r.student.grade===g);
+ return list.map(p=>{const c={done:0,prog:0,help:0,none:0};const at={};G.forEach(r=>{const x=info(r).per.find(y=>y.p.id===p.id);const s=x?x.pr.state:'none';c[s==='lock'?'none':s]++;if(s==='prog'||s==='help'){const k=(x.pr.label.split(':')[0])||'Started';at[k]=(at[k]||0)+1}});
+  const top=Object.entries(at).sort((a,b)=>b[1]-a[1])[0];const n=G.length||1;
+  return`<div class="td-prow"><div class="t">${IMG[p.id]?`<img src="${IMG[p.id]}" alt="">`:''}${esc(p.title)}</div><div><div class="td-bar td-stack"><i style="width:${c.done/n*100}%;background:#22a35a"></i><i style="width:${c.prog/n*100}%;background:#2f6fed"></i><i style="width:${c.help/n*100}%;background:#e0453a"></i></div><small>✓ ${c.done} finished · ${c.prog+c.help} working${c.help?` (${c.help} stuck)`:''} · ${c.none} not started</small></div><small>${top?'Most at: '+esc(top[0]):''}</small></div>`}).join('')||'<div class="td-empty">No projects for this grade yet.</div>'}
+function cell(x){const s=x.pr.state;if(s==='done')return`<span class="td-badge b-done">✓ Done</span>`;if(s==='lock')return`<span class="td-badge b-lock">🔒</span>`;if(s==='none')return`<span class="td-badge b-none">Not started</span>`;
+ return`<span class="td-cell" title="${esc(x.pr.label)}"><span style="color:${s==='help'?'#e0453a':'#2559c9'}">${x.pr.n?`Step ${x.pr.i+1}/${x.pr.n}`:esc(x.pr.label.split(':')[0])}${s==='help'?' ⚠':''}</span><span class="td-bar"><i style="width:${x.pr.pct*100}%;background:${s==='help'?'#e0453a':'#2f6fed'}"></i></span></span>`}
+function badge(st){return`<span class="td-badge ${ST[st][1]}">${ST[st][0]}</span>`}
+function bar(p,col){return`<span class="td-bar" style="width:110px;display:inline-flex;vertical-align:middle"><i style="width:${p*100}%;background:${col||'#2f6fed'}"></i></span> <b style="font-size:13px">${Math.round(p*100)}%</b>`}
+
+function vHome(R){tdHead('▦','Dashboard',`Welcome back${TNAME?', '+esc(TNAME.split(' ')[0]):''}. Here's how your students are progressing today.`);
+ if(!R.length)return emptyCard();const I=R.map(info);const fin=I.reduce((a,x)=>a+x.done,0);const stars=I.reduce((a,x)=>a+x.stars,0);
+ return kpis(R)+`<div class="td-row td-r3"><div class="td-card td-plan"><div class="crown">👑</div><b>${fin} certificate${fin===1?'':'s'} earned</b><p>${stars} challenge star${stars===1?'':'s'} ⭐ collected by your students</p><button class="td-btn pri" data-goto="students:done" style="background:var(--tor);border-color:var(--tor);margin-top:6px">See the finishers ›</button></div>
+ <div class="td-card"><h3>Weekly activity <small class="muted" style="font-weight:600">Last 7 days</small></h3>${weekChart(R)}</div>
+ <div class="td-card"><h3>Class overview</h3>${overview(R)}<div style="text-align:right;margin-top:8px"><button class="td-link" data-tv="classes">View all classes →</button></div></div></div>
+ ${suggestion(R)}
+ <div class="td-row td-r2"><div class="td-card"><h3>My classes <button class="td-link" data-tv="classes">Open a class →</button></h3>${classCards(R)}</div><div class="td-card"><h3>Recent activity <button class="td-link" data-tv="students">View all</button></h3>${recent(R)}</div></div>`}
+function vClasses(R){tdHead('👥','Classes','Click a class to see every student and the step they are on.');return R.length?`<div class="td-card">${classCards(R)}</div>`:emptyCard()}
+function vClass(R,g){const G=R.filter(r=>r.student.grade===g);const list=PROJECTS[g]||[];tdHead('👥',gradeName(g),`${G.length} student${G.length===1?'':'s'} · ${list.length} projects. Click a student to see each step.`);
+ const sorted=G.slice().sort((a,b)=>a.student.name.localeCompare(b.student.name));
+ return`<button class="td-btn td-back" data-tv="classes">← All classes</button>${kpis(G)}
+ <div class="td-card" style="margin-bottom:16px"><h3>Project progress</h3>${projRows(R,g)}</div>
+ <div class="td-card"><h3>Students</h3><div class="td-tbl"><table><thead><tr><th>Student</th><th>Overall</th><th>Status</th>${list.map(p=>`<th>${esc(p.title)}</th>`).join('')}<th>Last active</th></tr></thead><tbody>
+ ${sorted.map(r=>{const x=info(r);return`<tr class="click" data-stu="${esc(r.student.id)}" tabindex="0"><td><span class="td-name">${av(r.student.name)}<b>${esc(r.student.name)}</b></span></td><td>${bar(x.pct)}</td><td>${badge(x.status)}</td>${x.per.map(y=>`<td>${cell(y)}</td>`).join('')}<td>${ago(x.last)}</td></tr>`}).join('')||`<tr><td colspan="${list.length+4}" class="muted">No students in this class yet.</td></tr>`}</tbody></table></div></div>`}
+function vStudents(R){tdHead('🎓','Students','Every student, the project they are on and their step.');if(!R.length)return emptyCard();
+ const q=TV.q.toLowerCase(),f=TV.st;const L=R.filter(r=>(!q||r.student.name.toLowerCase().includes(q))&&(!f||info(r).status===f)).sort((a,b)=>a.student.name.localeCompare(b.student.name));const all=TEACHER==='*';
+ return`<div class="td-card"><div class="td-tools" style="margin-bottom:12px"><input id="tdQ" class="td-search" placeholder="🔍 Search a name" value="${esc(TV.q)}" aria-label="Search a name"><select id="tdSt" aria-label="Status"><option value="">All students</option>${Object.entries(ST).map(([k,v])=>`<option value="${k}" ${f===k?'selected':''}>${v[0]}</option>`).join('')}</select><small class="muted">${L.length} shown</small></div>
+ <div class="td-tbl"><table><thead><tr><th>Student</th><th>Class</th>${all?'<th>School</th>':''}<th>Now working on</th><th>Overall</th><th>Status</th><th>Stars</th><th>Last active</th></tr></thead><tbody>
+ ${L.map(r=>{const x=info(r);return`<tr class="click" data-stu="${esc(r.student.id)}" tabindex="0"><td><span class="td-name">${av(r.student.name)}<b>${esc(r.student.name)}</b></span></td><td>${gradeName(r.student.grade)}</td>${all?`<td>${esc(r.student.school)}</td>`:''}<td>${x.status==='done'?'🏆 All projects finished':x.cur?`<b>${esc(x.cur.p.title)}</b><br><small class="muted">${esc(x.cur.pr.label||'Not started')}</small>`:'–'}</td><td>${bar(x.pct)}</td><td>${badge(x.status)}</td><td>${x.stars?'⭐ '+x.stars:'–'}</td><td>${ago(x.last)}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">No students match.</td></tr>'}</tbody></table></div></div>`}
+function vStudent(R,id){const r=ROWS.find(x=>x.student.id===id);if(!r)return vStudents(R);const x=info(r);tdHead('🎓',r.student.name,`${esc(r.student.school)} · ${gradeName(r.student.grade)} · last active ${ago(x.last)}`);
+ return`<button class="td-btn td-back" data-class="${r.student.grade}">← ${gradeName(r.student.grade)}</button>
+ <div class="td-kpis">${kpi(av(r.student.name),Math.round(x.pct*100)+'%','Overall progress',badge(x.status),'#7c5cff',ring(x.pct,'#7c5cff',58))}${kpi('🏆',x.done+' / '+x.list.length,'Projects finished','certificates earned','#22a35a')}${kpi('⭐',x.stars,'Challenge stars','from the challenge steps','#f5a524')}${kpi('⏱',x.min?Math.round(x.min)+' min':'–','Time in the lab','while the lab was open','#2f6fed')}</div>
+ <div class="td-pcards">${x.per.map(y=>{const s=y.pr.state,n=y.pr.n||0;const dots=n?Array.from({length:n},(_,k)=>`${k?`<span class="ln ${k<=y.pr.i&&s!=='none'?'done':''}"></span>`:''}<span class="d ${s==='done'||k<y.pr.i?'done':k===y.pr.i&&s!=='none'&&s!=='lock'?'now':''}" title="Step ${k+1}${(y.l.names||[])[k]?': '+esc(y.l.names[k]):''}">${s==='done'||k<y.pr.i?'✓':k+1}</span>`).join(''):'';
+  const b=s==='done'?badge('done').replace('Finished all','Finished'):s==='help'?badge('help'):s==='prog'?'<span class="td-badge b-ok">In progress</span>':s==='lock'?'<span class="td-badge b-lock">🔒 Locked</span>':badge('none');
+  return`<div class="td-pcard">${IMG[y.p.id]?`<img src="${IMG[y.p.id]}" alt="">`:''}<div style="min-width:0;flex:1"><h4>${esc(y.p.title)}</h4>${b}${dots?`<div class="td-steps" aria-label="Steps">${dots}</div>`:''}<div class="td-note" style="margin:2px 0 0">${s==='done'?'All steps done 🎉':s==='lock'?'Opens after the previous project':s==='none'?'Not opened yet':esc(y.pr.label)}</div>
+  <div class="meta">${y.l.stars?`<span>⭐ ${y.l.stars}</span>`:''}${y.l.mist!=null?`<span>✖ ${y.l.mist} mistakes</span>`:''}${y.l.min?`<span>⏱ ${y.l.min} min</span>`:''}${y.l.updated?`<span>🕒 ${ago(y.l.updated)}</span>`:''}</div></div></div>`}).join('')||'<div class="td-empty">No projects for this grade yet.</div>'}</div>`}
+function vProjects(R){tdHead('🧩','Projects','How each class is doing in every project.');const gs=gradesShown();if(!R.length)return emptyCard();
+ return gs.map(g=>`<div class="td-card" style="margin-bottom:16px"><h3><span><span class="gb td-av" style="--c:${gcol(g)};display:inline-grid;border-radius:9px;margin-right:8px;width:30px;height:30px">${g}</span>${gradeName(g)}</span><button class="td-link" data-class="${g}">Open class →</button></h3>${projRows(R,g)}</div>`).join('')}
+let TNAME='';
+function renderDash(){INFO.clear();const R=rows();$('sampleTag').hidden=!TV.sample;$('navStu').textContent=R.length||'';$('navCls').textContent=gradesShown().length||'';setNav(TV.v);
+ const v=TV.v;$('tdBody').innerHTML=v==='classes'?vClasses(R):v==='class'?vClass(R,TV.grade):v==='students'?vStudents(R):v==='student'?vStudent(R,TV.sid):v==='projects'?vProjects(R):vHome(R);
+ if(TV.sample)$('tdBody').insertAdjacentHTML('afterbegin','<div class="td-alert" style="margin-bottom:16px"><div class="bang">👀</div><div><b>This is a sample class</b><p>These are made-up students so you can see how the dashboard works. Your real students appear when they use the lab.</p></div><button class="td-btn or" id="btnSampleOff">Back to my students</button></div>');
+ const q=$('tdQ');if(q){q.oninput=()=>{TV.q=q.value;const pos=q.selectionStart;renderDash();const n=$('tdQ');n.focus();n.setSelectionRange(pos,pos)}}const s=$('tdSt');if(s)s.onchange=()=>{TV.st=s.value;renderDash()}}
+function tgo(v,extra){Object.assign(TV,{v},extra||{});renderDash();$('vDash').scrollIntoView({block:'start'})}
+$('vDash').addEventListener('click',e=>{const t=e.target.closest('[data-tv],[data-class],[data-stu],[data-goto],#btnSample,#btnSampleOff');if(!t)return;
+ if(t.id==='btnSample'){TV.sample=true;ROWS=sampleRows();tgo('home');return}if(t.id==='btnSampleOff'){TV.sample=false;ROWS=REAL;tgo('home');return}
+ if(t.dataset.tv)return tgo(t.dataset.tv);if(t.dataset.class)return tgo('class',{grade:t.dataset.class});if(t.dataset.stu)return tgo('student',{sid:t.dataset.stu});
+ if(t.dataset.goto){const [v,st]=t.dataset.goto.split(':');return tgo(v,{st:st||'',q:''})}});
+$('vDash').addEventListener('keydown',e=>{if(e.key==='Enter'){const t=e.target.closest('[data-stu]');if(t)tgo('student',{sid:t.dataset.stu})}});
+$('fGrade').innerHTML='<option value="">All my classes</option>'+GRADES.map(g=>`<option value="${g}">${gradeName(g)}</option>`).join('');
+['fSchool','fGrade'].forEach(id=>$(id).addEventListener('input',()=>{const g=$('fGrade').value;if(g&&TV.v!=='student')TV.v='class',TV.grade=g;else if(!g&&TV.v==='class')TV.v='home';renderDash()}));
+async function showDash(){view('vDash');schoolFilter();try{TNAME=sessionStorage.getItem('britusTeacherName')||''}catch(_){}$('dashSchool').textContent=TEACHER==='*'?'All schools':TEACHER;$('meName').textContent=TNAME||'Teacher';$('meAv').textContent=initials(TNAME||'T');
+ const mine=r=>TEACHER==='*'||r.student.school===TEACHER;REAL=(await Data.classList()).filter(mine);ROWS=TV.sample?sampleRows():REAL;renderDash();
  $('dataNote').innerHTML=SETTINGS.apiUrl?'Showing students from the school server.':'<b>Note:</b> showing students who used the lab on <b>this device</b>. When IT connects the school server (see README), every student of your school from every device will appear here.'}
-function overall(r){const list=PROJECTS[r.student.grade]||[];const d=list.filter(p=>r.labs[p.id]&&r.labs[p.id].done).length;const any=list.some(p=>r.labs[p.id]);return{d,n:list.length,status:list.length&&d===list.length?'done':any?'prog':'none'}}
-function renderDash(){const fs=$('fSchool').value,fg=$('fGrade').value,ft=$('fStatus').value,q=$('fSearch').value.trim().toLowerCase();
- const rows=ROWS.filter(r=>(!fs||r.student.school===fs)&&(!fg||r.student.grade===fg)&&(!q||r.student.name.toLowerCase().includes(q))&&(!ft||overall(r).status===ft));
- const c={done:0,prog:0,none:0};rows.forEach(r=>c[overall(r).status]++);
- $('stats').innerHTML=`<div class="stat"><b>${rows.length}</b><span>Students</span></div><div class="stat"><b>${c.done}</b><span>Finished all projects</span></div><div class="stat"><b>${c.prog}</b><span>In progress</span></div><div class="stat"><b>${c.none}</b><span>Not started</span></div>`;
- $('tBody').innerHTML=rows.length?rows.sort((a,b)=>a.student.name.localeCompare(b.student.name)).map(r=>{const list=PROJECTS[r.student.grade]||[];
-  const chips=list.length?list.map(p=>{const st=r.labs[p.id];return st&&st.done?`<span class="chip c-done">🏆 ${esc(p.title)}: completed</span>`:st?`<span class="chip c-prog">${esc(p.title)}: ${esc(st.step)}</span>`:`<span class="chip c-none">${esc(p.title)}</span>`}).join(''):'<span class="chip c-none">No projects yet</span>';
-  const times=Object.values(r.labs).map(x=>x.updated).filter(Boolean).sort();const last=times.length?new Date(times[times.length-1]).toLocaleString():'–';
-  return`<tr><td><b>${esc(r.student.name)}</b></td><td>${esc(r.student.school)}</td><td>${gradeName(r.student.grade)}</td><td>${chips}</td><td>${esc(last)}</td></tr>`}).join(''):'<tr><td colspan="5" class="muted">No students match these filters yet.</td></tr>'}
-$('btnCsv').onclick=()=>{const head=['Student','School','Grade','Project','Status','Step','Last update'];const lines=[head];
- ROWS.forEach(r=>{const list=PROJECTS[r.student.grade]||[];(list.length?list:[{id:'',title:''}]).forEach(p=>{const st=r.labs[p.id]||{};lines.push([r.student.name,r.student.school,gradeName(r.student.grade),p.title,st.done?'Finished':st.step?'In progress':'Not started',st.step||'',st.updated||''])})});
+$('btnCsv').onclick=()=>{const head=['Student','School','Grade','Project','Status','Step','Step number','Steps in project','Stars','Mistakes','Minutes','Last update'];const lines=[head];
+ ROWS.forEach(r=>{const list=PROJECTS[r.student.grade]||[];(list.length?list:[{id:'',title:''}]).forEach(p=>{const st=r.labs[p.id]||{};const pr=labProg(r.labs[p.id]);lines.push([r.student.name,r.student.school,gradeName(r.student.grade),p.title,st.done?'Finished':st.step?(pr.state==='help'?'Needs help':'In progress'):'Not started',st.step||'',st.step&&!st.done?pr.i+1:st.done?pr.n:'',pr.n||'',st.stars||'',st.mist!=null?st.mist:'',st.min||'',st.updated||''])})});
  const csv=lines.map(l=>l.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));a.download='britus-stem-lab-progress.csv';document.body.appendChild(a);a.click();a.remove()};
 
 

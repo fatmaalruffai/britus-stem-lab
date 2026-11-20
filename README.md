@@ -53,7 +53,13 @@ Other grades show "Coming soon". Projects and their order are set in the `PROJEC
   - `britusStudents`: every student who signed in on this device, by id
   - `britusLab:v1`: progress `{ studentId: { labs: { labId: { step, done, updated } } } }`
 - **Each lab** has a short script at the end of the file (marked "Britus Virtual STEM Lab") that records the student's current step and when the project is finished, and adds a "← My projects" button.
-- **Teacher dashboard:** filters by school, grade, status and name, with an Excel (CSV) download. Each school has its own password and sees only its own students; an admin password sees all schools. Passwords are set in `SETTINGS.schools` and `SETTINGS.adminPassword`. This is a front-end check only (anyone can read the page source) and must be replaced by a real login.
+- **Teacher dashboard:** a sidebar with Dashboard, Classes, Students and Projects.
+  - *Dashboard:* students, projects finished, average progress and students who need help; weekly activity chart; class overview (finished all, on track, needs help, not started); a suggested next step; class cards and recent activity.
+  - *Classes:* click a grade to see every student with the step they are on in each project (for example *Step 3 of 6*), plus a progress bar for each project.
+  - *Student page:* each project with a step tracker, stars, mistakes and time in the lab.
+  - A student **needs help** when an unfinished project has not moved for 3 days or has 8 or more mistakes. *Preview with a sample class* shows made-up students (never saved). Excel (CSV) download includes step number, stars, mistakes and minutes.
+  - Each school has its own password and sees only its own students; an admin password sees all schools. Passwords are set in `SETTINGS.schools` and `SETTINGS.adminPassword`. This is a front-end check only (anyone can read the page source) and must be replaced by a real login.
+- **Progress tracking in labs:** each lab saves `step`, step number `i`, number of steps `n`, step names, `stars`, `mist` (mistakes), `min` (minutes) and steps per day under `britusLab:v1`.
 - **Analytics:** anonymous page and step counts with GoatCounter (no cookies, no personal data).
 
 ## For IT: connecting a server and school login
