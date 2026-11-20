@@ -617,10 +617,10 @@ function showCert(id){const s=Data.current();if(!s){view('vSignin');return}
  view('vCert')}
 $('btnPrint').onclick=()=>window.print();
 $('btnCertBack').onclick=()=>{location.hash='';showProjects()};
-window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#cert\/(.+)$/);if(m)showCert(decodeURIComponent(m[1]));else if(!$('vCert').hidden)showProjects()});
+window.addEventListener('hashchange',()=>{if(location.hash==='#teacher'){$('btnTeacher').click();return}const m=location.hash.match(/^#cert\/(.+)$/);if(m)showCert(decodeURIComponent(m[1]));else if(!$('vCert').hidden)showProjects()});
 
 function nextLab(){/* came from a lab link: go back to it after signing in */try{const n=new URLSearchParams(location.search).get('next');if(!n)return '';const u=new URL(n,location.href);if(u.origin===location.origin&&/\/labs\//.test(u.pathname))return u.href}catch(_){}return ''}
-function home(){try{const t=sessionStorage.getItem('britusTeacher');if(t&&t!=='1')TEACHER=t}catch(_){}const m=location.hash.match(/^#cert\/(.+)$/);const nx=nextLab();if(nx&&(Data.current()||TEACHER)){location.replace(nx);return}Data.current()?(m?showCert(decodeURIComponent(m[1])):showProjects()):view('vSignin');if(nx&&!Data.current())$('signErr').textContent='Please sign in first to open this project.'}
+function home(){try{const t=sessionStorage.getItem('britusTeacher');if(t&&t!=='1')TEACHER=t}catch(_){}if(location.hash==='#teacher'){$('btnTeacher').click();return}const m=location.hash.match(/^#cert\/(.+)$/);const nx=nextLab();if(nx&&(Data.current()||TEACHER)){location.replace(nx);return}Data.current()?(m?showCert(decodeURIComponent(m[1])):showProjects()):view('vSignin');if(nx&&!Data.current())$('signErr').textContent='Please sign in first to open this project.'}
 window.addEventListener('pageshow',()=>{if(!$('vProjects').hidden)showProjects()});
 home();
 </script>
