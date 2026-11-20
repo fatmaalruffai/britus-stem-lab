@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>/* Britus sign-in gate: a lab opens only after signing in on the main page */(function(){try{if(localStorage.getItem("britusStudent")||sessionStorage.getItem("britusTeacher"))return}catch(e){}location.replace("../../index.html?next="+encodeURIComponent(location.href))})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Safety First</title>
+<style>
+/* Grade 4 · Project 6 · Wet Diaper Alarm. Early Electronics snap kit; warm orange accent */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#c62828;--acc-d:#a63a00;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #ff8a3d}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#29b6f6,#e65100);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+table.dt{width:100%;border-collapse:collapse;margin:8px 0}.dt th{background:#16233f;color:#fff;padding:7px;font-size:14px}.dt td{border:1px solid var(--line);height:34px;padding:5px 8px;font-weight:600;font-size:14px}
+.gsvg{width:100%;height:auto;display:block;background:var(--tray);border-radius:10px;margin:6px 0}
+.oled{background:#05070a;color:#e8f4ff;border-radius:8px;padding:8px 10px;font:600 13px Consolas,monospace;display:inline-block}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:15px}.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok)}
+.sl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.sl output{font:800 20px Consolas,monospace;min-width:64px;text-align:right}
+.gauge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.gauge div{background:var(--tray);border-radius:9px;padding:8px;text-align:center}.gauge b{display:block;font-size:24px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--surf)}
+.ex .tag{display:inline-block;background:var(--acc);color:var(--onacc);font:800 11.5px "Segoe UI",system-ui,sans-serif;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;margin-bottom:4px}
+.ex h3{margin-top:4px}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.pc div{background:var(--tray);border-radius:9px;padding:8px;font-size:14px}.pc b{display:block}
+@media(max-width:560px){.pc{grid-template-columns:1fr}}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}.cmp th,.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:left}.cmp th{background:var(--navy);color:#fff}
+.opt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.opt label{display:grid;gap:3px;font-weight:700;font-size:14px}
+.opt select,textarea{font:inherit;padding:7px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+textarea{width:100%;min-height:90px}
+@media(max-width:560px){.opt{grid-template-columns:1fr}}
+.tips{margin:6px 0;padding-left:22px}.tips li{margin:4px 0}
+.foil{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:360px;margin:8px auto;background:#b3261e;padding:10px;border-radius:10px}
+.foil button{aspect-ratio:1;border-radius:50%;border:3px solid #7a1712;cursor:pointer;font:700 12px inherit;color:#fff}
+.foil button.solid{border-radius:8px;background:#b3261e;border-color:#e57373}.foil button.hole{background:#fdf6e3;color:#7a1712}
+.heat{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:360px;margin:8px auto}.heat div{border-radius:6px;padding:6px 2px;text-align:center;font:700 12px/1.3 inherit;background:var(--tray)}
+svg.sim{width:100%;height:auto;display:block;background:#0f1626;border-radius:10px;margin:6px 0}
+.oledbox{background:#05070a;border-radius:10px;padding:10px;display:flex;justify-content:center;margin:8px 0}.oledbox canvas{image-rendering:pixelated;width:100%;max-width:512px;border:2px solid #f2c230;border-radius:4px}
+.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}.nums label{display:grid;gap:3px;font-weight:700;font-size:14px}.nums input,.mtab input{font:inherit;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink);width:100%}
+.mtab{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}.mtab th,.mtab td{border:1px solid var(--line);padding:6px;text-align:left}.mtab th{background:var(--navy);color:#fff}.mtab td.ok{background:rgba(46,125,50,.15)}.mtab td.no{background:rgba(198,40,40,.12)}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-right:4px;border:1px solid rgba(0,0,0,.25)}
+.ser{background:#0b0f18;color:#9ef0a8;border-radius:10px;padding:8px 10px;font:13px/1.5 Consolas,monospace;height:150px;overflow-y:auto;margin:8px 0;white-space:pre-wrap}
+.ser .t{color:#7f8ca6}.ser .hit{color:#ffd27a}
+.rem{display:grid;grid-template-columns:repeat(3,56px);gap:6px;justify-content:center;background:#1b1b1b;padding:12px;border-radius:18px;width:max-content;margin:8px auto}
+.rem button{height:48px;border-radius:50%;border:0;background:#1e40af;color:#ffeb3b;font:800 18px inherit;cursor:pointer;box-shadow:0 3px 0 #0b1a4a}.rem button.ok{background:#f2c230;color:#1b1b1b;box-shadow:0 3px 0 #8a6a00}.rem span{display:block}
+.rem button:active{transform:translateY(2px);box-shadow:none}
+.hex input{font:600 14px Consolas,monospace;text-transform:uppercase;width:100%;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+.hex td.ok input{border-color:var(--ok)}.hex td.no input{border-color:var(--warn)}
+.led{display:inline-block;width:14px;height:14px;border-radius:50%;background:#3a1010;vertical-align:middle;margin-right:6px;border:1px solid #000}.led.on{background:#ff3b30;box-shadow:0 0 10px #ff3b30}
+.wstrip{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;min-height:64px;padding:8px;border:2px dashed var(--line);border-radius:12px;background:var(--surf);margin:8px 0}
+.wb{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;height:54px;border-radius:9px;color:#fff;font:700 12px/1.1 inherit;padding:3px 6px;border:0;cursor:pointer;text-align:center}
+.wb .i{font-size:20px;line-height:1}.wb input{width:38px;margin-top:2px;font:700 12px inherit;text-align:center;border:0;border-radius:4px;padding:1px}
+.wb.st{background:#f2c230;color:#1b1b1b}.wb.mo{background:#1f8a3b}.wb.lp{background:#f2c230;color:#1b1b1b;outline:3px solid #f2c230;outline-offset:-1px}.wb.sn{background:#d8322f}.wb.wt{background:#e86f1c}
+.pal{display:flex;flex-wrap:wrap;gap:4px}.pal .wb{min-width:64px}
+.mtab td.ok{background:rgba(46,160,67,.15)}.mtab td.no{background:rgba(216,50,47,.12)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin:6px 0}.mgrid figure{margin:0}.mgrid img{width:100%;background:#fff;border:1px solid var(--line);border-radius:8px}.mgrid figcaption{font-size:11px;text-align:center;color:var(--mute)}
+.mdl{display:flex;gap:6px;flex-wrap:wrap}.mdl .btn.on{background:var(--acc);color:#fff}
+.bat{height:14px;border-radius:7px;background:var(--line);overflow:hidden}.bat i{display:block;height:100%;background:linear-gradient(90deg,#2ea043,#f2c230,#d8322f)}
+.vol{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin:6px 0}.vol figure{margin:0;text-align:center;font-weight:800}.vol svg{width:150px;height:auto;background:var(--tray);border-radius:10px}
+#board{width:100%;max-width:420px;display:block;margin:6px auto;background:#eef0f4;border-radius:12px;touch-action:manipulation}
+#board .dot{cursor:pointer}#board .dot:hover circle.r{stroke:var(--acc);stroke-width:3}
+.bookimg{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}.bookimg img{max-width:100%;border-radius:8px;border:1px solid var(--line)}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}.big{font-size:1.15rem;padding:12px 18px}
+.sw{font-weight:800}.timer{font:800 2rem/1 ui-monospace,Menlo,monospace;background:#1f2433;color:#7fffb0;padding:8px 14px;border-radius:10px;min-width:120px;text-align:center}
+.guide{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}.guide figure{margin:0;background:var(--tray,#f6f3ec);border-radius:10px;padding:6px}.guide figcaption{font-size:.9rem;margin-bottom:4px}.guide img,.guide svg{width:100%;display:block;border-radius:8px;background:#fff}
+@media(max-width:560px){.guide{grid-template-columns:1fr}}
+#nowPart{display:flex;align-items:center;gap:10px;background:#efe9fb;border:2px solid var(--acc);border-radius:10px;padding:8px 10px;margin:6px 0;font-weight:700}#nowPart img{height:56px}
+.tray .btn img{height:34px;display:block;margin:0 auto 3px}
+.split3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}.split3 label{display:flex;flex-direction:column;gap:3px}.split3 textarea,.split3 select{font:inherit;border:2px solid var(--line);border-radius:8px;padding:6px;background:var(--surf);color:var(--ink)}
+@media (max-width:700px){.split3{grid-template-columns:1fr}}
+.hunt{display:flex;gap:6px;flex-wrap:wrap}.hunt span{background:var(--surf);border:2px solid var(--line);border-radius:999px;padding:6px 10px;font-weight:700;cursor:pointer}.hunt span.got{background:#c8f7d0;border-color:#2e7d32;color:#123}
+#dPlan{font:inherit;border:2px solid var(--line);border-radius:8px;padding:8px;background:var(--surf);color:var(--ink)}
+.pill{display:inline-block;border-radius:999px;padding:3px 10px;font-weight:800;font-size:13px}
+.meterbig{font:800 22px Consolas,monospace}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">🦺</div><div><h1>Safety First</h1><p>Grade 4 · Project 7 · Build a circuit that measures the current (The Role of the Ammeter)</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Project steps"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D model of the electronics kit circuit with a galvanometer on its mounting plate, in a factory safety office. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="board">Circuit</button><button class="btn" data-v="top">From above</button><button class="btn" data-v="meter">Meter</button><button class="btn" data-v="factory">Factory</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+ <div class="ctl" id="liveCtl" hidden><button class="btn big sw" id="swBtn">Switch 15: OFF</button><span class="meterbig" id="mRead">0 µA</span></div>
+</div>
+<div>
+<!-- 1 Plan -->
+<section class="card panel" id="p0">
+ <div class="k">Step 1 · Problem and plan</div>
+ <h2>The safety expert's tool</h2>
+ <div class="ex" style="margin-top:0"><b>The problem (book)</b><p style="margin:4px 0 0">An <b>occupational health and safety expert</b> in a factory makes routine checks to avoid accidents and injuries. He or she <b>measures the current</b> of some electric systems to make sure they are safe.</p></div>
+ <div class="ex"><b>Challenge (book):</b> Act as an electric engineer. Design a circuit that <b>measures the current</b>, put it inside a tool, and show how it measures the electric flow.</div>
+ <h3>Vocabulary (book)</h3>
+ <div id="voc"></div>
+ <div class="q">Brainstorm (book): which part of the kit can measure the current?</div>
+ <div class="choices"><button class="btn" data-bs="g">55 Galvanometer (a microammeter): its needle moves when current flows</button><button class="btn" data-bs="b">19 Battery compartment</button><button class="btn" data-bs="s">15 Switch</button></div><div class="fb" id="bsm"></div>
+ <div class="msg" id="m0"></div>
+ <div class="next"><button class="btn pri" data-go="1" id="n0" disabled>Next: build ▶</button></div>
+</section>
+<!-- 2 Build -->
+<section class="card panel" id="p1">
+ <div class="k">Step 2 · Build the circuit (book)</div>
+ <h2>Snap the parts together</h2>
+ <p style="margin-top:0">Book parts: 2 wire with 2 contacts (×4) · 15 switch · 19 battery compartment · 33 resistor 10 K · 55 galvanometer. Find each part in the box (some are traps!), answer the question, and it snaps onto the board. Mistakes are counted.</p>
+ <div class="guide"><figure><figcaption><b>Book circuit</b> (finished)</figcaption><img id="bkCirc" alt="Book picture: the finished circuit with the galvanometer at the top, the 10K resistor on the left, the battery on the right and the switch at the bottom"></figure>
+ <figure><figcaption><b>Your board</b> · the flashing part goes next</figcaption><svg id="target" class="gsvg" viewBox="0 0 330 200" role="img" aria-label="Board with the parts placed so far"></svg></figure></div>
+ <div class="pc" id="nowPart"></div>
+ <ol class="steps" id="bSteps"></ol>
+ <div class="tray" id="tray"></div>
+ <svg id="board" viewBox="0 0 330 200" role="application" aria-label="Mounting plate: tap the dots where the part snaps on"></svg>
+ <div class="msg" id="mB"></div>
+ <div class="next"><button class="btn pri" data-go="2" id="nB" disabled>Next: test it ▶</button></div>
+</section>
+<!-- 3 Test -->
+<section class="card panel" id="p2">
+ <div class="k">Step 3 · Test it (book)</div>
+ <h2>Turn it on and read the meter</h2>
+ <p style="margin-top:0">Book: <i>1) Turn on the switch 15. 2) The arrow of the microammeter will be deflected and start moving, indicating the value of the current. A current is measured in Amperes (A).</i></p>
+ <div class="ex"><b>How to read the galvanometer</b><p style="margin:4px 0 0">The scale goes from 0 to 10. On this meter, <b>each number = 50 µA</b> (microamperes). So the full scale (10) is 500 µA. 1 mA = 1000 µA.</p></div>
+ <div class="q">1. Turn on the switch (button under the 3D model). Where does the needle stop?</div>
+ <div class="row"><input id="tNum" type="number" step="0.5" style="max-width:100px;font:inherit;padding:8px;border-radius:8px;border:2px solid var(--line)" aria-label="needle number"><button class="btn" id="tNumB">Check</button></div><div class="fb" id="tNumM"></div>
+ <div class="q">2. So the current is how many µA? (number × 50)</div>
+ <div class="row"><input id="tUa" type="number" style="max-width:120px;font:inherit;padding:8px;border-radius:8px;border:2px solid var(--line)" aria-label="microamperes"> µA <button class="btn" id="tUaB">Check</button></div><div class="fb" id="tUaM"></div>
+ <div class="q">3. Turn the switch OFF. What happens to the needle, and why?</div>
+ <div class="choices"><button class="btn" data-tq="0">It goes back to 0: the loop is broken, so no current flows</button><button class="btn" data-tq="1">It stays at 6</button><button class="btn" data-tq="2">It goes to 10</button></div><div class="fb" id="tQm"></div>
+ <div class="msg" id="mT"></div>
+ <div class="next"><button class="btn pri" data-go="3" id="nT" disabled>Next: record sheet ▶</button></div>
+</section>
+<!-- 4 Record -->
+<section class="card panel" id="p3">
+ <div class="k">Step 4 · Student's record sheet (book)</div>
+ <h2>Evaluation</h2>
+ <div class="q">1. Did you build your own circuit or follow the instructions?</div><div class="choices"><button class="btn" data-r1="own">I designed my own</button><button class="btn" data-r1="ins">I followed the instructions</button></div>
+ <div class="q">2. Does your circuit work?</div><div class="choices"><button class="btn" data-r2="yes">Yes ✔</button><button class="btn" data-r2="no">No ✖</button></div>
+ <div class="q">3. Record the current.</div><div class="row"><input id="rCur" type="number" style="max-width:120px;font:inherit;padding:8px;border-radius:8px;border:2px solid var(--line)" aria-label="current"> µA = <input id="rCurMa" type="number" step="0.01" style="max-width:100px;font:inherit;padding:8px;border-radius:8px;border:2px solid var(--line)" aria-label="milliamperes"> mA <button class="btn" id="rCurB">Check</button></div><div class="fb" id="rCurM"></div>
+ <div class="q">4. How does your circuit measure the flow of electricity?</div>
+ <div class="choices"><button class="btn" data-r4="coil">The current flows through a coil in the meter. The coil becomes a magnet and turns the needle: more current, bigger turn</button><button class="btn" data-r4="heat">The meter gets hot and the heat pushes the needle</button><button class="btn" data-r4="light">The meter counts the light from the battery</button></div><div class="fb" id="r4m"></div>
+ <div class="q">5. Suggest other purposes in real life that the ammeter can be used for. Choose three.</div><div class="hunt" id="rIdeas"></div>
+ <div class="msg" id="mR"></div>
+ <div class="next"><button class="btn pri" data-go="4" id="nR" disabled>Next: math ▶</button></div>
+</section>
+<!-- 5 Math -->
+<section class="card panel" id="p4">
+ <div class="k">Step 5 · Math (book: 4.MD.A.2 measurement and conversion)</div>
+ <h2>Safety maths</h2>
+ <div id="quiz"></div>
+ <div class="msg" id="mM"></div>
+ <div class="next"><button class="btn pri" data-go="5" id="nM" disabled>Next: reflect ▶</button></div>
+</section>
+<!-- 6 Reflect -->
+<section class="card panel" id="p5">
+ <div class="k">Step 6 · Improve, reflect and assess (book)</div>
+ <h2>Make it better</h2>
+ <div class="q">Improve (book): what change would make your current tester safer and better?</div><div class="choices"><button class="btn" data-im="case">Put it in a strong case with a window for the meter and long probes</button><button class="btn" data-im="nores">Take out the resistor so the needle moves more</button><button class="btn" data-im="water">Test it in water</button></div><div class="fb" id="imm"></div>
+ <div class="q">Reflection (SDG 9 · Industry, innovation and infrastructure): how can you help work toward this goal with what you learned?</div><div class="choices"><button class="btn" data-sc="safe">Check that machines and wiring are safe, so factories and buildings work well and nobody gets hurt</button><button class="btn" data-sc="ignore">Ignore old wires</button><button class="btn" data-sc="none">It is not my job</button></div><div class="fb" id="scm"></div>
+ <div class="small"><b>Communication (book):</b> write the feedback from your class.</div>
+ <div class="split3"><label class="small">Positive feedback<textarea id="fb1" rows="2"></textarea></label><label class="small">Negative feedback<textarea id="fb2" rows="2"></textarea></label><label class="small">Suggested solutions<textarea id="fb3" rows="2"></textarea></label></div>
+ <h3>Assessment rubric (book)</h3>
+ <div class="lvh" aria-hidden="true"><span>Beginner</span><span>Emerging</span><span>Accomplished</span><span>Expanding</span></div>
+ <div class="rub" id="rub"></div>
+ <div class="msg" id="mA"></div>
+ <div class="next"><button class="btn pri" id="finish" disabled>Finish my project 🎉</button></div>
+ <div id="fin" hidden><h3>🎉 Project complete: Safety First</h3><p style="margin:0">Your circuit measures the current with the galvanometer: 3 V through 10 kΩ gives 300 µA. A safety expert uses the same idea to check machines.</p><img id="finImg" alt="Your finished current measuring circuit in 3D"><div class="row"><button class="btn pri" data-go="6">Try the challenges 🏆</button></div></div>
+</section>
+<!-- 7 Challenges -->
+<section class="card panel" id="p6">
+ <div class="k">Step 7 · Challenges</div>
+ <h2>Be a safety engineer</h2>
+ <p style="margin-top:0">Earn a star for each challenge: <b id="stars">0</b> / 4 ⭐</p>
+ <div class="ch"><div class="chh"><span class="star" data-st="c0">☆</span><h3 style="margin:0">📖 Book challenge: put it inside a tool</h3></div>
+  <p>Book design rules: the circuit must be <b>inside a tool</b>, and the tool must <b>show how it measures</b> the electric flow. Choose the best part for each job.</p><div id="c0q"></div><div class="row"><button class="btn pri" id="c0run">🧰 Build my tool</button></div><div class="msg" id="c0msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c1">☆</span><h3 style="margin:0">⚠️ Protect the meter</h3></div>
+  <p>Ali wants a bigger reading, so he swaps the 10 K resistor for a smaller one. Find the <b>smallest</b> resistor that still keeps the needle <b>on the scale</b> (not past 10). Test them!</p>
+  <div class="row"><span class="seg" id="c1seg"><button data-c1="1000">1 K</button><button data-c1="5100">5.1 K</button><button data-c1="6800">6.8 K</button><button data-c1="10000">10 K</button></span><button class="btn pri" id="c1run">▶ Test</button></div><div class="msg" id="c1msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c2">☆</span><h3 style="margin:0">🔗 Two resistors in a row</h3></div>
+  <p>Add a second 10 K resistor in series (in the same loop). Predict the new reading, then test.</p>
+  <div class="row"><label class="small">My prediction <input id="c2p" type="number" style="width:80px"> µA</label><button class="btn pri" id="c2run">▶ Test</button></div><div class="msg" id="c2msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c3">☆</span><h3 style="margin:0">🔋 Fresh or tired battery?</h3></div>
+  <p>The safety expert checks two batteries with your circuit. Fresh batteries give 3 V. Which battery is tired?</p>
+  <div class="row"><button class="btn" id="c3a">Test battery A</button><button class="btn" id="c3b">Test battery B</button><span class="small" id="c3r"></span></div>
+  <div class="choices" id="c3q" hidden><button class="btn" data-c3="A">Battery A is tired</button><button class="btn" data-c3="B">Battery B is tired</button></div><div class="msg" id="c3msg"></div></div>
+</section>
+<!-- 8 Other designs -->
+<section class="card panel" id="p7">
+ <div class="k">Step 8 · Other designs</div>
+ <h2>Where else do we measure current?</h2>
+ <p style="margin-top:0">The same circuit idea, inside different tools. Press <b>Show me</b> to test each one.</p>
+ <div id="dList"></div>
+ <h3>✏️ Design your own</h3>
+ <div class="split3"><label class="small">What will it check?<select id="dWhat"><option value="toy">My toy's batteries</option><option value="solar">A small solar panel</option><option value="fruit">A lemon battery</option><option value="lamp">A desk lamp circuit</option></select></label>
+  <label class="small">Resistor<select id="dRes"><option value="10000">10 K (safe for the meter)</option><option value="100">100 Ω</option><option value="0">No resistor</option></select></label>
+  <label class="small">Tool shape<select id="dShape"><option value="hand">Handheld tester with probes</option><option value="box">Box on the wall</option><option value="pen">Pen tester</option></select></label></div>
+ <div class="small"><b>Tips:</b> always keep a resistor in the loop so the meter is safe · read the needle straight from the front · switch off between tests · never test mains (wall) electricity: only small batteries.</div>
+ <div class="row"><button class="btn pri" id="dTry">Check my design</button></div>
+ <div class="msg" id="dChk"></div>
+ <label class="small" for="dPlan">My plan</label><textarea id="dPlan" rows="3" style="width:100%" placeholder="What will your tool check? How will people read it?"></textarea>
+ <div class="row"><button class="btn" id="dSave">💾 Save my plan</button><span class="small" id="dSaved"></span></div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+const BOOKIMG={"p2": "data:image/webp;base64,UklGRqYBAABXRUJQVlA4IJoBAADQCACdASo0ABgAPl0mjkUjoiEb+qwAOAXEoAnTMf8s2o3tnP/l4p/AuDnSVN5utcObetZ5jPMAWk0D1/meBpQyOVKIlcH6ylWlaPA7EWwAAP79C6A3hvHt/4L64PnRt6Mk8JdZqHu3OKVxLg49IWwrMrZdTNwvvOlzp+chpVwHOmKj5eNSYRmsYXLnvm41xNH1jeUvf7XuP7We0I/hdBa6EWKBj1ilThz+ncJ488Qw7MV+7GHxzVkG5Cpd6dioIGvOVS+GQq0j8++ecmbN3IywuvUefpK9dIKIqK2tYy0FhDVrLQ5c9gxFkN9vZN+qXQnzkKnU+fOhDHMjRlkf+stVvIfhls2hs+vLtLYxAL7xEr12ypoPOain4O3Cruc2tnUz/OGu1Dz9EEaSapfKgOuJO6T0bbG8Jbp69fYl6zOrUa6uFQgLr5AasmmUiWZ35W/JXjaTXpol6vOmQOuSAFkAnATa5CWkmTJFUWpjy11J8e07CebIbe+d5dMMPAxgmG8pxdcdazOVROPd4+Hl4EomBRip6/ErLEnAAA==", "p15": "data:image/webp;base64,UklGRqgFAABXRUJQVlA4IJwFAACwFwCdASpuACwAPmEoj0UkIqEWHP7EQAYEtgBhtASpadRyLHQz+/9w/x3si8RvpW+YDza9NI59D2hp93zO/AJXVxHwW9eP7937yuTlH9O4ktLRoAeLNo7epB9f/pbEfy0c1aXHyqh5jbNwefWjeOozlrNR90QMdFagE33jM/aSVyinOXmZFbM1DbGg3hO+NqQFQuk5eZwZ4RKKIcO1byOKDn6AWzIQgfl2x6KL17uuEP0yQrbP9ymjSPU0ckDu6G4aBPOq+QAA/v3aZRqtbQ/vOM5Ic9Pxnf9SHDZ6uUN2d7x8U46heIo5PAfoDkpCs5Y3rCg7S5QwVAcf3mP1ghiLLnhfH3b5rfvbZZXVTvPqdhFQ9BgRSiQ1SOXJAyHA/zXu09pcyUW+y5B2livvaX1p4uBRaykAB1CNb0LVX2Y6W0mhIsBs8S+N8IrtxJAG1mVTVcDOvBLfzlOM4X3O4TI5kxnc9O4PBguPFGtb0cr/FZSdWDmYo8JRvpj8MAaWbEUS46bv13MIxH58P6Ezp9kP/uU9zI56pvb4wxAxwL3l4daTs3lLL5dLHhXOKLFgDPjEbetpurKwDrc6H7daoEF+SEVKXVyQBOIdQQwzfhXeSdEWD28R6J3UQwv/jkn/5Ymy6nr2BKj4jUr8FCpgeUZpwi9MK72aQmqiG+yxNIO2buJRJFFvLrf0Bm8evrSL4dwkl5mv2J9J8SBuSglNYuUwutdSBFVaexkBu5Le5mHrcTzWbAomn6n4pzg/9DeSScb7sV13/YoFva3/wzib6UjLdKjY8u3aKfI3Ljs1JddA+UBL9LNJ1f1xdt94nt6/TTe/TGXioTCG7rG7APl58TMZC5l+5q5oVilhCk1aZPIMZrqSzWvk3/0r9O5pGISeKpOhST/dJvYjln76G198dP/tZPrIQCi9/XcOiBHg5fCqQMxDTBhY2XCLBpQmDsik1l1D5MblgW/zlff4PFu5aOHlE+9neUt83ubsidwHfMexQRWhyKksGspfNTweuXd9+PCnjGdhyKwNGEzOHJPdhprsI8QumifEaq8xhNZqByTPMbwO9+pR9Kp2sHzecK38Sg2edjW8vt+4x8jn0jZLZjuwpyACm6zrgX/JfiBMC/B6qUj5mbuzSF65AplYP8wlb7UcXOq0UbmesREWsdPbPGPWmcDVReC9gqRqDUU/A/tFlD28i7Ev61IxW0v5IcNbiAmDLDF2XG/ONbbDbTfesD9c4hvXPcrZ0wLjI0rmC7J9JIPyp4s+DoAj4QdaAwVu4Jtdhk5+sD7/pbVBkrydeLxeQYarusSxAGixw5J8rQGSXx/mbbeuZ4hx1u/O0cru1+qcR3HwuCTAnZUqT82OWL6e9eBfxUk0XhQj03RG32TgdFWqQK9G9XeoArEEBo+DQQJQoc7ZeeX52K00F66dP89uKsXTtRvGl9giFuxYCol0mHGrzdet8vetgRsNLysk5/F8NjUO8sGGry/m7viDUpY73SQGxTD7Rzwcx8YdWgcv1JRqoAqaa1tX5k9VgenDChGyJyz4D0Da44/0E58MxhjpcRzzsrVM/tsWQtafKl0toBiFzRBOFL3zb5LCadiSf2ru8FEbTWfd1Z0oSKbKHKGSyAlSYrBJqg/w0aLwCFfuvxayJSAL5+V/K9tSpLhYRd9na8fvuv+UdRLIW2xAMnCiNBEea9Suymm62pa0G8d9cBKhK4giR/qMrLWUGhQceGqJqvqERb3jcAY9i8kWZvdNpSOsihU0zGdlj5KvNUJoHblD7YMK0EBSShm25U+fij4nXink4igLnFnxjln+0MdF9KhiwuevVWNcz6FK09Arid5ykeehFpgD6bmvlNS2PnGAZH5RNHuei15nvmv35IbhA8c4Gf+AEzL2UnY6AMqib5KO+pnA/ds5pXJAAA==", "p19": "data:image/webp;base64,UklGRoQIAABXRUJQVlA4IHgIAAAwIwCdASpiAFQAPmEskUakIqGhp7M8AIAMCWwXkkNA/Odpw7f9R+Svs0W5/Xfh3iru38dHm7/gesX/Mes3zBeez5l/2w/bH3gOkA/o3+w62P0Semf/aP9tPaIrHfRn8YlRHF/XxPH/O9/cw3hvx3+IKZ40rfun+0Dkt7OhnumnJx7JMJJgbYQN2WNrNPNL/HmXb/6vomXtPOwhtQIa0PVtFYeCgwCUYQB2lQgi7tWcS0yiG7DXBoyDJjg8k8tcIi0MsW27y9qrHJLMql9ryCyEux3fojZXejP63vAfRPowcBGWz6jJy2nVwu7CwNWsE3sQa6qub5/YK133Qn/jIcn0xpf9aSSUm5V7G4nYQYihbsRKDa/pJwyUlDWM7ZCM/zAAAAD+/hyMCtbwOtOD/UcdU70BdY2LiW1TrDh8oxM2rnNO+N/XHVrHqLp15P+8RkJ58oo9igzpL6PiOwy1Zier/XJ/7HThI/duwhntywjvYvw8f39JxSk70/ZcS/MemBCVxrdbZS1OG3x8YAeLCcst+fJ64lCrvqlM+nj2hNLx9+p+GbnKlQ9Yx5EJEJrBuQdPU2m/jD5tJUmE2X9NhD+BHnoGuiRy1nrjzMq5/2dX9EK6ZMBLL27OYYUobgg0k02BYQZQAIajcQsTyKpb1VoZizqZhod/+rYy/tvdFLLUGuYBJA1AXqxMZCxti/gD642C4op+M1adKMQmpzNv2gDATtxohjmBgVGddz+YB8wRcI+MJ88I0f80dy5y6SOUgJF9GG/iLfGmd5GcrnuTNMLhFBN8iZM0vZfEmBvF+kTNOG9LZJZSlGdWy9nwt0eHzv3JCr1gFXIG3GXz/wgup18Dt2/+rXP316X+cyH/9tr65yfb4jKqgeK7Cj+juKdT1IG5Av+IjkudQmu3RYiN/ZDu1vzgwwYCSpqHP8leRoeDu6Ky6RQTMUiJhsSPOMPRlPGoQk35JV23UslHcGjd4uqCF0kyV4aHTLAa2WbTngDmdEu9H3rHkfjVKl4w3krGjESQmMvXTHMX5u8t82w8meMVv5DaAK5B4P0XTYpivwKypeEb/Lh2XHtld8WJcD028OqwJDAd8rt87Cu8XaSDHpTWDwPFxEoUUEDh1O1lWYQ5jb698716l73If2hKO/v/QmpZ802mLY4cpJ8CHF9a2/NDlEwF9rbWvBvmcg9KDhVzmPg/SefimomYYPgFTwyZctVfCCQYwyiBjQzkW+9TL+LTgGKd8AvYr0lOghn+z2V4QMmujmkdE8ncN4bpFfd8ZnoJP/GIFP8Lx2qWdtUIGXBHAmsBzH7cEJ995ECSTwJ0C6LENqonB9cizmbDI7bA32QJ/J9lIPrrr+MHjHVv7ZtbcCpeHQaZzuy/VkaD4X7WiTjYPqW9bldPauT7rQvGoBWYTzW1hYPxGSK5sSkbTUS0CVtaE7H/0eMtvZ9vMqLuRkIkqNhSe3Z2/XLoDWvHC5c1CofXmuJ2XzojMY3MP2/znf5ahc6QyTJZ2eBf6OiES+dsrbGctIdh6Cf9ddGHl7g4BkBT0ZnmAUxR40UKHbmMAjcEPMcrrj60u2m+qR7Nac3h3ySjLZo7xcb0/iRx/uagvTvlGs+7g6ubwhdheCPWqK7miCxs1cYAffO/sBMVPTxDAlsO2AsriwU7dZxakAGSKrxGEgj16Tt4rlmlDeUiF8HyCGaNIi9bTOIcOS+l94vLBHe8XgzX6cnKQQ9rubqPvkPluxf+XHNbJ2NQZoeUpVn4nnT7NwdhEsqp9XeUymBMkbIlNo246wyQPt1V8P7MekmHf4kJjehDNnCBmp+OyPWU4nvtD+q309BWuLZkRwzYSyFi+FI0ubtKXqGUvlWDCU3bMEd8a8qkqtUnA5u6wNp/4keZ7+81pezJ1CG7fDEVhcqQthSdJNTA0KbaahKfwggHeYAQQjlpCYLbIbMqB0rifN/ItiCTTBiamwX849KSea4+S1EZINubt1dkamlhg15eYakMtAh4a1E2iQt5JlgsOKe0fCKisVL3l/1gdIPaLA3aCTtdAAksD9BdZIxVTg7h1mIK/fvmoiYEv0IofcoHFiWe0l8DGPHTuk2ttXDVY+NQKaRhviUrV3tn0WQ7wDbNd8mxTVD0RnSGSXKpm8KvHjFarP2zlxVXviE6UV1MiK5mZrzXbaq9u96vqRLCIGR4NYrYycfav9+KjObbGeLWZoGKRCUOxxBtY2xlcwcvp441MPhGFT/OUnCSoPdp3jUKETE3MfGlADDw6Fx+3Z9koT85kOWH+M6wTns2PZHPZtDjgg1V/DJWGRlM0F4Yc3ZTaJZzROshhSAtgUirA/jUxWQTat/O7TBGPuzYz3bSE3pydV3WH36CCLx5OD/NNtLRxmM1vN/buhfMlu0nfkzYQG/b0L/6/+Ibv4/Ch5Dau/n5Qo9XviZF6rurRz9Um2tRWlqqE6fWoUKT/7au7z3lM+xzmHaAcOWbo2wVIBttySg6AMG4UQjWHTB3+jgxIJt5OB5SBWILoXE/6hUSo6TuNCmWRg4jzNQ5yo/Ks2kBGhhHBw4+0b0L9bsARvzWxwW8/30KlzrkXbOWAHVOkOUU2J/cI+1mhzknEQDxUZ6EkJkKHdYmCqZmCIwOXBYM1EuFxY2Ig3+hDMillpS98zJl4EUTe+hxf+BH0A5ia8iIpapiLF5kwTyusYmYURgMZzcKy9upcvYgX/Ptn/09/M0pOFupsLf+o/FaN0OL9LY9c9CuducfspxyS45ryqn8PaoNkS0zc4Zvqayr/Y1Qss+hJ2m4E5RU4yYo98daz5wzAold95W7iCEQVvUIn/33g6AakLeMW3M8Cqufj8x2pMArVC4kjAzn7Djol16AakYOQQQoL4mlvGE446tDr1PSQAqQeAAAAA==", "p14": "data:image/webp;base64,UklGRvAEAABXRUJQVlA4IOQEAACQFgCdASpuACwAPmEqkEYkIiGhKrScAIAMCWwYnyc0OsHONbXwf4G5K4vtUd7C9vL5oPNu9J+8zc+z7P37SULjnN94yqSTP9D6+Oznab3vr5fx+BlrRxqGCyab//I5N8s7MpSy1Py8IQwuHIz5DUhaetUyHiDQ/32DsLpMMukGIqFx+5R8ng2N+ztw8szSGbYcZyPiWQgLgUhxiIJVjzOmedZfP0ZdrmzUxhyllc4QDsTLIvivIuH75qzcy4AA/v3ah+tSroK1PwJiV3c0XSiN6K7VUW7695Pt4l5kZC4ejjfZ3DYdnDk7cc7nSEno0YatdCIC2VS4tUD24uwp54hon8oMB+4/LgkaqgX9Q5Y0BQVWbnD1Cla+CcqM43hdhviTzgi5Uw9vl+d/GtNVK8mbk5XdaMJvPEwPS8nvPwcMIah1re0q/lezLIbd9jD6ZAu+RBJrQ8tAFpeIzsUkGuut8jltVV7+FLyvPagIP2qGv3+K9FVWY/U/gBUWv4fEz+EsJuPiDm/V8lkLdCglLbN4V+iA38vA7FjgI0suWKh20ikPEUej+MQeAWJaqBPeYNKmNVpQq2/yGVz/lFy8AuavXNvTQx26z6LVzAp29/0WW/LBZda6RUgVoipIULwuJIV55RbXf7qOcrHsSITij6udyvek4cwMKGcrBoov+2MoFdMkZbmJAqlCfuhm4NfjZNN2G9/O/78aFklByoEfQR4jFeerc4UgYXfHOvS2omgWAQLwVy/sjzrvVJ79Dyytq9T1mTP9DLoJa90/y+unaM86yNKvI5/6WL+clvMcWYzc1e03n+PAOSSbF6343mzT0+wk04U6k9fHRhHrivqpEX/M4+Ho/t1bEeweyUy3CBQM2suDyQ7hKXHgJW5Mav20/Hvf/2nwbDf6Rg6kWxKJVphZI+VolZjJ1/oQIttNP9ZDXVSgJB5RLXT8uR3UkpBbePmjql/lfaDjiUGzgnv1rzyoEb/xoix7cJIPk7wLtGcxkpuB0QjiOWsAzulz2L1yNl45OohbpQxnDKe66pHS8S6MxfJBZbD0DwyaCPmwU1tV51g3oqojXqxubbx5n2UiTVLziHH8DC+y+wSi6IFpicCpOATtQUlPUWmIPkzhYGRfgwKf0/7Ct8TuXBTiqI6I18MeK3erOpJZ1eRGVQLGRc4xpU1Pu/2Et4gDhHx7d/w19Xxrh5WG/6XEU3iyTWqov2fKVJejKdqrYousDOC80MTeh6Jm0PTzbcmhg5/hG68bvX/8MUMUJSY1+WbxXcDSt1s2zH6fdwTvJL1kFn+cR2k49IjpjzMrzhX6Ly90H3ZsehahaAtcXS+4hajYdC67X7JCy7Iooctz11z/ik5WXcjMEM/i75uDZjSblUexXo2/05pXj/148A5Ewvqi8BwwcjSIPAWk2bdiCRoHSI4qPGfFcvWW2SWqzjhC4uafM/ix4+i5SmxlJj2BDUBZBc+3xEC2ELAcbwHK/H5gZGTLbB2nrEnCeU4UxwVY0EHQ+BKDXzPSfIa94iHz9rN0l7l5tJCATUT1H+gRLEq+DA9usCcqHBujEvaGEOARBx6vJlYiZ3655qUjALb6iwxW26JrQjtR+y9C1oDTfM6fB+ufggqOzCdRXzOeKNaIqsVe/XjSfu6HRYYNJl1ylP0vZIkHXxXRPAAA", "p12": "data:image/webp;base64,UklGRmoEAABXRUJQVlA4IF4EAADwFACdASpuACwAPmEwk0ckIyGhIxgK8IAMCWwArseqV0uRvAHKQE1hUbdL+ef5H1FfrT+xXvN6bZ6AHTPeVVWLNtPdIulzlY2y5QH0yOFWffH9WjMe9PKcVsy2i02llvegzvTcVz7V9jSXPiQ/jiu8zDv7raoLGxZvfcy0G7XJQPi0NQ4P50hgZTJ+mNZFFyeDNGr8tEmzaslxfEpdwFrdph09V3iLmjcPr4O72GKbhAD+/hXbNbC3J4eafP/jNUvIhoKk+yi3gksm57lkz9gSAMkj9B0IA+jxD/l3yREWxJw/gx8Pb+M/4k4h35i/9/+QhfwZy+d9uEoqC0eKOY60DLgJ+REvmqp8oE6UlhJ6J8EGsGxwOPGPYClHtWzIizzc9uFGo1DYTLzHkO1RtxQFEuO6XPP3cgokEtL27HIuTI8HUjjLMtUXASAjaXeCHcH7luiohDBZ8ic5Ine/WOWYcO35/WydmMLlMEslr3382sJi2T2ER0/GwxijXVldz8OzA8knAWHVagZejpUbBSp8mh8CSGtZdXgLIGg8U4PeP3+HGOXTyYTFcJ/taa0lw9+3AkXQatZKOeZrnz+J6jnZoysQdCDBA8wn30Szymx8QSL0zCzUSvLAb73ZF6zqdzeB9+akcRfnjIl4y6fOXoo1Evs/POcEwP5r5snnb9FNjkbyB/ByLan8m00sfqLOh3eETy2tYT6top+/6biwNM+qqkdA+NZACxs40Jk5Wglvx/qP4SIe73aoVekJVvnwnXOJh5gscsE/H3L7g5wZySpK1Tokx49hZwyJEZuyWr8J2977QY+vExttj+8FP646KicRigAQCdeOfOcWyV6kw6yConiwzzAZsN+GqPZ/2R31uWx7p1649sxgqkuG9Vr0/8+eFLRIPAZ+eg6wf3b0FJQnRbNV6HdOd16sU4OScQl3+SLTg1rzBxss03u5w+77LIfwy1V71gg2NZl/XCYE5++a5+hYXz21SUQDSfCEXBLLepXcM4E5lOKxwuHIzgaqViY4+ytvtuyLavp6qfx7iKiEPG+uaYSrIzaVzWeEYMebIlZY3pTG0etb/7l2aXXodkGFtH07nqfn4n2pAEZ89rq0BdbjVNW23O+k9uqRL/CV9JtGPNJ4qJ6QuKbT/+ddj2AYDCNV+AgGBZGLYrKp0KP6aO3Yl2Pf38yhi45DTn+mWKsmi5b0Yj8y1K4eWCXHK7ZcxYCPTbN77NiOTszh3ukoQy+N8WXmqRmKh3W0F/jBnLkMNpCjlgZDF108hTLUlb/PUlZ2qzwKOvy1u9awZRzEjo611T3IoZymwhmBpFH9UOn/cQEcRej6L7i/9JYCQdK9MjyCzEaOUJbsSEN4Et0q+rDbnH3GTUSOYKqfflCtNFkkKga84qOz8Z/PLYz07yzpPrFzHHwCYXEJHGSeWS3u1sM9jW8hK2q8pvlzpjbezBIJNZu+eFbCXbAqUXWxgVcXy/xWtUUH2b4xroAAAA==", "p55": "data:image/webp;base64,UklGRnAEAABXRUJQVlA4IGQEAAAwGwCdASp4AHAAPm0uk0akIqIhKBgNUIANiWcA103AKk75mwgF25U8P5N7Nv9PkAohfY3+04j5pPDbTANHGF1pVdBLMxka8jWp64ka2+4FDaapDDmMucuqESKlOHGdv3mQQv3DqFJCAy98rNR7S/CZ/DpzzovQsaGku+9tYkSSoGEH8C8TVFem37omeSFixs1ie/cxZYRAlSG1ox88t31qCGCBHarIJY6FEgrYCsjwpb6bT0VjG1CnX2vipAZoWhAH7QNNJLEdLRkMVwhudZJkkSg5fbiWMQKihzqPPyo78ScAAP7+Lp9H1QCiyG/z43vj77Daq6l+oqTmQDdzSYT/eOIz5diFIegLvDb7V1ATvr/zNUGB954utbbxHpAmEQmdw9cbZt2KoegcrW6m+eXc4NYAz5weIVyCU8qbPGiHNzX4tbAz//c5UXXdj8w2Ow1u+UNZ/OJRhQKy/8F8CCoTfoRa2KC7mp0PgdBdXx/DtIV3uEU4YdCF/hrobq+28NgJiIRc1U1vp8V6v6iZqvkJC1igBs4Ai0eXw/pbK6p4GEBR5tsqbOELa3iFJfbX0HjB40a9Pbgi3AQ2fLLKl3pOEE3G4eKSso89bFrlrIXaiANdjfkAbA/v6NoFwEJx6+mbjoljsz8vJxCJx5VzsFj1WFFbb/O9V6fVRbE3fP34sFfuBaYOWYbIPeCYouQJKNqknGoQM1hE152VvlrhJlTxg4iMWAemiC9z0lx93kSiyFsMDl4JsypTym58ULOS9dwFUnIEqj15dNtY0Wy2zFmYPZoaR4BYXfM2iNHiVevLs/bjJeeZpME8NsIJh44AbBvcynFgeyqFAvpYr0KJ6/n2yUIcCBSPTHH9Gcz8L3FyWhxn/yaY5Nm6rie27UxzIGNzYrJnWbJBbNRqo3rX/OkNJJdDG7DHQp8Z1bUklIMKm+simZZ8e0QVbjODl6TMQ85MegvPnP5rKrs9FsHfYT9jLzWqmShqq49t39tBxThoZB5o5HLOiav+EpckjN86mcqGgNn36lq/GRg/D3oDIm4PNFqM2JzYnA/1X6SUmNFTZV7Dh6bxYYXe6LKr/Bn0HgfDd86UOQ29fFhdIwn+a8ddFy8lbHV/P3BaqSADxficxvbyeV04jXwLAxxI9qp6I71zSemhkitUaTitGro+TWmk0FvKn31fb4n7ZmOGo/85gVUNFdxrNW+CfRZ7BpL49u7/aOjLDP+juZI2P/kTBmDgjbk8HJ/J2VMa1P0etUbBSAAWsnb58pzq4Hi9wrTxkzJNFf9gBXLupnwn3xscL7zsjUqzotquVDEQuL78ttvQQhCbu7DFdqq+X1lM9FR5nHUSibaRJ+lSIa30iyq499gxHjewKRk5x117QvvAeb1KTfQ5hJTrGWyP/QqvJO0d/u4NTESbPZ/IZDfqOcOQvEPbAxmPT+ZVE9bYv6eBu7i+RhF/9R07w5IXWP3wo3H4OByV4QguWGYoT7ro8z+/jnksAAAAAA==", "p33": "data:image/webp;base64,UklGRlQEAABXRUJQVlA4IEgEAAAQFwCdASp4ACQAPm0ukkWkIqGXW6XYQAbEtgBdmdfnT8x83yyv3j8J8bZNflU8qeQD/G+wzxWumJ5j/2h9ZL+q/sr7m/QN/YfrOfQy8t/2hf3DsTH8tXr8AcvJgzppUrALNs2GDSO5/wHrXGMQrKFwV0KwAhx5xjwWPNqgfjPF4j//uJ1f77klANQUiHrdWPyuf12cJJsWDmetIB055xHGEvJKm1IprUNGh0tfUZPzmoZcrEys5JUZ3iJU9eqflQB4AP7+a1YoVOstw/S+FN4QT//MhqpM03/exABjYmP08jsQ0yDXO395AHe56GfBqjnsk4px0dib0gHOZ/d7I0TMfW5YehTOFc0/4RmNjEbZKot9ZkbZ+2h6z8TRwDHDBawaeZw7mKS7ZAg/YaBPBWXBFsZYOO9H//7zavNw0H/9c1/sHxS52OrclbAhMjoaefuSMKxjl6CnkjNjy+wCZDsP1KPi67aOkPfWD5j0jWQJOgwT0bXAp8FvdY2QrI7TAbFrF/znpkfMsc8twpzp8GY5WQjci1Q11NQsNZHXBsz4KAHEeI7JwPRLdItfgyo3qdrqWfs9SFwmHe88baG70mZ4m+TKlw/nVw+kHIONglvF/P8R7A9AY46LVve7NuRtwi3C56oPd/zvkUbG7T73PWfB4w8h4d9SuJwANubidRUwmEPgD8T1ZXDMpmqHZNV2p8s+v/7tpAnjO/1mPxS/T9M/gXkrtla7TCbq6zM6fncVHkZ8HILv6/T1kyf6CZuUBWqoPerlWfPqZ4OxbxBR9b+5oZ7NPx4bZisSH56wXU94rfcK1EQD9HF6101uJ7ffpyksV9KTdl/JMzNjsZtkdZXVV9QJMx9fsOZw74cGZAe4i5UYgLPj4bsYntH/LGVim/8RQxhWpWfh8bVNA4Lnb/t/aoKHgwC8VvL/xlIHX8CBJytOU0ol/qlDr+XagUf/299Ndom8XxtTUn6bQUroWAp2KM1k1pbKN9EY3LN3Z/acycjb4VI7kasKzpVtkhftcCjAMOxo4m2W2dmCdA/XsMZIp4toogRf5MbgOtdK4UPg6g5zmszM7Ho1ysgXIaFkTRHEcJv4C8y/1rF5a5jgQCiw037jY0pt2DKzNeTMc/9r7Ai6ng6LnI0FaM+XFVSeJGXXa7RSs4QPMeZ58kcKtdTBDJeqgo0rbTKxw9Gmq5EyN4MydmRPgAZv0Oox5f2oNIdinP9J80bk8DRATfy36sZVc6QwY6E1x3/cH509pr/tNZv7ydoBToqQG/l0C2emEz4gMQdv+RQNj56h6m45IIo/CbfoMPR36IkBNdRD/aigBMGIH7KXgKub0dq+cqGznrbcx9FeiXgLRAHMjCkYKcU4PhyWxJ1zi9UgUJEkikOmo1Lg6DjkmkF7zv4wqCjUVg2DYR64LeKQFq+zOQWMfR274eeKoQU8ImRCjU+ypnfvssDCg+idSAAA", "circ": "data:image/webp;base64,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"};
+/* ================== Safety First · Grade 4 Project 7 · Early Electronics Kit 3D lab (The Role of the Ammeter) ================== */
+const $=id=>document.getElementById(id);
+const S=['Plan','Build','Test it','Record','Math','Reflect','Challenges','Other designs'];
+const KEY='britus-g4-safety';
+const st=(()=>{const d={done:[],bs:null,voc:{},placed:0,bMist:0,on:0,tNum:0,tUa:0,tq:null,r1:null,r2:null,rCur:0,r4:null,ideas:{},quiz:{},im:null,sc:null,rub:{},fbk:['','',''],finished:0,ch:{},c0:{},c3seen:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+function fb(id,ok,good,bad){const e=$(id);e.style.color=ok?'var(--ok)':'var(--warn)';e.textContent=ok?good:bad}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off'};
+function hud(h){$('hud').innerHTML=h}
+function banner(t,bad){const b=$('banner');b.textContent=t;b.style.background=bad?'#b3261e':'#1d7a4c';b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,4000)}
+
+/* ================== 3D scene ================== */
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[0.6,0.6,-1.2],r:16,aspect:.62,views:{
+ board:[0.3,0.95,11.5,[0.7,0.5,-1.0]],top:[0,0.12,11,[0.7,0,-1.2]],meter:[0.05,1.32,5.2,[0,1.25,-2.7]],
+ factory:[0.35,1.15,30,[-1,2.5,-7]],fin:[0.45,1.0,16,[0.4,1,-2]],tool:[0.5,0.9,13,[0.6,0.6,-0.6]],side:[1.1,1.0,13,[1.2,0.6,-1.2]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const G=1.2,PLY=0.3;
+const gx=c=>(c-2)*G,gz=r=>(r-2)*G;
+const SILVER=0xc8ccd2;
+const boardG=grp();
+/* mounting plate */
+(()=>{const w=6.4*G,d=4.6*G;K.RBox(w,PLY,d,0.12,M(0xf5f6f8,{roughness:.5}),boardG,gx(2.45),PLY/2,gz(1));
+ for(let c=-0.5;c<=5.4;c+=0.5)for(let r=-1;r<=3;r+=0.5)Cy(0.08,0.06,M(0xd6d9de),boardG,gx(c),PLY+0.03,gz(r),'y',6)})();
+function snap(par,x,y,z){Cy(0.17,0.12,M(SILVER,{metalness:.7,roughness:.3}),par,x,y+0.06,z,'y',14);Cy(0.09,0.1,M(0x8a8f96,{metalness:.6}),par,x,y+0.15,z,'y',10)}
+/* ---------- parts (book page 61: 2 ×4, 15, 19, 33, 55) ---------- */
+const PL=[
+ {id:'meter',code:55,tray:'55 Galvanometer',a:[1,0],b:[3,0],lv:0,q:'What does the galvanometer (microammeter) show?',o:['How much electric current flows: its needle moves','The time','How hot the wire is'],ok:'Book: the arrow of the microammeter shows the value of the current.'},
+ {id:'res',code:33,tray:'33 Resistor 10K',a:[0,0],b:[0,2],lv:0,q:'Why does the circuit need the 10K resistor?',o:['It limits the current, so the sensitive meter is not damaged','It makes light','It stores electricity'],ok:'Without it, too much current would rush through the meter.'},
+ {id:'bat',code:19,tray:'19 Battery compartment',a:[4,0],b:[4,2],lv:0,q:'Where is the + end of the battery compartment?',o:['At the top, next to the + of the galvanometer','At the bottom','It has no + end'],ok:'The + of the meter must join the + of the battery.'},
+ {id:'sw',code:15,tray:'15 Switch',a:[1,2],b:[3,2],lv:0,q:'Keep the switch on OFF while you build. Why?',o:['So no current flows until the circuit is finished','So the meter is louder','So the battery charges'],ok:'Safety first: switch OFF while building!'},
+ {id:'w2a',code:2,tray:'2 Wire with 2 contacts',a:[0,0],b:[1,0],lv:1,q:'This wire joins the resistor to…',o:['The galvanometer','The switch','Nothing'],ok:'Resistor → meter.'},
+ {id:'w2b',code:2,tray:'2 Wire with 2 contacts',a:[3,0],b:[4,0],lv:1,q:'This wire joins the + of the meter to…',o:['The + of the battery','The resistor','The table'],ok:'+ to +: the meter is connected the right way round.'},
+ {id:'w2c',code:2,tray:'2 Wire with 2 contacts',a:[3,2],b:[4,2],lv:1,q:'This wire joins the battery to…',o:['The switch','The meter','The resistor'],ok:'Battery − → switch.'},
+ {id:'w2d',code:2,tray:'2 Wire with 2 contacts',a:[0,2],b:[1,2],lv:1,q:'The last wire joins the switch to the resistor. What does it make?',o:['A closed loop: the current can go all the way round','A short cut','A light'],ok:'The circuit is finished! Now test it.'}];
+const PART={};PL.forEach(p=>PART[p.id]=p);
+const EXTRA=[['3 Wire with 3 contacts','Look again: every wire in the book circuit is short, with 2 contacts.'],['14 Button','The book uses the switch 15 to turn the circuit on.'],['17 LED (red)','An LED shows light, but it cannot measure how much current flows.'],['18 Light bulb 2.5V','A bulb would glow, but the book uses the galvanometer to measure the current.'],['20 Loudspeaker','A loudspeaker makes sound: not in this circuit.'],['51 Transistor PNP','The transistor is used in the next project, the lie detector.']];
+function pts(p){const [c0,r0]=p.a,[c1,r1]=p.b;const out=[];const n=Math.max(Math.abs(c1-c0),Math.abs(r1-r0));for(let i=0;i<=n;i++)out.push([c0+Math.sign(c1-c0)*i,r0+Math.sign(r1-r0)*i]);return out}
+const meshes={};let swKnob,needle;
+/* ---------- printed tops like the real kit ---------- */
+const PX=150;
+function rr(x,X,Y,W,H,R){x.beginPath();x.moveTo(X+R,Y);x.arcTo(X+W,Y,X+W,Y+H,R);x.arcTo(X+W,Y+H,X,Y+H,R);x.arcTo(X,Y+H,X,Y,R);x.arcTo(X,Y,X+W,Y,R);x.closePath()}
+const KC={wire:'#1d5fc4',sw:'#1f9d4b',res:'#f2c230',meter:'#1f1f22',btn:'#1f9d4b',touch:'#f2c230'};
+function numBox(x,cx,cy,n,dark){const w=0.42*PX,h=0.26*PX;x.fillStyle='#fff';rr(x,cx-w/2,cy-h/2,w,h,6);x.fill();x.strokeStyle=dark||'#123a7a';x.lineWidth=3;x.stroke();x.fillStyle=dark||'#123a7a';x.font=`bold ${Math.round(h*0.8)}px Arial`;x.textAlign='center';x.textBaseline='middle';x.fillText(String(n),cx,cy+1)}
+function paintPiece(kind,Lf,wf,L,code){return tex(Math.round(Lf*PX),Math.round(wf*PX),(x,w,h)=>{const base=KC[kind];const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,255,255,.18)');g.addColorStop(1,'rgba(0,0,0,.12)');
+ x.clearRect(0,0,w,h);rr(x,2,2,w-4,h-4,Math.min(h/2-2,0.3*PX));x.fillStyle=base;x.fill();x.fillStyle=g;x.fill();x.lineWidth=4;x.strokeStyle='rgba(0,0,0,.28)';x.stroke();
+ const X=u=>(u+Lf/2)*PX,cy=h/2;const n=Math.round(L/G)+1;const pads=[];for(let i=0;i<n;i++)pads.push(X(-L/2+i*G));
+ x.strokeStyle='#fff';x.fillStyle='#fff';x.lineWidth=0.045*PX;x.lineCap='round';const ln=(a,b,c,d)=>{x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke()};
+ if(kind==='wire'){x.strokeStyle='rgba(150,200,255,.75)';x.lineWidth=0.06*PX;ln(pads[0],cy,pads[n-1],cy);numBox(x,w/2,cy,code)}
+ else{const a=pads[0]+0.26*PX,b=pads[n-1]-0.26*PX,m=(a+b)/2,span=b-a;
+  if(kind==='sw'){ln(a,cy,m-0.15*span,cy);ln(m-0.15*span,cy,m+0.15*span,cy-0.28*h);ln(m+0.2*span,cy,b,cy);x.fillStyle='#111';rr(x,a+0.02*span,cy+0.12*h,0.42*span,0.24*h,5);x.fill();x.fillStyle='#fff';x.font=`bold ${Math.round(0.14*h)}px Arial`;x.textAlign='left';x.textBaseline='middle';x.fillText('ON',a+0.04*span,cy+0.24*h);x.textAlign='right';x.fillText('OFF',a+0.42*span,cy+0.24*h);numBox(x,b-0.05*span,cy-0.3*h,15,'#14632f')}
+  if(kind==='res'){x.strokeStyle='#c62828';ln(a,cy,m-0.28*span,cy);ln(m+0.28*span,cy,b,cy);x.lineWidth=0.035*PX;x.strokeRect(m-0.28*span,cy-0.2*h,0.56*span,0.4*h);x.fillStyle='#e8dcc0';rr(x,m-0.16*span,cy-0.08*h,0.32*span,0.16*h,8);x.fill();
+   ['#8d5524','#111','#f57c00','#d4af37'].forEach((c,i)=>{x.fillStyle=c;x.fillRect(m-0.11*span+i*0.06*span,cy-0.08*h,0.025*span,0.16*h)});x.fillStyle='#c62828';x.font=`bold ${Math.round(0.16*h)}px Arial`;x.textAlign='center';x.textBaseline='middle';x.fillText(code===33?'10K':'R',a+0.08*span,cy-0.32*h);numBox(x,b-0.08*span,cy+0.32*h,code,'#8a6a00')}
+  if(kind==='btn'){ln(a,cy,m-0.22*span,cy);ln(m+0.22*span,cy,b,cy);ln(m-0.24*span,cy-0.2*h,m+0.24*span,cy-0.2*h);ln(m,cy-0.2*h,m,cy-0.36*h);x.fillStyle='#f3e7b0';rr(x,a+0.04*span,cy+0.1*h,0.22*span,0.22*h,4);x.fill();numBox(x,b-0.05*span,cy-0.3*h,14,'#14632f')}
+  if(kind==='touch'){x.strokeStyle='#c62828';ln(a,cy,m-0.25*span,cy);ln(m+0.25*span,cy,b,cy);x.beginPath();for(let i=0;i<=8;i++)x.lineTo(m-0.25*span+i*0.0625*span,cy+(i%2?-1:1)*0.2*h);x.stroke();numBox(x,b-0.08*span,cy-0.32*h,12,'#8a6a00')}
+  if(kind==='meter'){ln(a,cy,m-0.12*span,cy);ln(m+0.12*span,cy,b,cy);x.beginPath();x.arc(m,cy,0.12*span,0,7);x.stroke();ln(m-0.07*span,cy+0.07*span,m+0.08*span,cy-0.08*span);x.font=`bold ${Math.round(0.3*h)}px Arial`;x.textAlign='center';x.textBaseline='middle';x.fillText('+',b-0.08*span,cy+0.3*h);numBox(x,b-0.08*span,cy-0.3*h,55,'#111')}}
+ pads.forEach(px=>{x.beginPath();x.arc(px,cy,0.25*PX,0,7);x.fillStyle='rgba(255,255,255,.35)';x.fill()})})}
+function slab(W,D,th,r,m,par,x,y,z){const s=new THREE.Shape(),a=W/2,b=D/2;r=Math.min(r,a-0.01,b-0.01);s.moveTo(-a+r,-b);s.lineTo(a-r,-b);s.quadraticCurveTo(a,-b,a,-b+r);s.lineTo(a,b-r);s.quadraticCurveTo(a,b,a-r,b);s.lineTo(-a+r,b);s.quadraticCurveTo(-a,b,-a,b-r);s.lineTo(-a,-b+r);s.quadraticCurveTo(-a,-b,-a+r,-b);
+ const g=new THREE.ExtrudeGeometry(s,{depth:th-0.04,bevelEnabled:true,bevelThickness:0.02,bevelSize:0.02,bevelSegments:2,curveSegments:8});g.rotateX(-Math.PI/2);g.translate(0,0.02,0);return K.mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+function topPlane(par,t,Lf,wf,y){const m=new THREE.Mesh(new THREE.PlaneGeometry(Lf,wf),new THREE.MeshStandardMaterial({map:t,transparent:true,roughness:.55}));m.rotation.x=-Math.PI/2;m.position.y=y;par.add(m);return m}
+function piece(par,kind,a,b,lv,code){const g=grp(par);const y=PLY+0.02+lv*0.2;const A=V3(gx(a[0]),y,gz(a[1])),B=V3(gx(b[0]),y,gz(b[1]));const mid=A.clone().add(B).multiplyScalar(0.5);const L=A.distanceTo(B);const ang=Math.atan2(-(B.z-A.z),B.x-A.x);
+ const body=grp(g);body.position.copy(mid);body.rotation.y=ang;const wf=kind==='wire'?0.62:1.0,Lf=L+0.7,th=kind==='wire'?0.12:0.22;
+ slab(Lf,wf,th,Math.min(0.28,wf/2),M(new THREE.Color(KC[kind]).getHex(),{roughness:.5}),body,0,0,0);
+ topPlane(body,paintPiece(kind,Lf,wf,L,code),Lf,wf,th+0.012);
+ const n=Math.round(L/G)+1;for(let i=0;i<n;i++){if(kind!=='wire'&&i>0&&i<n-1)continue;snap(body,-L/2+i*G,th-0.05,0)}
+ g.userData={body,L,th,y};return g}
+function mkBat(a,b,par){const g=grp(par||boardG);const y=PLY+0.02;const A=V3(gx(a[0]),y,gz(a[1])),B=V3(gx(b[0]),y,gz(b[1]));const mid=A.clone().add(B).multiplyScalar(0.5);const L=A.distanceTo(B);const ang=Math.atan2(-(B.z-A.z),B.x-A.x);
+ const body=grp(g);body.position.copy(mid);body.rotation.y=ang;const W=L+0.95,D=1.95,cz=-0.68;
+ slab(W,D,0.4,0.16,M(0xd8342c,{roughness:.5}),body,0,0,cz);
+ topPlane(body,tex(Math.round(W*PX),Math.round(D*PX),(x,w,h)=>{x.fillStyle='#d8342c';rr(x,2,2,w-4,h-4,18);x.fill();x.strokeStyle='rgba(0,0,0,.3)';x.lineWidth=4;x.stroke();x.fillStyle='#8f1d17';rr(x,w*0.05,h*0.04,w*0.9,h*0.56,10);x.fill();
+  x.fillStyle='#fff';x.font=`bold ${Math.round(0.34*PX)}px Arial`;x.textAlign='center';x.textBaseline='middle';x.fillText('+',w*0.2,h*0.8);x.font=`bold ${Math.round(0.18*PX)}px Arial`;x.fillText('3V',w*0.32,h*0.8);
+  x.strokeStyle='#fff';x.lineWidth=5;[[0.45,0.16],[0.5,0.09],[0.55,0.16],[0.6,0.09]].forEach(([t,hw])=>{x.beginPath();x.moveTo(w*t,h*0.8-hw*h);x.lineTo(w*t,h*0.8+hw*h);x.stroke()});numBox(x,w*0.76,h*0.8,19,'#8a1c16')}),W,D,0.412).position.set(0,0.412,cz);
+ const cells=[];[-0.95,-1.4].forEach(z=>{cells.push(Cy(0.21,2.15,M(0x2fb35a,{roughness:.35}),body,0,0.62,z,'x',20));Cy(0.215,0.16,M(SILVER,{metalness:.8,roughness:.25}),body,-1.05,0.62,z,'x',20);Cy(0.08,0.1,M(SILVER,{metalness:.8}),body,1.15,0.62,z,'x',10)});
+ snap(body,-L/2,0.36,0);snap(body,L/2,0.36,0);g.userData={y,cells,body};return g}
+/* meter face: 0-10 scale, 50 µA per number (full scale 500 µA) */
+const FW=1.7,FH=1.2;
+const faceT=tex(256,180,(x,w,h)=>{x.fillStyle='#fbfbf7';x.fillRect(0,0,w,h);const cx=128,cy=170,R=120;x.strokeStyle='#222';x.lineWidth=2;x.beginPath();x.arc(cx,cy,R-12,-Math.PI/2-0.72,-Math.PI/2+0.72);x.stroke();
+ for(let i=0;i<=20;i++){const v=i/2,t=-0.7+v*0.14,big=i%2===0;const r1=R-12,r2=R-(big?30:22);x.lineWidth=big?2.4:1.4;x.beginPath();x.moveTo(cx+r1*Math.sin(t),cy-r1*Math.cos(t));x.lineTo(cx+r2*Math.sin(t),cy-r2*Math.cos(t));x.stroke()}
+ x.fillStyle='#111';x.font='bold 22px Arial';x.textAlign='center';x.textBaseline='middle';[0,5,10].forEach(v=>{const t=-0.7+v*0.14;x.fillText(String(v),cx+(R+2)*Math.sin(t),cy-(R+2)*Math.cos(t)-2)});
+ x.font='bold 12px Arial';x.fillStyle='#555';x.fillText('µA ×50',cx,cy-52);x.fillStyle='#b71c1c';x.beginPath();x.arc(cx,cy,7,0,7);x.fill()});
+function mkMeter(p){const g=piece(boardG,'meter',p.a,p.b,p.lv,55);const body=g.userData.body,th=g.userData.th;
+ const box=grp(body);box.position.set(0,th,-0.3);
+ K.RBox(2.0,0.35,0.7,0.06,M(0x2a2a2e,{roughness:.6}),box,0,0.18,0);
+ Bx(1.95,1.45,0.42,M(0x9ea3a8,{roughness:.45,metalness:.2}),box,0,1.0,-0.05);
+ Bx(1.95,0.36,0.44,M(0x7d8287,{roughness:.5}),box,0,0.45,-0.04);
+ const face=new THREE.Mesh(new THREE.PlaneGeometry(FW,FH),new THREE.MeshStandardMaterial({map:faceT,roughness:.4}));face.position.set(0,1.1,0.18);box.add(face);
+ const glass=new THREE.Mesh(new THREE.PlaneGeometry(FW,FH),new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.12,roughness:.05,metalness:.3}));glass.position.set(0,1.1,0.2);box.add(glass);
+ const piv=grp(box);piv.position.set(0,1.1+FH/2-170/180*FH,0.19);Bx(0.025,0.78,0.008,M(0xd32f2f,{roughness:.4}),piv,0,0.39,0);Cy(0.05,0.02,M(0x111111),piv,0,0,0.005,'z',12);
+ needle=piv;g.userData.y=PLY+0.02;return g}
+function mkPart(p){
+ if(p.id==='meter')return mkMeter(p);
+ if(p.id==='bat')return mkBat(p.a,p.b);
+ const kind=p.id.startsWith('w')?'wire':p.id;const g=piece(boardG,kind,p.a,p.b,p.lv,p.code);const body=g.userData.body,th=g.userData.th;
+ if(p.id==='res'){const r=grp(body);r.position.set(0,th+0.14,0);Cy(0.1,0.5,M(0xe0cfa6,{roughness:.5}),r,0,0,0,'x',14);[-0.12,-0.04,0.04,0.12].forEach((xx,i)=>Cy(0.104,0.04,M([0x8d5524,0x111111,0xf57c00,0xd4af37][i]),r,xx,0,0,'x',14));[-1,1].forEach(k=>Cy(0.015,0.3,M(SILVER,{metalness:.8}),r,k*0.38,0,0,'x',6))}
+ if(p.id==='sw'){const L=g.userData.L;swKnob=Bx(0.2,0.14,0.18,M(0xf2f2f2,{roughness:.4}),body,-L/2+0.42,th+0.07,0.24)}
+ g.userData.y=PLY+0.02+p.lv*0.2;return g}
+PL.forEach(p=>{meshes[p.id]=mkPart(p);meshes[p.id].visible=false});
+function setSwitch(on){if(!swKnob)return;swKnob.position.x=-G+(on?0.42:1.05)}
+/* ---------- extras: second resistor, tool case, probes, sources ---------- */
+const xtra={};
+xtra.res2=piece(boardG,'res',[0,2],[1,2],2,33);(()=>{const b=xtra.res2.userData.body;const r=grp(b);r.position.set(0,0.36,0);Cy(0.1,0.5,M(0xe0cfa6),r,0,0,0,'x',14)})();
+xtra.tool=grp();(()=>{const t=xtra.tool,O=M(0xef6c00,{roughness:.55}),cx=gx(2.45),cz=gz(1),W=6.6*G,D=4.8*G,H=1.0;
+ Bx(W+0.3,0.25,D+0.3,O,t,cx,-0.02,cz);[[0,-1],[0,1]].forEach(([_,k])=>Bx(W+0.3,H,0.15,O,t,cx,H/2,cz+k*(D/2+0.08)));[-1,1].forEach(k=>Bx(0.15,H,D+0.3,O,t,cx+k*(W/2+0.08),H/2,cz));
+ const lab=new THREE.Mesh(new THREE.PlaneGeometry(4,0.6),new THREE.MeshBasicMaterial({map:tex(400,60,(x,w,h)=>{x.fillStyle='#ef6c00';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 34px Arial';x.textAlign='center';x.fillText('CURRENT TESTER ⚡',w/2,44)})}));lab.position.set(cx,0.5,cz+D/2+0.17);t.add(lab);
+ [[0xd32f2f,-0.6],[0x212121,0.6]].forEach(([c,dx])=>{const pr=grp(t);pr.position.set(cx+dx+1.6,0.2,cz+D/2+1.6);pr.rotation.y=dx>0?-0.25:0.25;Cy(0.11,1.5,M(c,{roughness:.4}),pr,0,0,0,'z',12);Cy(0.03,0.5,M(SILVER,{metalness:.8}),pr,0,0,1.0,'z',8);
+  const cv=new THREE.CatmullRomCurve3([V3(0,0,-0.75),V3(0,0.4,-1.6),V3(-dx*0.3,0.9,-2.8),V3(-dx*0.4,0.7,-4.0)]);pr.add(new THREE.Mesh(new THREE.TubeGeometry(cv,20,0.05,6),M(c)))});
+ t.visible=false})();
+xtra.solar=grp(boardG);(()=>{const s=xtra.solar;s.position.set(gx(4)+1.6,0,gz(1));const pnl=tex(256,160,(x,w,h)=>{x.fillStyle='#0d2a5e';x.fillRect(0,0,w,h);x.strokeStyle='#8fb0e0';x.lineWidth=2;for(let i=1;i<6;i++){x.beginPath();x.moveTo(i*w/6,0);x.lineTo(i*w/6,h);x.stroke()}for(let j=1;j<4;j++){x.beginPath();x.moveTo(0,j*h/4);x.lineTo(w,j*h/4);x.stroke()}});
+ const p=new THREE.Mesh(new THREE.BoxGeometry(2.4,0.08,1.6),[M(0x888888),M(0x888888),new THREE.MeshStandardMaterial({map:pnl,roughness:.2,metalness:.4}),M(0x888888),M(0x888888),M(0x888888)]);p.position.set(0,0.9,0);p.rotation.z=0.35;s.add(p);Cy(0.06,0.9,M(0x777777),s,0,0.45,0,'y',8);s.visible=false})();
+xtra.lemon=grp(boardG);(()=>{const l=xtra.lemon;l.position.set(gx(4)+1.4,0,gz(1));const s=Sp(0.8,M(0xf4d03f,{roughness:.6}),l,0,0.75,0,22);s.scale.set(1.25,0.9,0.9);Bx(0.12,0.9,0.3,M(0xb87333,{metalness:.7}),l,-0.4,1.4,0);Bx(0.12,0.9,0.3,M(0xa0a7ad,{metalness:.7}),l,0.4,1.4,0);l.visible=false})();
+xtra.cell=grp(boardG);(()=>{const c=xtra.cell;c.position.set(gx(4)+1.6,0.35,gz(1));Cy(0.28,1.6,M(0x2fb35a,{roughness:.35}),c,0,0,0,'x',20);Cy(0.1,0.12,M(SILVER,{metalness:.8}),c,0.86,0,0,'x',10);c.visible=false})();
+/* ---------- factory safety office ---------- */
+const fac=grp();fac.position.set(0,0,-11);
+(()=>{const wall=tex(512,256,(x,w,h)=>{x.fillStyle='#d9dde2';x.fillRect(0,0,w,h);x.fillStyle='#c9ced4';for(let i=0;i<w;i+=64)x.fillRect(i,0,3,h);for(let i=0;i<w;i+=16){x.fillStyle=(i/16)%2?'#111':'#f2c230';x.beginPath();x.moveTo(i,h-26);x.lineTo(i+16,h-26);x.lineTo(i+6,h);x.lineTo(i-10,h);x.closePath();x.fill()}});
+ const bg=new THREE.Mesh(new THREE.PlaneGeometry(40,14),new THREE.MeshStandardMaterial({map:wall,roughness:1}));bg.position.set(0,7,-3);fac.add(bg);
+ const sign=new THREE.Mesh(new THREE.PlaneGeometry(6,2.2),new THREE.MeshBasicMaterial({map:tex(360,132,(x,w,h)=>{x.fillStyle='#1b7a3e';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 46px Arial';x.textAlign='center';x.fillText('SAFETY',w/2,56);x.fillText('FIRST',w/2,112);x.font='60px Arial';x.fillText('⛑',40,92)})}));sign.position.set(-6,8.5,-2.9);fac.add(sign);
+ const sign2=new THREE.Mesh(new THREE.PlaneGeometry(2.4,2.1),new THREE.MeshBasicMaterial({map:tex(160,140,(x,w,h)=>{x.fillStyle='#f2c230';x.beginPath();x.moveTo(w/2,8);x.lineTo(w-8,h-8);x.lineTo(8,h-8);x.closePath();x.fill();x.strokeStyle='#111';x.lineWidth=7;x.stroke();x.fillStyle='#111';x.font='bold 70px Arial';x.textAlign='center';x.fillText('⚡',w/2,h-26)}),transparent:true}));sign2.position.set(4.5,8.5,-2.9);fac.add(sign2);
+ /* machine with control panel */
+ const mc=grp(fac);mc.position.set(8,0,0);K.RBox(6,4.5,3.4,0.15,M(0x546e7a,{roughness:.5,metalness:.3}),mc,0,2.25,0);Bx(2.4,1.6,0.1,M(0x263238),mc,-1.2,3.2,1.75);[[0xd32f2f,-1.8],[0x2e7d32,-1.2],[0xf2c230,-0.6]].forEach(([c,xx])=>Cy(0.18,0.15,M(c,{emissive:c,emissiveIntensity:.3}),mc,xx,2.9,1.8,'z',14));Bx(5.4,0.4,3.0,M(0x37474f),mc,0,4.7,0);
+ for(let i=0;i<5;i++)Cy(0.22,3.2,M(0x9e9e9e,{metalness:.6}),mc,-2.4+i*1.2,5.1,0,'z',14);Bx(6.4,0.06,3.0,M(0x212121,{roughness:.9}),mc,0,5.33,0);
+ mc.userData.lamp=Cy(0.3,0.5,M(0x2e7d32,{emissive:0x2e7d32,emissiveIntensity:.6}),mc,2.4,4.9,1.2,'y',14);fac.userData.machine=mc;
+ /* hard hat and clipboard */
+ const hat=grp(fac);hat.position.set(-7,0,6);const dome=new THREE.Mesh(new THREE.SphereGeometry(0.9,24,14,0,Math.PI*2,0,Math.PI/2),M(0xf2c230,{roughness:.35}));hat.add(dome);Cy(1.2,0.08,M(0xf2c230,{roughness:.35}),hat,0.15,0.02,0,'y',24);Bx(0.25,0.12,1.8,M(0xf9d65c),hat,0,0.85,0);
+ const cb=grp(fac);cb.position.set(-4,0.05,7);cb.rotation.y=0.25;Bx(1.8,0.06,2.4,M(0x8d6e63),cb,0,0,0);const pp=new THREE.Mesh(new THREE.PlaneGeometry(1.6,2.1),new THREE.MeshBasicMaterial({map:tex(160,210,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);x.fillStyle='#111';x.font='bold 15px Arial';x.fillText('SAFETY CHECK',12,26);x.font='13px Arial';['Machine 1  ✔','Machine 2  ✔','Machine 3  …','Wires      ✔','Current    ?'].forEach((t,i)=>x.fillText(t,14,56+i*28))})}));pp.rotation.x=-Math.PI/2;pp.position.y=0.04;cb.add(pp);Bx(0.6,0.12,0.2,M(SILVER,{metalness:.8}),cb,0,0.06,-1.1)})();
+
+/* ================== live circuit: I = V ÷ R ================== */
+const live={sw:false,V:3,R:10000,src:'bat',val:0,shown:0,over:false};
+function built(){return st.placed>=PL.length||cur>=2}
+function current(){if(!built()||!live.sw)return 0;return live.R<=0?99999:live.V/live.R*1e6}/* µA */
+function needleTarget(){const ua=current();return Math.min(10.6,ua/50)}
+let overWarn=0;
+K.hooks.push(dt=>{const t=needleTarget();live.over=current()>500;const k=Math.min(1,dt*3.2);live.val+=(t-live.val)*k;let v=live.val;if(live.over&&v>10.3)v=10.45+Math.sin(performance.now()/40)*0.12;
+ if(needle)needle.rotation.z=0.7-Math.max(-0.2,v)*0.14;
+ const ua=current();$('mRead').textContent=live.sw&&built()?(live.over?'⚠ over 500 µA!':Math.round(ua)+' µA'):'0 µA';
+ if(live.over&&live.sw&&performance.now()>overWarn){overWarn=performance.now()+4500;SFX.bad();banner('⚠ Overload! The needle hits the end: the meter could break.',true)}
+ const mc=fac.userData.machine;if(mc&&mc.userData.lamp.visible)mc.userData.lamp.material.emissiveIntensity=0.4+0.3*Math.sin(performance.now()/300)});
+function setSw(on){live.sw=on;setSwitch(on);$('swBtn').textContent='Switch 15: '+(on?'ON':'OFF');$('swBtn').classList.toggle('sel',on)}
+$('swBtn').onclick=()=>{SFX.click();setSw(!live.sw);onEvt('sw')};
+let onEvt=()=>{};
+function setCircuit(o){Object.assign(live,{V:3,R:10000,src:'bat'},o||{});meshes.bat.visible=live.src==='bat'&&(st.placed>PL.findIndex(p=>p.id==='bat')||cur>=2);['solar','lemon','cell'].forEach(k=>xtra[k].visible=live.src===k);xtra.res2.visible=!!live.two;meshes.w2d.visible=!live.two&&(st.placed>=PL.length||cur>=2)}
+
+/* ================== 1. Plan ================== */
+const VOC=[['Occupational',['Connected with a job','Connected with a holiday','Connected with food'],0],['Welfare',['Health, happiness and safety','A kind of wire','A big factory'],0]];
+function drawPlan(){const v=st.voc||{};$('voc').innerHTML=VOC.map((w,i)=>`<div class="q">${w[0]} means…</div><div class="choices">${w[1].map((t,j)=>`<button type="button" class="btn ${v[i]===j?(j===w[2]?'ok sel':'sel'):''}" data-vo="${i}:${j}">${t}</button>`).join('')}</div>`).join('')+`<div class="fb" id="vom"></div>`;
+ const vo=VOC.every((w,i)=>v[i]===w[2]);if(Object.keys(v).length)fb('vom',vo,'✔ Great vocabulary!','Check your answers again.');
+ document.querySelectorAll('[data-bs]').forEach(b=>b.classList.toggle('sel',b.dataset.bs===st.bs));
+ if(st.bs)fb('bsm',st.bs==='g','✔ Yes: the galvanometer 55 is a microammeter. It measures very small currents.','Which part has a needle and a scale?');
+ const ok=vo&&st.bs==='g';$('n0').disabled=!ok;if(ok){msg('m0','good','✔ Great plan! Now build the circuit from the book.');done(0)}else msg('m0','','Answer the vocabulary and the brainstorm question.')}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-vo]');if(a){const [k,j]=a.dataset.vo.split(':').map(Number);st.voc[k]=j;save();j===VOC[k][2]?SFX.ok():SFX.bad();drawPlan()}
+ const b=e.target.closest('[data-bs]');if(b){st.bs=b.dataset.bs;save();st.bs==='g'?SFX.ok():SFX.bad();drawPlan()}});
+
+/* ================== SVG board (book top view) ================== */
+const SX=c=>36+c*56,SY=r=>52+r*56;
+function partSVG(p){
+ if(p.id==='bat')return`<g><rect x="${SX(4)-20}" y="${SY(0)-24}" width="94" height="${SY(2)-SY(0)+48}" rx="8" fill="#d8322f"/><rect x="${SX(4.45)}" y="${SY(0)}" width="13" height="${SY(2)-SY(0)}" rx="6" fill="#2fb35a"/><rect x="${SX(4.8)}" y="${SY(0)}" width="13" height="${SY(2)-SY(0)}" rx="6" fill="#2fb35a"/><text x="${SX(4)+8}" y="${SY(0)+22}" fill="#fff" font-size="16" font-weight="800">+</text><text x="${SX(4)+4}" y="${SY(1.6)}" fill="#fff" font-size="12" font-weight="800">19</text><circle cx="${SX(4)}" cy="${SY(0)}" r="7" fill="#c8ccd2"/><circle cx="${SX(4)}" cy="${SY(2)}" r="7" fill="#c8ccd2"/></g>`;
+ const x1=SX(p.a[0]),y1=SY(p.a[1]),x2=SX(p.b[0]),y2=SY(p.b[1]);const w=p.id.startsWith('w')?16:30;const col=p.id==='meter'?'#222':p.id==='res'?'#f2c230':p.id==='sw'?'#2e9e48':'#1f5fbf';const mx=(x1+x2)/2,my=(y1+y2)/2;
+ let s=`<g><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+ if(p.id==='meter')s+=`<rect x="${mx-34}" y="${SY(0)-50}" width="68" height="34" rx="3" fill="#fff" stroke="#888"/><path d="M${mx-22} ${SY(0)-24} Q${mx} ${SY(0)-44} ${mx+22} ${SY(0)-24}" fill="none" stroke="#333"/><line x1="${mx}" y1="${SY(0)-18}" x2="${mx-6}" y2="${SY(0)-38}" stroke="#d32f2f" stroke-width="2"/>`;
+ s+=`${pts(p).filter((q,i,a)=>p.id.startsWith('w')||i===0||i===a.length-1).map(([c,r])=>`<circle cx="${SX(c)}" cy="${SY(r)}" r="7" fill="#c8ccd2" stroke="#7a8088"/>`).join('')}<rect x="${mx-15}" y="${my-9}" width="30" height="18" rx="3" fill="#fff" opacity=".92"/><text x="${mx}" y="${my+5}" font-size="12" font-weight="800" text-anchor="middle" fill="#123">${p.code}</text></g>`;return s}
+function grid(){let s='';for(let c=0;c<=4;c++)for(let r=0;r<=2;r++)s+=`<circle cx="${SX(c)}" cy="${SY(r)}" r="5" fill="#c3c8d0"/>`;return s}
+function boardSVG(el,placed,opt){opt=opt||{};let s=grid();placed.forEach(p=>s+=partSVG(p));
+ if(opt.dots){for(let c=0;c<=4;c++)for(let r=0;r<=2;r++){const sel=opt.sel&&opt.sel.some(q=>q[0]===c&&q[1]===r),hint=opt.hint&&opt.hint.some(q=>q[0]===c&&q[1]===r);s+=`<g class="dot" data-c="${c}" data-r="${r}"><circle cx="${SX(c)}" cy="${SY(r)}" r="16" fill="transparent"/><circle class="r" cx="${SX(c)}" cy="${SY(r)}" r="11" fill="${sel?'#c62828':hint?'#ffd54f':'rgba(198,40,40,.15)'}" stroke="${hint?'#e65100':'#c62828'}" stroke-width="${hint?3:1.5}">${hint?'<animate attributeName="r" values="9;14;9" dur="1s" repeatCount="indefinite"/>':''}</circle></g>`}}
+ el.innerHTML=s}
+$('board').setAttribute('viewBox','0 0 350 196');$('target').setAttribute('viewBox','0 0 350 196');
+
+/* ================== 2. Build ================== */
+let bSel=false,bTaps=[],bWrongDots=0,bStrike=0,bAsk=false;
+const TRAY=[...new Set(PL.map(p=>p.tray))].map(l=>({id:'t:'+l,lab:l})).concat(EXTRA.map((x,i)=>({id:'x'+i,lab:x[0]}))).sort((a,b)=>parseInt(a.lab)-parseInt(b.lab));
+function showParts(){PL.forEach((p,i)=>meshes[p.id].visible=i<st.placed||cur>=2)}
+function bOpts(i){const n=PL[i].o.length;const r=i%n;return [...Array(n).keys()].slice(r).concat([...Array(n).keys()].slice(0,r))}
+function targetSVG(i){let s=grid();PL.forEach((p,k)=>{if(k===i)return;s+=`<g opacity="${k<i?0.55:0.15}">${partSVG(p)}</g>`});
+ if(i<PL.length){const p=PL[i];s+=`<g>${partSVG(p)}<animate attributeName="opacity" values="1;0.35;1" dur="1.2s" repeatCount="indefinite"/></g>`;[p.a,p.b].forEach(([c,r])=>s+=`<circle cx="${SX(c)}" cy="${SY(r)}" r="13" fill="none" stroke="#e65100" stroke-width="3"/>`)}
+ $('target').innerHTML=s}
+function drawBuild(){const n=PL.length,c=st.placed,want=PL[c];targetSVG(c);
+ $('nowPart').innerHTML=want?`${BOOKIMG['p'+want.code]?`<img src="${BOOKIMG['p'+want.code]}" alt="">`:''}<span>Part ${c+1} of ${n}: <b>${want.tray}</b></span>`:'✔ All parts are on the plate!';
+ $('bSteps').innerHTML=PL.map((p,i)=>i<=c?`<li class="${i<c?'dn':'cur'}">${i<c?`${p.tray} ✔`:`Find part <b>${p.code}</b> and snap it on.`}</li>`:'').join('');
+ const left=id=>{const lab=id.slice(2);return PL.some((p,i)=>i>=c&&p.tray===lab)};
+ $('tray').innerHTML=TRAY.map(p=>{const im=BOOKIMG['p'+parseInt(p.lab)];return`<button type="button" class="btn ${p.id.startsWith('t:')&&!left(p.id)?'used':''} ${bSel&&want&&('t:'+want.tray)===p.id?'sel':''}" data-part="${p.id}">${im?`<img src="${im}" alt="">`:''}${p.lab}</button>`}).join('');
+ boardSVG($('board'),PL.slice(0,c),{dots:bSel&&!bAsk,sel:bTaps,hint:bWrongDots>=2&&want?[want.a,want.b]:null});
+ if(bAsk&&want){msg('mB','',`<b>${want.q}</b><div class="choices" style="margin-top:6px">${bOpts(c).map(j=>`<button type="button" class="btn" data-bo="${j}">${want.o[j]}</button>`).join('')}</div>`)}
+ hud(`<div class="h">Part <b>${Math.min(c+1,n)}</b> of ${n} · mistakes <b>${st.bMist||0}</b></div>`);
+ if(c>=n){msg('mB','good',`✔ Your current-measuring circuit is built: ${n} parts with ${st.bMist||0} mistake${st.bMist===1?'':'s'}. It matches the book!`);$('nB').disabled=false;done(1)}}
+function bMiss(t){bStrike++;st.bMist=(st.bMist||0)+1;save();SFX.bad();msg('mB','bad',t+(bStrike>=3&&!bSel?`<br>💡 Hint: look for part <b>${PL[st.placed].tray}</b>.`:''))}
+$('tray').addEventListener('click',e=>{const el=e.target.closest('[data-part]');if(!el||st.placed>=PL.length||bAsk)return;const id=el.dataset.part,want=PL[st.placed];
+ if(id==='t:'+want.tray){bSel=true;bTaps=[];SFX.click();msg('mB','',`Right part: <b>${want.tray}</b>. Now tap the <b>2 dots</b> on the plate where its ends snap on. Look at the book picture if you need help.`);drawBuild();return}
+ bSel=false;const x=EXTRA[+id.slice(1)];bMiss(x?'Not in this circuit: '+x[1]:'Not this part yet. Look at the book picture: which part comes next?');drawBuild()});
+$('board').addEventListener('click',e=>{const d=e.target.closest('.dot');if(!d||!bSel)return;const c=+d.dataset.c,r=+d.dataset.r;bTaps.push([c,r]);SFX.click();
+ if(bTaps.length<2){drawBuild();return}const want=PL[st.placed];const W=[want.a,want.b];const eq=(p,q)=>p[0]===q[0]&&p[1]===q[1];
+ const ok=(eq(bTaps[0],W[0])&&eq(bTaps[1],W[1]))||(eq(bTaps[0],W[1])&&eq(bTaps[1],W[0]));
+ if(ok){bSel=false;bTaps=[];bWrongDots=0;bAsk=true;SFX.ok();const m=meshes[want.id];m.visible=true;dropIn(m,K.hooks,3);K.view(want.id==='meter'?'board':'board')}
+ else{bTaps=[];bWrongDots++;bMiss(bWrongDots>=2?'Not there. The glowing yellow dots show where it snaps.':'Not there. Compare with the book picture: count the dots from the left and from the top.')}drawBuild()});
+$('mB').addEventListener('click',e=>{const el=e.target.closest('[data-bo]');if(!el)return;const want=PL[st.placed],j=+el.dataset.bo;
+ if(j===0){st.placed++;save();bAsk=false;bStrike=0;SFX.ok();drawBuild();if(st.placed<PL.length)msg('mB','good','✔ '+want.ok)}else{st.bMist=(st.bMist||0)+1;save();SFX.bad();banner('Not quite: try again!',true)}});
+
+/* ================== 3. Test ================== */
+function drawTest(){
+ if(st.tNum)fb('tNumM',true,'✔ 6 on the scale. Look straight at the needle from the front to read it.','');
+ if(st.tUa)fb('tUaM',true,'✔ 6 × 50 = 300 µA (that is 0.3 mA). The book: current is measured in Amperes (A).','');
+ document.querySelectorAll('[data-tq]').forEach(b=>b.classList.toggle('sel',b.dataset.tq===st.tq));
+ if(st.tq!=null)fb('tQm',st.tq==='0','✔ No closed loop = no current. The needle returns to 0.','Try it: switch OFF and watch the needle.');
+ const ok=st.tNum&&st.tUa&&st.tq==='0';$('nT').disabled=!ok;if(ok){msg('mT','good','✔ Great testing! Your circuit measures the current.');done(2)}else msg('mT','',live.sw?'Read the needle and answer the questions.':'Turn on switch 15 (button under the 3D model).')}
+$('tNumB').onclick=()=>{const v=+$('tNum').value;if(!live.sw&&!st.on){SFX.bad();fb('tNumM',false,'','Turn the switch ON first, then read the needle.');return}if(v===6){st.tNum=1;save();SFX.ok();drawTest()}else{SFX.bad();fb('tNumM',false,'',v>6?'Too big. Use the Meter view to look closely.':'Too small. Count the marks: each long mark is 1 number.')}};
+$('tUaB').onclick=()=>{const v=+$('tUa').value;if(v===300){st.tUa=1;save();SFX.ok();drawTest()}else{SFX.bad();fb('tUaM',false,'',st.tNum?'Multiply the needle number by 50.':'First read the needle number.')}};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-tq]');if(b){st.tq=b.dataset.tq;save();st.tq==='0'?SFX.ok():SFX.bad();drawTest()}});
+
+/* ================== 4. Record sheet ================== */
+const IDEAS=[['elec','🔧 An electrician checks the wires in a house',1],['car','🚗 A mechanic checks a car battery',1],['hosp','🏥 Checking hospital machines are safe',1],['charge','🔌 Testing a phone charger',1],['tea','🍵 Measuring how hot tea is',0],['fruit','🍎 Weighing fruit',0]];
+function drawRec(){['r1','r2','r4'].forEach(k=>document.querySelectorAll(`[data-${k}]`).forEach(b=>b.classList.toggle('sel',b.dataset[k]===st[k])));
+ if(st.rCur)fb('rCurM',true,'✔ 300 µA = 0.3 mA, because 1 mA = 1000 µA.','');
+ if(st.r4)fb('r4m',st.r4==='coil','✔ Inside the meter, the current makes a coil into a small magnet that turns the needle. More current = more turn.','Think: what makes the needle move?');
+ const id=st.ideas||{};$('rIdeas').innerHTML=IDEAS.map(([k,t])=>`<span role="button" tabindex="0" class="${id[k]?'got':''}" data-id="${k}">${t}</span>`).join('');
+ const good=IDEAS.filter(x=>x[2]&&id[x[0]]).length,bad=IDEAS.some(x=>!x[2]&&id[x[0]]);
+ const ok=st.r1&&st.r2==='yes'&&st.rCur&&st.r4==='coil'&&good>=3&&!bad;$('nR').disabled=!ok;
+ if(ok){msg('mR','good','✔ Record sheet complete!');done(3)}else msg('mR',bad?'bad':'',bad?'An ammeter measures electric current. Does that one use electricity?':st.r2==='no'?'Go back to Test it: is the switch ON and are all the parts snapped on?':'Answer all 5 questions.')}
+document.addEventListener('click',e=>{for(const k of ['r1','r2','r4']){const b=e.target.closest(`[data-${k}]`);if(b){st[k]=b.dataset[k];save();SFX.click();drawRec()}}
+ const s=e.target.closest('#rIdeas [data-id]');if(s){st.ideas=st.ideas||{};const k=s.dataset.id;st.ideas[k]=st.ideas[k]?0:1;save();IDEAS.find(x=>x[0]===k)[2]?SFX.ok():SFX.bad();drawRec()}});
+$('rCurB').onclick=()=>{const a=+$('rCur').value,b=+$('rCurMa').value;if(a===300&&Math.abs(b-0.3)<1e-9){st.rCur=1;save();SFX.ok();drawRec()}else{SFX.bad();fb('rCurM',false,'',a!==300?'Read the needle again: number × 50 µA.':'Divide by 1000: 1 mA = 1000 µA.')}};
+
+/* ================== 5. Math (4.MD.A.2) ================== */
+const Q=[{q:'1 ampere (A) = 1000 milliamperes (mA). How many mA are in 2 A?',o:['2000 mA','200 mA','20 mA'],a:0,e:'2 × 1000 = 2000 mA.'},
+ {q:'1 mA = 1000 µA. Your circuit shows 300 µA. How many mA is that?',o:['0.3 mA','3 mA','30 mA'],a:0,e:'300 ÷ 1000 = 0.3 mA.'},
+ {q:'A safety check takes 15 minutes for each machine. How long does it take to check 6 machines?',o:['1 hour 30 minutes','1 hour','2 hours'],a:0,e:'15 × 6 = 90 minutes = 1 hour 30 minutes.'},
+ {q:'The expert starts at 8:45 and finishes at 10:15. How long did the check take?',o:['1 hour 30 minutes','2 hours 30 minutes','1 hour 15 minutes'],a:0,e:'8:45 → 9:45 is 1 hour, then 30 more minutes to 10:15.'},
+ {q:'A safety cable is 3 metres long. How many centimetres is that?',o:['300 cm','30 cm','3000 cm'],a:0,e:'1 m = 100 cm, so 3 m = 300 cm.'},
+ {q:'4 workers each wear a hard hat of 450 g. What is the total mass?',o:['1 kg 800 g','1 kg 450 g','18 kg'],a:0,e:'450 × 4 = 1800 g = 1 kg 800 g.'},
+ {q:'Each number on the meter is 50 µA. The needle is on 8. What is the current?',o:['400 µA','58 µA','80 µA'],a:0,e:'8 × 50 = 400 µA.'},
+ {q:'Book careers: who makes sure that people are safe at work?',o:['An Occupational Safety Manager','A pastry chef','A pilot'],a:0,e:'Book careers: Occupational Safety Manager and HR Manager.'}];
+function drawQuiz(){$('quiz').innerHTML=Q.map((x,i)=>{const c=st.quiz[i];const ord=[...x.o.keys()];const r=i%ord.length;const O=ord.slice(r).concat(ord.slice(0,r));return`<div class="q">${i+1}. ${x.q}</div><div class="choices">${O.map(j=>`<button type="button" class="btn ${c==null?'':j===x.a&&c===x.a?'right':j===c?'wrong':''}" data-q="${i}" data-o="${j}">${x.o[j]}</button>`).join('')}</div><div class="fb" style="color:${c===x.a?'var(--ok)':'var(--warn)'}">${c==null?'':c===x.a?'✔ '+x.e:'Try again.'}</div>`}).join('');
+ const ok=Q.every((x,i)=>st.quiz[i]===x.a);$('nM').disabled=!ok;if(ok){msg('mM','good','✔ All correct: you are a measurement expert!');done(4)}else msg('mM','',Object.keys(st.quiz).length+' of '+Q.length+' answered.')}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;const i=+b.dataset.q,o=+b.dataset.o;st.quiz[i]=o;save();o===Q[i].a?SFX.ok():SFX.bad();drawQuiz()});
+
+/* ================== 6. Reflect (book) ================== */
+const RUB=[['Rate how well you were able to understand this challenge.',['Even with the help I didn’t get it.','After a little help, I got it.','I need some more practice.','I need a challenge so I can help someone else.']],
+ ['Rate how well you presented and communicated.',['I feel it was difficult to present my STEM model.','I can present my model to my friends with a little support.','I can present my model to my friends and can communicate most of my ideas.','I can present my model effectively and can support others.']],
+ ['Rate how well you understand and build circuits in the kit.',['It is difficult for me to understand and build the circuit.','I need support and guidance to build the circuit.','I can understand and build the circuit without any support or guidance.','I understand how the circuit works very well and I can easily build the circuit.']],
+ ['Rate how you feel about this project.',['☹️','😐','🙂','😄']],
+ ['Rate the Sustainable Development Goal.',['I don’t think this project can help the goal.','I think this project can help the goal a little.','I think this project will help this goal a lot.','I think this project can help exceed the goal expectations.']]];
+function drawRub(){document.querySelectorAll('[data-im]').forEach(b=>b.classList.toggle('sel',b.dataset.im===st.im));document.querySelectorAll('[data-sc]').forEach(b=>b.classList.toggle('sel',b.dataset.sc===st.sc));
+ if(st.im)fb('imm',st.im==='case','✔ A strong case keeps fingers away from the wires, the window shows the needle, and probes let you test from a safe distance.',st.im==='nores'?'Without the resistor too much current flows and the meter can break!':'Water and electricity are dangerous together!');
+ if(st.sc)fb('scm',st.sc==='safe','✔ Safe, well-checked machines and buildings are part of SDG 9: good industry and infrastructure.','Which choice helps everyone stay safe?');
+ ['fb1','fb2','fb3'].forEach((id,i)=>{if(document.activeElement!==$(id))$(id).value=st.fbk[i]||''});
+ $('rub').innerHTML=RUB.map((r,i)=>`<div><div class="rq">${i+1}. ${r[0]}</div><div class="lv" role="radiogroup" aria-label="${r[0]}">${r[1].map((t,j)=>`<button type="button" role="radio" aria-checked="${st.rub[i]===j}" class="${st.rub[i]===j?'on':''}" data-r="${i}" data-l="${j}">${t}</button>`).join('')}</div></div>`).join('');
+ const n=Object.keys(st.rub).length;const ready=n>=RUB.length&&st.sc==='safe'&&st.im==='case';$('finish').disabled=!ready;msg('mA','',n<RUB.length?`${n} of ${RUB.length} rubric rows done.`:!ready?'Answer the questions above.':'All done. Press Finish!')}
+['fb1','fb2','fb3'].forEach((id,i)=>$(id).addEventListener('input',()=>{st.fbk[i]=$(id).value;save()}));
+$('rub').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;st.rub[b.dataset.r]=+b.dataset.l;save();SFX.click();drawRub()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sc]');if(b){st.sc=b.dataset.sc;save();st.sc==='safe'?SFX.ok():SFX.bad();drawRub()}const c=e.target.closest('[data-im]');if(c){st.im=c.dataset.im;save();st.im==='case'?SFX.ok():SFX.bad();drawRub()}});
+function showFin(){showParts();setCircuit();setSw(true);K.view('fin',true);setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false},1200)}
+$('finish').onclick=()=>{st.finished=1;save();done(5);SFX.done();showFin();setTimeout(()=>$('fin').scrollIntoView({behavior:'smooth',block:'center'}),700)};
+
+/* ================== 7. Challenges ================== */
+function star(k,id,h){msg(id,'good',h);if(!st.ch[k]){st.ch[k]=1;save()}SFX.done();drawStars();banner('⭐ Challenge complete!')}
+function drawStars(){const n=['c0','c1','c2','c3'].filter(k=>st.ch[k]).length;$('stars').textContent=n;document.querySelectorAll('[data-st]').forEach(e=>{const on=!!st.ch[e.dataset.st];e.textContent=on?'★':'☆';e.closest('.ch').classList.toggle('won',on)})}
+const C0=[['What is the tool case made of?',[['plastic','Strong plastic: it does not carry electricity',1],['metal','Thin metal',0],['paper','Paper',0]]],
+ ['How will people see the measurement?',[['win','A clear window over the galvanometer needle',1],['closed','Close the case completely',0],['guess','They guess',0]]],
+ ['How will the tool touch the machine wires?',[['probe','Two insulated probes: red and black',1],['hands','With bare hands',0],['water','Through a wet cloth',0]]]];
+function drawC0(){$('c0q').innerHTML=C0.map((q,i)=>`<div class="q">${i+1}. ${q[0]}</div><div class="choices">${q[1].map(([k,t])=>`<button type="button" class="btn ${st.c0[i]===k?'sel':''}" data-c0="${i}:${k}">${t}</button>`).join('')}</div>`).join('')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c0]');if(b){const [i,k]=b.dataset.c0.split(':');st.c0[i]=k;save();SFX.click();drawC0()}});
+$('c0run').onclick=()=>{const bad=C0.map((q,i)=>q[1].find(o=>o[0]===st.c0[i])).map((o,i)=>!o?`Answer question ${i+1}.`:o[2]?'':['Metal carries electricity: the case must be an insulator like plastic.','The book rule: the tool must SHOW how it measures. People must see the needle.','Never touch wires with your hands or with water: use insulated probes.'][i]).filter(Boolean);
+ if(bad.length){SFX.bad();msg('c0msg','bad',bad.join(' '));return}
+ xtra.tool.visible=true;setCircuit();setSw(true);K.view('tool');star('c0','c0msg','⭐ Your current tester follows the book rules: the circuit is inside a plastic tool, the window shows the needle (300 µA) and the probes keep hands safe.')};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c1]');if(b){document.querySelectorAll('[data-c1]').forEach(x=>x.classList.toggle('on',x===b))}});
+$('c1run').onclick=()=>{const b=document.querySelector('[data-c1].on');if(!b){SFX.bad();msg('c1msg','bad','Choose a resistor first.');return}const R=+b.dataset.c1;setCircuit({R});setSw(true);K.view('meter');const ua=3/R*1e6;
+ st.c1t=st.c1t||{};st.c1t[R]=1;save();
+ setTimeout(()=>{if(ua>500)msg('c1msg','bad',`💥 ${R>=1000?R/1000+' K':R+' Ω'}: 3 V ÷ ${R} Ω = ${ua>=1000?(ua/1000).toFixed(1)+' mA':Math.round(ua)+' µA'}. That is more than 500 µA: the needle slams past 10! Try a bigger resistor.`);
+  else if(R===6800)star('c1','c1msg','⭐ 6.8 K gives about 441 µA: the needle is near 9, still on the scale. It is the smallest safe resistor here! (10 K is safe too, but gives a smaller reading.)');
+  else msg('c1msg','',`✔ 10 K is safe: 300 µA. But is there a <b>smaller</b> resistor that is still safe? Try another one.`)},1600)};
+$('c2run').onclick=()=>{const p=+$('c2p').value;setCircuit({R:20000,two:true});setSw(true);K.view('board');
+ setTimeout(()=>{if(p===150)star('c2','c2msg','⭐ Correct! 10 K + 10 K = 20 K. Twice the resistance → half the current: 300 ÷ 2 = 150 µA (needle on 3).');else{SFX.bad();msg('c2msg','bad',`The meter shows 150 µA (needle on 3), not ${p||'?'} µA. Two resistors in a row make it twice as hard for the current, so the current is halved. Change your prediction and test again.`)}},1600)};
+function c3test(k){const V=k==='A'?3:1.8;setCircuit({V});setSw(true);K.view('meter');st.c3seen[k]=1;save();$('c3r').textContent=`Battery ${k}: needle on ${V/10000*1e6/50} → ${Math.round(V/10000*1e6)} µA`;if(st.c3seen.A&&st.c3seen.B)$('c3q').hidden=false}
+$('c3a').onclick=()=>c3test('A');$('c3b').onclick=()=>c3test('B');
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c3]');if(!b)return;if(b.dataset.c3==='B')star('c3','c3msg','⭐ Battery B gives only 180 µA, so it has only about 1.8 V instead of 3 V. Less voltage pushes less current: battery B is tired!');else{SFX.bad();msg('c3msg','bad','Which battery made the needle move less?')}});
+
+/* ================== 8. Other designs ================== */
+const DS=[['tester','🧰 Handheld current tester','The book circuit inside a plastic case with a window and two probes, ready for the safety expert.'],
+ ['machine','🏭 Factory machine check','The expert puts the probes on a machine. A normal reading means the machine is safe to use.'],
+ ['battery','🔋 Battery checker','Test a single AA cell: a fresh cell (1.5 V) gives 150 µA, a flat one much less.'],
+ ['solar','☀️ Solar panel meter','Replace the battery with a small solar panel. More sunlight = more current.'],
+ ['lemon','🍋 Lemon battery','A lemon with a copper and a zinc strip makes about 0.9 V. Can the meter see it?']];
+function drawDesigns(){$('dList').innerHTML=DS.map(([k,t,d])=>`<div class="ch"><div class="chh"><h3 style="margin:0">${t}</h3></div><p style="margin:4px 0">${d}</p><div class="row"><button class="btn pri" data-ds="${k}">▶ Show me</button></div><div class="msg" id="dm_${k}"></div></div>`).join('')}
+function resetScene(){xtra.tool.visible=false;setCircuit();fac.userData.machine.userData.lamp.material=M(0x2e7d32,{emissive:0x2e7d32,emissiveIntensity:.6})}
+function design(k){resetScene();document.querySelectorAll('[data-ds]').forEach(b=>b.classList.toggle('sel',b.dataset.ds===k));setSw(true);
+ if(k==='tester'){xtra.tool.visible=true;K.view('tool');msg('dm_tester','good','🧰 The tester reads 300 µA. Safe, easy to hold and easy to read!')}
+ if(k==='machine'){xtra.tool.visible=true;setCircuit({V:2.4});K.view('factory');msg('dm_machine','good','🏭 The machine reading is 240 µA (needle on 4.8): normal. ✔ Green light: the machine is safe to use.')}
+ if(k==='battery'){setCircuit({V:1.5,src:'cell'});K.view('side');msg('dm_battery','good','🔋 Fresh AA cell: 1.5 V ÷ 10 K = 150 µA (needle on 3). A flat cell would show almost nothing.')}
+ if(k==='solar'){setCircuit({V:2,src:'solar'});K.view('side');msg('dm_solar','good','☀️ In the sun the panel gives about 2 V: 200 µA (needle on 4). Cover it with a cloud and the needle drops!');setTimeout(()=>{if(live.src==='solar'){live.V=0.5;msg('dm_solar','good','☁️ A cloud covers the panel: only 50 µA (needle on 1). Solar power depends on light.')}},3500)}
+ if(k==='lemon'){setCircuit({V:0.9,src:'lemon'});K.view('side');msg('dm_lemon','good','🍋 The lemon battery gives about 0.9 V: 90 µA (needle just under 2). Small, but the sensitive galvanometer can see it!')}
+ hud('<div class="h">'+DS.find(d=>d[0]===k)[1]+' · <b>'+Math.round(current())+' µA</b></div>')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ds]');if(b){SFX.click();design(b.dataset.ds)}});
+$('dTry').onclick=()=>{const w=$('dWhat').value,R=+$('dRes').value,sh=$('dShape').value;const V={toy:3,solar:2,fruit:0.9,lamp:3}[w];resetScene();setCircuit({V,R,src:w==='solar'?'solar':w==='fruit'?'lemon':'bat'});if(sh==='hand'||sh==='pen')xtra.tool.visible=true;setSw(true);K.view('meter');
+ if(R===0){SFX.bad();msg('dChk','bad','⚠ No resistor: nothing limits the current, so it rushes through the meter. The needle slams past 10 and the meter can break. Always keep the 10 K resistor!');return}
+ const ua=V/R*1e6;if(ua>500){SFX.bad();msg('dChk','bad',`⚠ ${V} V ÷ ${R} Ω = ${ua>=1000?(ua/1000).toFixed(1)+' mA':Math.round(ua)+' µA'}: too much for this meter (500 µA max). Use the 10 K resistor.`);return}
+ SFX.ok();msg('dChk','good',`✔ Safe design! ${V} V ÷ 10 K = ${Math.round(ua)} µA: the needle points to ${(ua/50).toFixed(1)}. ${sh==='box'?'A box on the wall is good for checking one machine all the time.':sh==='pen'?'A pen tester fits in a pocket.':'A handheld tester can go to every machine.'}`)};
+try{$('dPlan').value=localStorage.getItem(KEY+'-plan')||''}catch(e){}
+$('dSave').onclick=()=>{try{localStorage.setItem(KEY+'-plan',$('dPlan').value)}catch(e){}SFX.ok();$('dSaved').textContent='✔ Saved on this device.'};
+
+/* ================== live events ================== */
+onEvt=k=>{if(cur===2&&k==='sw'){if(live.sw){st.on=1;save();banner('Switch ON: the needle moves!');K.view('meter')}drawTest()}
+ if(cur===0||cur===1)return};
+
+/* ================== navigation ================== */
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();
+ hud('');setSw(false);showParts();resetScene();$('liveCtl').hidden=!(i===2||i===3||i===6||i===7);
+ if(i===0){drawPlan();K.view('factory')}
+ if(i===1){bSel=false;bAsk=false;bTaps=[];drawBuild();K.view('top')}
+ if(i===2){drawTest();K.view('board')}
+ if(i===3){drawRec();K.view('meter')}
+ if(i===4){drawQuiz();K.view('spin')}
+ if(i===5){drawRub();if(st.finished)showFin();else K.view('fin')}
+ if(i===6){drawStars();drawC0();K.view('board')}
+ if(i===7){drawDesigns();K.view('board')}
+ window.scrollTo(0,0)}
+$('bkCirc').src=BOOKIMG.circ;
+drawPlan();drawQuiz();drawRub();
+go(st.finished?5:Math.min(...[0,1,2,3,4,5].filter(i=>!st.done.includes(i)),6));
+
+</script>
+</body>
+</html>

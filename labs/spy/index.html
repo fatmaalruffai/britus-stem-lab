@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>/* Britus sign-in gate: a lab opens only after signing in on the main page */(function(){try{if(localStorage.getItem("britusStudent")||sessionStorage.getItem("britusTeacher"))return}catch(e){}location.replace("../../index.html?next="+encodeURIComponent(location.href))})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual STEM Lab: Spy Robot</title>
+<style>
+/* Grade 5 · Project 5 · Sort to Recycle. WeDo 2.0 kit; recycling green accent */
+:root{--bg:#f4efe6;--surf:#fff;--ink:#1f2433;--mute:#5f6475;--line:#e3dccd;--acc:#6a1b9a;--acc-d:#1b5e20;--onacc:#fff;--navy:#16233f;--ok:#1d7a4c;--okbg:#e3f3ea;--warn:#b3261e;--warnbg:#fbe9e7;--tray:#f7f2e9;--stage1:#fbf6ec;--stage2:#e7dcc6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151c;--surf:#1d212b;--ink:#eef0f6;--mute:#a8adbd;--line:#333949;--acc:#ff9b3d;--acc-d:#ffb46b;--onacc:#13151c;--ok:#58c98c;--okbg:#173424;--warn:#ff8a7e;--warnbg:#3a1d19;--tray:#191c25;--stage1:#262b37;--stage2:#1a1e28;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.top{background:var(--navy);color:#fff;border-bottom:4px solid #ff8a3d}
+.top .in{max-width:1180px;margin:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .ti{display:flex;gap:14px;align-items:center}
+.top .ic{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#43a047,#1565c0);display:grid;place-items:center;flex:none;font-size:24px}
+.top h1{margin:0;font:700 clamp(19px,2.6vw,25px)/1.15 "Segoe UI",system-ui,sans-serif;letter-spacing:.2px}
+.top p{margin:2px 0 0;color:#c4cbe0;font-size:13.5px}
+.top .btn{background:transparent;color:#fff;border-color:#ffffff40}
+nav{max-width:1180px;margin:12px auto 0;padding:0 max(16px,env(safe-area-inset-left));display:flex;gap:6px;flex-wrap:wrap}
+nav button{flex:1 1 110px;padding:9px 8px;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);background:var(--acc);color:var(--onacc)}
+nav button.done:not(.on){border-color:var(--ok);color:var(--ok)}
+nav button.done::after{content:" ✓"}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;max-width:1180px;margin:auto;padding:12px max(16px,env(safe-area-inset-left)) 28px}
+@media(max-width:880px){main{grid-template-columns:1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:16px}
+#stage{padding:8px;align-self:start;background:var(--surf)}
+@media(min-width:881px){#stage{position:sticky;top:8px}}
+#v3{position:relative;border-radius:10px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,var(--stage1),var(--stage2))}
+#cv3{display:block;width:100%;touch-action:none;cursor:grab}
+#hud{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:70%}
+#hud .h{background:rgba(22,35,63,.86);color:#fff;border-radius:8px;padding:6px 10px;font:600 13.5px/1.35 "Segoe UI",system-ui,sans-serif}
+#hud .h b{color:#ffd27a}
+#hud .big{font-size:22px;font-weight:800}
+#banner{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#1d7a4c;color:#fff;border-radius:999px;padding:8px 18px;font:800 16px "Segoe UI",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+#tip{position:absolute;right:10px;bottom:8px;font-size:12px;color:var(--mute);pointer-events:none}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 2px 2px}
+.vbar b{font-size:13px;color:var(--mute)}
+h2{margin:0 0 6px;font:700 20px/1.25 "Segoe UI",system-ui,sans-serif}
+h3{margin:12px 0 4px;font:700 16px/1.3 "Segoe UI",system-ui,sans-serif}
+.k{font:700 12px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:var(--acc-d);margin-bottom:6px}
+.panel{display:none}.panel.on{display:block}
+.btn{border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:8px;padding:8px 12px;font:600 14.5px inherit;font-family:inherit;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.btn.pri:hover{background:var(--acc-d);border-color:var(--acc-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.btn.ok{border-color:var(--ok);color:var(--ok)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e0a43a;outline-offset:2px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px;margin:8px 0}
+.tray .btn.used{opacity:.4;text-decoration:line-through;pointer-events:none}
+.msg{min-height:2.6em;padding:9px 11px;border-radius:9px;background:var(--tray);margin:8px 0;font-size:15px}
+.msg.good{background:var(--okbg);color:var(--ok);font-weight:600}.msg.bad{background:var(--warnbg);color:var(--warn);font-weight:600}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:3px 0}.steps li.dn{color:var(--ok)}.steps li.cur{font-weight:700;color:var(--acc-d)}
+.wires{display:grid;gap:6px;margin:6px 0}
+.wire{display:flex;align-items:center;gap:10px;text-align:left;border:2px solid var(--line);background:var(--surf);color:var(--ink);border-radius:9px;padding:7px 10px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.wire i{width:28px;height:8px;border-radius:4px;flex:none}.wire small{display:block;font-weight:500;color:var(--mute)}
+.wire.sel{border-color:var(--acc)}.wire.ok{border-color:var(--ok);color:var(--ok)}
+.pins{display:flex;flex-wrap:wrap;gap:6px}
+.pins .btn{min-width:62px;font-family:Consolas,monospace}
+.ctrl{display:grid;gap:8px;margin:6px 0}.ctrl label{font-weight:600;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.palette{display:flex;flex-wrap:wrap;gap:6px;background:var(--tray);padding:8px;border-radius:10px}
+.blk{border:0;border-radius:7px;padding:7px 11px;color:#fff;font:600 14px inherit;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.blk.used{opacity:.3;pointer-events:none}
+.hat{background:#d9922b;border-radius:14px 14px 7px 7px}.ctl{background:#c27b1a}.sns{background:#2a86c9}.mot{background:#c9423a}.oth{background:#7a5bb5}
+.script{min-height:140px;border:2px dashed var(--line);border-radius:10px;padding:8px;margin:8px 0;background:var(--surf)}
+.script .blk{display:block;width:max-content;max-width:100%;margin:3px 0;cursor:default}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.split{grid-template-columns:1fr}}
+pre.code{background:#141a2b;color:#e6e9f2;border-radius:10px;padding:10px 12px;font:13px/1.6 Consolas,"Courier New",monospace;overflow-x:auto;margin:8px 0;min-height:140px}
+pre.code .c{color:#7f8ca6}pre.code .new{background:rgba(255,210,122,.18);border-radius:3px}
+.calc{background:var(--tray);border:1px dashed #e0a43a;border-radius:10px;padding:9px 12px;margin:8px 0;font-size:14.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0;text-align:center}
+.stats div{background:var(--tray);border-radius:9px;padding:6px}.stats b{display:block;font-size:22px}.stats span{font-size:12.5px;color:var(--mute);font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surf);color:var(--ink);padding:6px 11px;font:700 13.5px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.trouble{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:14.5px}
+.q{margin:14px 0 4px;font-weight:700}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices .btn.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}.choices .btn.wrong{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.fb{font-size:14px;font-weight:600;min-height:20px;margin-top:4px}
+.rub{display:grid;gap:10px}.rq{font-weight:700;font-size:14.5px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px}
+.lv button{border:2px solid transparent;border-radius:8px;padding:6px;font:600 12px/1.25 inherit;font-family:inherit;cursor:pointer;color:#2b2418;min-height:52px}
+.lv button:nth-child(1){background:#f6c9d3}.lv button:nth-child(2){background:#f3e2b5}.lv button:nth-child(3){background:#c8ebd2}.lv button:nth-child(4){background:#a9dfbb}
+.lv button.on{border-color:#1f2433}.lv button.on::before{content:"✔ "}
+.lvh{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;text-align:center;font:800 12px inherit;font-family:inherit;margin-top:8px}
+.lvh span:nth-child(1){color:#c0283e}.lvh span:nth-child(2){color:#d77a0c}.lvh span:nth-child(3){color:#1d8a46}.lvh span:nth-child(4){color:#0f6b33}
+@media(max-width:560px){.lv{grid-template-columns:1fr 1fr}.lvh{display:none}}
+#fin{border:2px solid #e0a43a;border-radius:12px;padding:14px;margin-top:12px;background:linear-gradient(135deg,#fff7e6,#ffeccc);color:#3a2a06}
+#fin h3{margin:0 0 4px;font-size:20px;color:#1d7a4c}
+#fin img{width:100%;border-radius:10px;margin:8px 0;border:1px solid #e9d4a8}
+.ch{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.ch.won{border-color:#e0a43a;box-shadow:0 0 0 3px rgba(224,164,58,.3)}
+.chh{display:flex;gap:10px;align-items:center}.star{font-size:30px;color:#e0a43a;line-height:1}
+.next{display:flex;justify-content:flex-end;margin-top:12px;gap:8px;flex-wrap:wrap}
+.small{font-size:13.5px;color:var(--mute)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+footer{text-align:center;padding:20px 16px 30px;border-top:1px solid var(--line)}
+footer b{display:block;font-size:clamp(20px,3vw,26px)}footer small{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+table.dt{width:100%;border-collapse:collapse;margin:8px 0}.dt th{background:#16233f;color:#fff;padding:7px;font-size:14px}.dt td{border:1px solid var(--line);height:34px;padding:5px 8px;font-weight:600;font-size:14px}
+.gsvg{width:100%;height:auto;display:block;background:var(--tray);border-radius:10px;margin:6px 0}
+.oled{background:#05070a;color:#e8f4ff;border-radius:8px;padding:8px 10px;font:600 13px Consolas,monospace;display:inline-block}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:15px}.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok)}
+.sl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.sl output{font:800 20px Consolas,monospace;min-width:64px;text-align:right}
+.gauge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.gauge div{background:var(--tray);border-radius:9px;padding:8px;text-align:center}.gauge b{display:block;font-size:24px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--surf)}
+.ex .tag{display:inline-block;background:var(--acc);color:var(--onacc);font:800 11.5px "Segoe UI",system-ui,sans-serif;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;margin-bottom:4px}
+.ex h3{margin-top:4px}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.pc div{background:var(--tray);border-radius:9px;padding:8px;font-size:14px}.pc b{display:block}
+@media(max-width:560px){.pc{grid-template-columns:1fr}}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}.cmp th,.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:left}.cmp th{background:var(--navy);color:#fff}
+.opt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.opt label{display:grid;gap:3px;font-weight:700;font-size:14px}
+.opt select,textarea{font:inherit;padding:7px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+textarea{width:100%;min-height:90px}
+@media(max-width:560px){.opt{grid-template-columns:1fr}}
+.tips{margin:6px 0;padding-left:22px}.tips li{margin:4px 0}
+.foil{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:360px;margin:8px auto;background:#b3261e;padding:10px;border-radius:10px}
+.foil button{aspect-ratio:1;border-radius:50%;border:3px solid #7a1712;cursor:pointer;font:700 12px inherit;color:#fff}
+.foil button.solid{border-radius:8px;background:#b3261e;border-color:#e57373}.foil button.hole{background:#fdf6e3;color:#7a1712}
+.heat{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:360px;margin:8px auto}.heat div{border-radius:6px;padding:6px 2px;text-align:center;font:700 12px/1.3 inherit;background:var(--tray)}
+svg.sim{width:100%;height:auto;display:block;background:#0f1626;border-radius:10px;margin:6px 0}
+.oledbox{background:#05070a;border-radius:10px;padding:10px;display:flex;justify-content:center;margin:8px 0}.oledbox canvas{image-rendering:pixelated;width:100%;max-width:512px;border:2px solid #f2c230;border-radius:4px}
+.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}.nums label{display:grid;gap:3px;font-weight:700;font-size:14px}.nums input,.mtab input{font:inherit;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink);width:100%}
+.mtab{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}.mtab th,.mtab td{border:1px solid var(--line);padding:6px;text-align:left}.mtab th{background:var(--navy);color:#fff}.mtab td.ok{background:rgba(46,125,50,.15)}.mtab td.no{background:rgba(198,40,40,.12)}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-right:4px;border:1px solid rgba(0,0,0,.25)}
+.ser{background:#0b0f18;color:#9ef0a8;border-radius:10px;padding:8px 10px;font:13px/1.5 Consolas,monospace;height:150px;overflow-y:auto;margin:8px 0;white-space:pre-wrap}
+.ser .t{color:#7f8ca6}.ser .hit{color:#ffd27a}
+.rem{display:grid;grid-template-columns:repeat(3,56px);gap:6px;justify-content:center;background:#1b1b1b;padding:12px;border-radius:18px;width:max-content;margin:8px auto}
+.rem button{height:48px;border-radius:50%;border:0;background:#1e40af;color:#ffeb3b;font:800 18px inherit;cursor:pointer;box-shadow:0 3px 0 #0b1a4a}.rem button.ok{background:#f2c230;color:#1b1b1b;box-shadow:0 3px 0 #8a6a00}.rem span{display:block}
+.rem button:active{transform:translateY(2px);box-shadow:none}
+.hex input{font:600 14px Consolas,monospace;text-transform:uppercase;width:100%;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--surf);color:var(--ink)}
+.hex td.ok input{border-color:var(--ok)}.hex td.no input{border-color:var(--warn)}
+.led{display:inline-block;width:14px;height:14px;border-radius:50%;background:#3a1010;vertical-align:middle;margin-right:6px;border:1px solid #000}.led.on{background:#ff3b30;box-shadow:0 0 10px #ff3b30}
+.wstrip{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;min-height:64px;padding:8px;border:2px dashed var(--line);border-radius:12px;background:var(--surf);margin:8px 0}
+.wb{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;height:54px;border-radius:9px;color:#fff;font:700 12px/1.1 inherit;padding:3px 6px;border:0;cursor:pointer;text-align:center}
+.wb .i{font-size:20px;line-height:1}.wb input{width:38px;margin-top:2px;font:700 12px inherit;text-align:center;border:0;border-radius:4px;padding:1px}
+.wb.st{background:#f2c230;color:#1b1b1b}.wb.mo{background:#1f8a3b}.wb.lp{background:#f2c230;color:#1b1b1b;outline:3px solid #f2c230;outline-offset:-1px}.wb.sn{background:#d8322f}.wb.wt{background:#e86f1c}
+.pal{display:flex;flex-wrap:wrap;gap:4px}.pal .wb{min-width:64px}
+.mtab td.ok{background:rgba(46,160,67,.15)}.mtab td.no{background:rgba(216,50,47,.12)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin:6px 0}.mgrid figure{margin:0}.mgrid img{width:100%;background:#fff;border:1px solid var(--line);border-radius:8px}.mgrid figcaption{font-size:11px;text-align:center;color:var(--mute)}
+.mdl{display:flex;gap:6px;flex-wrap:wrap}.mdl .btn.on{background:var(--acc);color:#fff}
+.bat{height:14px;border-radius:7px;background:var(--line);overflow:hidden}.bat i{display:block;height:100%;background:linear-gradient(90deg,#2ea043,#f2c230,#d8322f)}
+.vol{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin:6px 0}.vol figure{margin:0;text-align:center;font-weight:800}.vol svg{width:150px;height:auto;background:var(--tray);border-radius:10px}
+.wb.li{background:#2f80ff}
+.wb select{margin-top:2px;font:700 11px inherit;border:0;border-radius:4px;max-width:70px}
+.guide{display:grid;grid-template-columns:1fr 1.6fr;gap:10px;margin:6px 0}.guide figure{margin:0;background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:6px}.guide img{width:100%;display:block;border-radius:6px;background:#fff}.guide figcaption{font-size:.88rem;margin-bottom:4px}
+@media (max-width:700px){.guide{grid-template-columns:1fr}}
+.split3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}.split3 label{display:flex;flex-direction:column;gap:3px}.split3 textarea,.split3 select{font:inherit;border:2px solid var(--line);border-radius:8px;padding:6px;background:var(--surf);color:var(--ink)}
+@media (max-width:700px){.split3{grid-template-columns:1fr}}
+.hunt{display:flex;gap:6px;flex-wrap:wrap}.hunt span{background:var(--surf);border:2px solid var(--line);border-radius:999px;padding:6px 10px;font-weight:700;cursor:pointer}.hunt span.got{background:#c8f7d0;border-color:#2e7d32;color:#123}
+#dPlan{font:inherit;border:2px solid var(--line);border-radius:8px;padding:8px;background:var(--surf);color:var(--ink)}
+.ruler{font:700 13px Consolas,monospace}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+ <div class="ti"><div class="ic" aria-hidden="true">🕵️</div><div><h1>Spy Robot</h1><p>Grade 5 · Project 6 · A WeDo 2.0 robot that gives a signal when someone arrives</p></div></div>
+ <button class="btn" id="snd" aria-pressed="true">🔊 Sound on</button>
+</div></div>
+<nav id="nav" aria-label="Project steps"></nav>
+<main>
+<div class="card" id="stage">
+ <div id="v3"><canvas id="cv3" aria-label="3D model of the LEGO WeDo 2.0 spy robot standing by the door of a party room, with a ruler on the floor. Drag to turn it, scroll or pinch to zoom."></canvas><div id="hud" aria-live="polite"></div><div id="banner" hidden></div><div id="tip">Drag to turn · scroll to zoom</div></div>
+ <div class="vbar"><b>View:</b><button class="btn" data-v="iso">Robot</button><button class="btn" data-v="face">Face</button><button class="btn" data-v="back">Back</button><button class="btn" data-v="room">Party room</button><button class="btn" data-v="ruler">Ruler</button><button class="btn" data-v="tablet">Tablet</button><button class="btn" data-v="spin">⟳ Spin</button></div>
+</div>
+<div>
+<!-- 1 Build -->
+<section class="card panel" id="p0">
+ <div class="k">Step 1 · Plan and build</div>
+ <h2>Build the spy robot</h2>
+ <div class="ex" style="margin-top:0"><b>The problem (book)</b><p style="margin:4px 0 0">Sheraz and Luqman are planning a <b>surprise party</b> for their friend Rehan, but they don't know when he will arrive. They want a <b>spy robot</b> that gives a <b>light or sound signal</b> when it detects him arriving.</p></div>
+ <div class="q">Brainstorm (book): how will the robot know someone is coming?</div><div class="choices"><button class="btn" data-bs="tilt">A tilt sensor: it feels when the robot is tipped</button><button class="btn" data-bs="motion">A motion sensor: it sees when something comes close</button><button class="btn" data-bs="motor">A motor: it spins faster</button></div><div class="fb" id="bsm"></div>
+ <div class="guide"><figure><figcaption><b>Book model</b></figcaption><img id="bkModel" alt="Book picture: the LEGO WeDo 2.0 spy robot, a white Smarthub body with lime green legs and big eyes"></figure>
+ <div><p style="margin:0 0 6px">Build it step by step, like the book model. For each step, <b>find the right part</b> in the box (some are traps!), then <b>answer the question</b>. Every mistake is counted.</p><ol class="steps" id="bSteps"></ol></div></div>
+ <div class="small"><b>Parts box</b></div>
+ <div class="tray" id="tray"></div>
+ <div id="bQ" hidden></div>
+ <div class="msg" id="mB"></div>
+ <div class="next"><button class="btn pri" data-go="1" id="nB" disabled>Next: connect ▶</button></div>
+</section>
+<!-- 2 Connect -->
+<section class="card panel" id="p1">
+ <div class="k">Step 2 · Connect</div>
+ <h2>Power up and connect the Smarthub</h2>
+ <p style="margin-top:0">Book: <i>Battery check: before you begin, make sure the Smarthub has fresh batteries.</i></p>
+ <div class="q">1. Which batteries go in a WeDo 2.0 Smarthub?</div><div class="choices"><button class="btn" data-cn="b0">2 AA batteries (or the rechargeable battery)</button><button class="btn" data-cn="b1">One 9 V battery</button><button class="btn" data-cn="b2">A coin battery</button></div><div class="fb" id="cn1"></div>
+ <div class="q">2. Plug the motion sensor cable into a Smarthub port.</div>
+ <div class="row" id="plugRow"></div><div class="fb" id="cn2"></div>
+ <div class="q">3. Press the green button. What does the light do while it waits for the tablet?</div><div class="choices"><button class="btn" data-cn="l0">It blinks</button><button class="btn" data-cn="l1">It turns off</button><button class="btn" data-cn="l2">It turns red and stays red</button></div><div class="fb" id="cn3"></div>
+ <div id="pairBox" hidden><div class="q">4. Choose the Smarthub in the WeDo 2.0 app to connect it.</div><div class="row" id="pairRow"></div></div>
+ <div class="msg" id="mW">Answer each part.</div>
+ <div class="next"><button class="btn pri" data-go="2" id="nW" disabled>Next: program ▶</button></div>
+</section>
+<!-- 3 Program -->
+<section class="card panel" id="p2">
+ <div class="k">Step 3 · Program (book)</div>
+ <h2>Make the robot play a sound when it detects motion</h2>
+ <div class="guide" style="grid-template-columns:1fr"><figure><figcaption><b>Book program</b> (top right, pointed by the arrow): <i>Make the robot play a sound when it detects motion.</i></figcaption><img id="bkProg" alt="Book picture: the WeDo 2.0 program Start, Wait for motion sensor, Play sound 1"></figure></div>
+ <p style="margin-top:0">Click a block to add it, click a block in your program to remove it. Choose the sensor in the orange box and type the numbers.</p>
+ <div class="small"><b>Blocks</b></div>
+ <div class="pal" id="pal"></div>
+ <div class="small" style="margin-top:8px"><b>Your program</b></div>
+ <div class="wstrip" id="prog" aria-label="Your program"></div>
+ <div class="row"><button class="btn pri" id="pRun">▶ Check and run</button><button class="btn" id="pClr">🗑 Clear</button></div>
+ <div class="msg" id="mP">Build the program, then press Check and run.</div>
+ <div class="next"><button class="btn pri" data-go="3" id="nP" disabled>Next: test ▶</button></div>
+</section>
+<!-- 4 Test -->
+<section class="card panel" id="p3">
+ <div class="k">Step 4 · Test (book)</div>
+ <h2>Here comes Rehan!</h2>
+ <p style="margin-top:0">Book: <i>Click on the button to start the spy robot. It should produce sound as set in the program.</i> Then <i>measure the distance from the spy bot to the place where someone first sets it off.</i></p>
+ <div class="row"><button class="btn pri" id="tGo">▶ Start the robot and let Rehan walk in</button><button class="btn" id="tAgain" disabled>↺ Walk again</button></div>
+ <div class="small">Motion sensor reading: <b id="tDist">–</b> · <span id="tState">waiting</span></div>
+ <div id="tMeas" hidden><div class="q">4. Look at the ruler (view: Ruler). Where was Rehan's front foot when the robot first beeped? (cm)</div>
+ <div class="row"><input id="tCm" type="number" min="0" max="40" style="max-width:110px;font:inherit;padding:8px;border-radius:8px;border:2px solid var(--line)" aria-label="distance in centimetres"> cm <button class="btn" id="tCmB">Record</button></div><div class="fb" id="tCmM"></div></div>
+ <div class="msg" id="mT">Press Start.</div>
+ <div class="next"><button class="btn pri" data-go="4" id="nT" disabled>Next: discover ▶</button></div>
+</section>
+<!-- 5 Discover -->
+<section class="card panel" id="p4">
+ <div class="k">Step 5 · Discover (book)</div>
+ <h2>Different sounds, loops and light</h2>
+ <p style="margin-top:0">Book: <i>Program it with different sounds, apply loop to see how it performs. You can also try light as a signal.</i></p>
+ <div class="ex"><b>A · Different sounds</b><p style="margin:4px 0">Change the number in the Play sound block. WeDo 2.0 has sounds 1 to 20.</p>
+  <div class="row"><label class="small">Sound <input id="dSnd" type="number" min="1" max="20" value="3" style="width:60px;font:inherit;padding:4px;border-radius:6px;border:2px solid var(--line)"></label><button class="btn" id="dSndRun">▶ Try it</button></div><div class="fb" id="dSndM"></div></div>
+ <div class="ex"><b>B · Apply a loop</b><p style="margin:4px 0">Without a loop the program ends after the first beep. Put the Wait and Sound blocks <b>inside a Repeat</b>, then send Rehan, his sister and his dad in one by one.</p>
+  <div class="row"><span class="seg"><button data-dl="0" class="on">No loop</button><button data-dl="1">With loop</button></span><button class="btn" id="dLoopRun">▶ Send 3 people</button></div><div class="fb" id="dLoopM"></div></div>
+ <div class="ex"><b>C · Light as a signal</b><p style="margin:4px 0">Swap the sound for the <b>Light</b> block: the Smarthub light changes colour. Which colour number is red?</p>
+  <div class="row"><label class="small">Light colour <input id="dCol" type="number" min="0" max="10" value="3" style="width:60px;font:inherit;padding:4px;border-radius:6px;border:2px solid var(--line)"></label><button class="btn" id="dColRun">▶ Try it</button></div><div class="fb" id="dColM"></div></div>
+ <div class="q">Which signal is better for a <b>surprise</b> party, and why?</div><div class="choices"><button class="btn" data-dq="light">The light: Rehan will not hear it, so the surprise is not spoiled</button><button class="btn" data-dq="loud">A very loud sound, so Rehan hears it too</button><button class="btn" data-dq="none">No signal</button></div><div class="fb" id="dQm"></div>
+ <div class="msg" id="mD"></div>
+ <div class="next"><button class="btn pri" data-go="5" id="nD" disabled>Next: record sheet ▶</button></div>
+</section>
+<!-- 6 Record sheet -->
+<section class="card panel" id="p5">
+ <div class="k">Step 6 · Student's record sheet (book)</div>
+ <h2>Record and convert</h2>
+ <div id="quiz"></div>
+ <div class="q">5. Convert your measurement from question 4 to metres.</div><div class="row"><span id="rCm"></span> cm = <input id="rM" type="number" step="0.01" style="max-width:110px;font:inherit;padding:8px;border-radius:8px;border:2px solid var(--line)" aria-label="metres"> m <button class="btn" id="rMB">Check</button></div><div class="fb" id="rMM"></div>
+ <div class="q">6. In what other scenarios can your model help with security? Choose three ideas.</div><div class="hunt" id="rIdeas"></div>
+ <div class="msg" id="mQ"></div>
+ <div class="next"><button class="btn pri" data-go="6" id="nQ" disabled>Next: reflect ▶</button></div>
+</section>
+<!-- 7 Reflect -->
+<section class="card panel" id="p6">
+ <div class="k">Step 7 · Improve, reflect and assess (book)</div>
+ <h2>Make it better</h2>
+ <div class="q">Improve (book): what change would make the spy robot work better?</div><div class="choices"><button class="btn" data-im="aim">Point the motion sensor straight at the door, not at a wall</button><button class="btn" data-im="cable">Pull the sensor cable out</button><button class="btn" data-im="cover">Cover the sensor with paper</button></div><div class="fb" id="imm"></div>
+ <div class="q">Reflection (SDG 9 · Industry, innovation and infrastructure): what can your community do to promote innovation?</div><div class="choices"><button class="btn" data-sc="club">Start a robotics club and share ideas at a school maker fair</button><button class="btn" data-sc="ban">Stop children using computers</button><button class="btn" data-sc="none">Nothing: innovation is only for big companies</button></div><div class="fb" id="scm"></div>
+ <div class="small"><b>Communication (book):</b> write the feedback from your class.</div>
+ <div class="split3"><label class="small">Positive feedback<textarea id="fb1" rows="2"></textarea></label><label class="small">Negative feedback<textarea id="fb2" rows="2"></textarea></label><label class="small">Suggested solutions<textarea id="fb3" rows="2"></textarea></label></div>
+ <h3>Assessment rubric (book)</h3>
+ <div class="lvh" aria-hidden="true"><span>Beginner</span><span>Emerging</span><span>Accomplished</span><span>Expanding</span></div>
+ <div class="rub" id="rub"></div>
+ <div class="msg" id="mA"></div>
+ <div class="next"><button class="btn pri" id="finish" disabled>Finish my project 🎉</button></div>
+ <div id="fin" hidden><h3>🎉 Project complete: Spy Robot</h3><p style="margin:0">Your spy robot watches the door with its motion sensor and signals as soon as someone arrives. Surprise!</p><img id="finImg" alt="Your finished spy robot in 3D"><div class="row"><button class="btn pri" data-go="7">Try the challenges 🏆</button></div></div>
+</section>
+<!-- 8 Challenges -->
+<section class="card panel" id="p7">
+ <div class="k">Step 8 · Challenges</div>
+ <h2>Be a security engineer</h2>
+ <p style="margin-top:0">Earn a star for each challenge: <b id="stars">0</b> / 4 ⭐</p>
+ <div class="ch"><div class="chh"><span class="star" data-st="c0">☆</span><h3 style="margin:0">📖 Book challenge: a loop that never sleeps</h3></div>
+  <p>The book says <i>apply loop</i>. Build a program that beeps for <b>every</b> guest, not only the first one.</p>
+  <div class="wstrip" id="c0prog"></div><div class="pal" id="c0pal"></div>
+  <div class="row"><button class="btn pri" id="c0run">▶ Send 4 guests</button><button class="btn" id="c0clr">🗑 Clear</button></div><div class="msg" id="c0msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c1">☆</span><h3 style="margin:0">🤫 Silent alarm</h3></div>
+  <p>The book says alarms can be <i>silent with flashing lights</i>. Make the robot <b>flash red 3 times</b> and make <b>no sound</b>.</p>
+  <div class="row"><label class="small">Light colour <input id="c1c" type="number" min="0" max="10" value="1" style="width:56px"></label><label class="small">Flashes <input id="c1n" type="number" min="1" max="10" value="1" style="width:56px"></label><label class="small"><input id="c1s" type="checkbox" checked> also play a sound</label><button class="btn pri" id="c1run">▶ Test</button></div><div class="msg" id="c1msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c2">☆</span><h3 style="margin:0">📏 Measure master (5.MD.1)</h3></div>
+  <p>Four teams measured where their robot was set off. Convert every measurement.</p><div id="c2q"></div><div class="row"><button class="btn pri" id="c2chk">Check</button></div><div class="msg" id="c2msg"></div></div>
+ <div class="ch"><div class="chh"><span class="star" data-st="c3">☆</span><h3 style="margin:0">🐈 No false alarms</h3></div>
+  <p>The family cat walks past the far end of the hall and the robot beeps! The WeDo motion sensor has 3 modes. Choose the one that only reacts when someone comes <b>close</b> to the door.</p>
+  <div class="row"><span class="seg" id="c3seg"><button data-c3="change">Object detected (any change)</button><button data-c3="near">Object near</button><button data-c3="far">Object far</button></span><button class="btn pri" id="c3run">▶ Cat, then Rehan</button></div><div class="msg" id="c3msg"></div></div>
+</section>
+<!-- 9 Other designs -->
+<section class="card panel" id="p8">
+ <div class="k">Step 9 · Other designs</div>
+ <h2>Same robot, new jobs</h2>
+ <p style="margin-top:0">The same Smarthub and motion sensor can guard many places. Press <b>Show me</b> to test each one in 3D.</p>
+ <div id="dList"></div>
+ <h3>✏️ Design your own</h3>
+ <div class="split3"><label class="small">Where?<select id="dWhere"><option value="fridge">The fridge (snack spy)</option><option value="desk">My desk drawer</option><option value="garden">The garden gate</option><option value="class">The classroom door</option></select></label>
+  <label class="small">Signal<select id="dSig"><option value="sound">Sound</option><option value="light">Light</option><option value="both">Sound + light</option><option value="motor">Motor waves a flag</option></select></label>
+  <label class="small">Sensor mode<select id="dMode"><option value="change">Object detected</option><option value="near">Object near</option><option value="far">Object far</option></select></label></div>
+ <div class="small"><b>Tips:</b> point the sensor where people pass · the WeDo motion sensor sees about 15 cm, so place it close · use a loop so it keeps guarding · use light when the signal must be secret · test with a friend and measure the distance.</div>
+ <div class="row"><button class="btn pri" id="dTry">Check my design</button></div>
+ <div class="msg" id="dChk"></div>
+ <label class="small" for="dPlan">My plan</label><textarea id="dPlan" rows="3" style="width:100%" placeholder="Where will your robot stand? What will it do when it detects someone?"></textarea>
+ <div class="row"><button class="btn" id="dSave">💾 Save my plan</button><span class="small" id="dSaved"></span></div>
+</section>
+</div>
+</main>
+<footer><b>Britus Education</b><small>© 2026 Fatma Alruffai</small></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== Britus 3D kit: shared three.js scene, orbit camera and real-looking kit parts (SG90, HW-201, Arduino Uno, hand) ===== */
+function Kit3D(opt){
+ const box=opt.box,cv=opt.canvas;
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ R.outputEncoding=THREE.sRGBEncoding;
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,16/10,0.1,400);
+ sc.add(new THREE.HemisphereLight(0xfff8ee,0x8a7a66,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,0.95);key.position.set(14,26,18);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+ Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:90});key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+ const fill=new THREE.DirectionalLight(0xdfe9ff,0.35);fill.position.set(-16,10,-10);sc.add(fill);
+ const cache={};
+ const M=(c,o)=>{o=o||{};const k=c+JSON.stringify(o);if(cache[k])return cache[k];
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:0},o));m.color.convertSRGBToLinear();if(o.emissive!=null)m.emissive.convertSRGBToLinear();if(o.opacity!=null&&o.opacity<1){m.transparent=true;m.depthWrite=o.depthWrite||false}return cache[k]=m};
+ function mesh(g,m,par,x,y,z){const o=new THREE.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=true;o.receiveShadow=true;(par||sc).add(o);return o}
+ const Bx=(w,h,d,m,par,x,y,z)=>mesh(new THREE.BoxGeometry(w,h,d),typeof m==='number'?M(m):m,par,x,y,z);
+ const Cy=(r,h,m,par,x,y,z,ax,seg)=>{const o=mesh(new THREE.CylinderGeometry(r,r,h,seg||24),typeof m==='number'?M(m):m,par,x,y,z);if(ax==='z')o.rotation.x=Math.PI/2;if(ax==='x')o.rotation.z=Math.PI/2;return o};
+ const Sp=(r,m,par,x,y,z,seg)=>mesh(new THREE.SphereGeometry(r,seg||20,Math.round((seg||20)*.7)),typeof m==='number'?M(m):m,par,x,y,z);
+ function RBox(w,h,d,r,m,par,x,y,z){/* rounded box via extruded rounded rectangle */
+  const s=new THREE.Shape(),a=w/2-r,b=h/2-r;s.moveTo(-a,-h/2);s.lineTo(a,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-b);s.lineTo(w/2,b);s.quadraticCurveTo(w/2,h/2,a,h/2);s.lineTo(-a,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,b);s.lineTo(-w/2,-b);s.quadraticCurveTo(-w/2,-h/2,-a,-h/2);
+  const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelThickness:Math.min(r,d/4),bevelSize:Math.min(r,d/4)*.8,bevelSegments:3,curveSegments:6});g.translate(0,0,-d/2);return mesh(g,typeof m==='number'?M(m):m,par,x,y,z)}
+ function tex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
+ function grp(par){const g=new THREE.Group();(par||sc).add(g);return g}
+ /* ---- table ---- */
+ const tableT=tex(512,512,(x,w,h)=>{x.fillStyle='#d9b98c';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){x.strokeStyle=`rgba(${120+Math.random()*40|0},${80+Math.random()*30|0},40,${.08+Math.random()*.1})`;x.lineWidth=1+Math.random()*3;x.beginPath();const y=Math.random()*h;x.moveTo(0,y);x.bezierCurveTo(w*.3,y+Math.random()*20-10,w*.6,y+Math.random()*20-10,w,y+Math.random()*16-8);x.stroke()}});
+ tableT.wrapS=tableT.wrapT=THREE.RepeatWrapping;tableT.repeat.set(3,2);
+ const table=mesh(new THREE.BoxGeometry(80,1.2,46),new THREE.MeshStandardMaterial({map:tableT,roughness:.75}),sc,0,-0.6,0);table.castShadow=false;
+ /* ---- SG90 micro servo (blue see-through, label, tabs, white shaft). Shaft along +z at local (0,0,0). ---- */
+ const lab=tex(256,128,(x,w,h)=>{x.fillStyle='#141414';x.fillRect(0,0,w,h);x.strokeStyle='#c9a227';x.lineWidth=6;x.strokeRect(8,8,w-16,h-16);x.fillStyle='#e8dfae';x.fillRect(16,16,w-32,34);x.fillStyle='#222';x.font='bold 26px Arial';x.textAlign='center';x.fillText('Micro Servo',w/2,42);x.fillStyle='#e8dfae';x.font='22px Arial';x.fillText('9g',w/2,72);x.fillStyle='#d6a531';x.font='bold 30px Georgia';x.fillText('SG90',w/2,108)});
+ function sg90(par){const g=grp(par);const blue=M(0x2f45d6,{opacity:.82,roughness:.15,metalness:.05,depthWrite:true});
+  const body=Bx(2.3,2.25,1.25,blue,g,0,-0.75,-0.75);body.material=[blue,blue,blue,blue,new THREE.MeshStandardMaterial({map:lab,roughness:.4}),blue];
+  Bx(3.25,0.14,1.25,M(0x3d55e0,{opacity:.88,roughness:.2,depthWrite:true}),g,0,-0.2,-0.75);
+  [-1.4,1.4].forEach(x=>Cy(0.12,0.16,0xdfe6ff,g,x,-0.2,-0.75,'y',12));
+  Cy(0.62,0.5,M(0x4a60ec,{opacity:.9,roughness:.2,depthWrite:true}),g,0,0,-0.05,'z',28);
+  Cy(0.2,0.4,0xfafafa,g,0,0,0.3,'z',16);return g}
+ /* ---- servo horn / pointer arm: rotates around z ---- */
+ function pointer(par,len,col){const g=grp(par);Bx(len,0.42,0.12,M(col||0xe53935,{roughness:.4}),g,len/2-0.6,0,0.52);Cy(0.36,0.16,0xfafafa,g,0,0,0.6,'z',20);Cy(0.12,0.06,0x999999,g,0,0,0.7,'z',10);return g}
+ /* ---- HW-201 IR sensor: PCB in x-y plane, LEDs pointing -x. emitter (clear) top, receiver (black) bottom, pins on +x ---- */
+ const hwT=tex(320,140,(x,w,h)=>{x.fillStyle='#1d3fae';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='bold 22px Arial';x.fillText('HW-201',96,30);x.fillStyle='#151515';x.fillRect(110,46,46,30);
+  x.fillStyle='#3b78ff';x.fillRect(180,70,44,44);x.strokeStyle='#fff';x.lineWidth=4;x.strokeRect(180,70,44,44);x.beginPath();x.moveTo(202,76);x.lineTo(202,108);x.moveTo(186,92);x.lineTo(218,92);x.stroke();
+  x.fillStyle='#e8e3c8';[[60,90],[60,112],[140,96]].forEach(([a,b])=>x.fillRect(a,b,18,10));x.fillStyle='#fff';x.font='bold 15px Arial';x.fillText('OUT',262,34);x.fillText('GND',262,76);x.fillText('VCC',262,118)});
+ function hw201(par){const g=grp(par);const pcbM=new THREE.MeshStandardMaterial({map:hwT,roughness:.5});const sideM=M(0x1d3fae);
+  const p=Bx(3.2,1.4,0.16,sideM,g,0,0,0);p.material=[sideM,sideM,sideM,sideM,pcbM,sideM];
+  const em=M(0xeef6ff,{opacity:.6,roughness:.05,depthWrite:true}),rc=M(0x111111,{roughness:.2});
+  [[0.36,em],[-0.36,rc]].forEach(([y,m])=>{Cy(0.26,0.7,m,g,-1.85,y,0.1,'x',18);Sp(0.26,m,g,-2.2,y,0.1,16);Cy(0.06,0.4,0xbbbbbb,g,-1.45,y+0.08,0.1,'x',6)});
+  const led=Sp(0.09,M(0x2d4a2f),g,-0.9,-0.5,0.12,10);
+  [0.45,0,-0.45].forEach(y=>{Bx(0.22,0.22,0.22,0x111111,g,1.65,y,0.05);Cy(0.035,0.7,M(0xc9a227,{metalness:.8,roughness:.3}),g,2.05,y,0.05,'x',6)});
+  g.userData.led=led;return g}
+ function setLed(h,on){h.userData.led.material=on?M(0x4cff6a,{emissive:0x22ff55,emissiveIntensity:1}):M(0x2d4a2f)}
+ /* ---- Arduino Uno: teal board in x-z plane on the table. pin(name) returns a world-ish local point on its header ---- */
+ const DIG=['13','12','11','10','9','8','7','6','5','4','3','2','1','0'],PWR=['IOREF','RESET','3.3V','5V','GND','GND2','VIN'],ANA=['A0','A1','A2','A3','A4','A5'];
+ const unoT=tex(690,530,(x,w,h)=>{x.fillStyle='#0f7f8f';x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;for(let i=0;i<30;i++){x.beginPath();const a=Math.random()*w,b=Math.random()*h;x.moveTo(a,b);x.lineTo(a+Math.random()*120-60,b+Math.random()*80-40);x.stroke()}
+  x.fillStyle='#fff';x.font='bold 21px Arial';x.textAlign='center';
+  DIG.forEach((n,i)=>{x.fillText(n,250+i*30,92)});x.fillText('GND',200,92);x.fillText('DIGITAL (PWM~)',460,118);
+  PWR.forEach((n,i)=>x.fillText(n.replace('2',''),205+i*30,452));ANA.forEach((n,i)=>x.fillText(n,450+i*30,452));x.fillText('POWER',300,420);x.fillText('ANALOG IN',525,420);
+  x.lineWidth=12;x.strokeStyle='#fff';x.beginPath();x.arc(330,250,32,0,7);x.stroke();x.beginPath();x.arc(398,250,32,0,7);x.stroke();x.font='bold 40px Arial';x.fillStyle='#fff';x.fillText('−',330,264);x.fillText('+',398,266);
+  x.beginPath();x.fillStyle='#fff';x.roundRect?x.roundRect(450,218,130,64,32):x.rect(450,218,130,64);x.fill();x.fillStyle='#0f7f8f';x.font='42px Arial';x.fillText('UNO',515,264);x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('ARDUINO',364,320);
+  x.fillStyle='#222';x.fillRect(500,330,56,56)});
+ function uno(par){const g=grp(par);const top=new THREE.MeshStandardMaterial({map:unoT,roughness:.6}),side=M(0x0a5f6b);
+  const b=Bx(6.9,0.16,5.3,side,g,0,0.08,0);b.material=[side,side,top,side,side,side];
+  Bx(1.6,1.1,1.2,M(0xc7cbcf,{metalness:.7,roughness:.25}),g,-3.3,0.7,-1.45);Bx(1.3,1.0,0.9,0x1b1b1b,g,-3.25,0.66,1.6);
+  [[-0.6,1.6],[0.1,1.6]].forEach(([x,z])=>Cy(0.32,0.6,M(0xd0d4d8,{metalness:.6,roughness:.3}),g,x,0.46,z,'y',18));
+  Bx(2.6,0.26,0.8,0x111111,g,-0.6,0.2,-0.1).material=M(0x1d1d1d);
+  const hdr=M(0x151515);
+  const holes=n=>{const t=tex(n*32,32,(x,w,h)=>{x.fillStyle='#1a1a1a';x.fillRect(0,0,w,h);for(let i=0;i<n;i++){x.fillStyle='#000';x.fillRect(i*32+8,8,16,16);x.strokeStyle='#4a4a4a';x.lineWidth=2;x.strokeRect(i*32+8,8,16,16)}});return new THREE.MeshStandardMaterial({map:t,roughness:.6})};
+  const h1=Bx(0.3*0.86*15,0.75,0.26,hdr,g,-1.0+0.3*0.86*7,0.52,-2.45);h1.material=[hdr,hdr,holes(15),hdr,hdr,hdr];
+  const h2=Bx(0.3*0.86*14,0.75,0.26,hdr,g,-1.0+0.3*0.86*6.5+0.05,0.52,2.45);h2.material=[hdr,hdr,holes(14),hdr,hdr,hdr];return g}
+ function tag(text,col){const t=tex(160,80,(x,w,h)=>{x.fillStyle=col||'#16233f';x.beginPath();x.moveTo(14,4);x.lineTo(w-14,4);x.quadraticCurveTo(w-4,4,w-4,14);x.lineTo(w-4,h-24);x.quadraticCurveTo(w-4,h-14,w-14,h-14);x.lineTo(w/2+10,h-14);x.lineTo(w/2,h-2);x.lineTo(w/2-10,h-14);x.lineTo(14,h-14);x.quadraticCurveTo(4,h-14,4,h-24);x.lineTo(4,14);x.quadraticCurveTo(4,4,14,4);x.fill();x.fillStyle='#fff';x.font='bold 40px Arial';x.textAlign='center';x.fillText(text,w/2,48)});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));s.renderOrder=10;s.scale.set(1.3,.65,1);return s}
+ function unoTags(g,names){const out={};names.forEach(n=>{const s=tag(n.replace('GNDT','GND'));const p=unoPin(g,n);g.worldToLocal(p);s.position.set(p.x,p.y+.85,p.z);g.add(s);out[n]=s});return out}
+ function setTag(s,text,ok){const n=tag(text,ok?'#1d7a4c':'#16233f');s.material.map=n.material.map;s.material.needsUpdate=true}
+ function unoPin(g,name){/* returns world position of a header socket */
+  let x,z;const di=DIG.indexOf(name);if(name==='GNDT'){x=-1.0;z=-2.45}else if(di>=0){x=-0.6+di*0.3*0.86;z=-2.45}
+  else{const pi=PWR.indexOf(name),ai=ANA.indexOf(name);if(pi>=0){x=-1.0+pi*0.3*0.86;z=2.45}else{x=1.4+ai*0.3*0.86;z=2.45}}
+  const v=new THREE.Vector3(x,0.95,z);g.updateMatrixWorld();return g.localToWorld(v)}
+ /* ---- jumper cable (tube) from a to b with a lift ---- */
+ function cable(par,a,b,col,lift,list){const mid=a.clone().lerp(b,.5);mid.y=Math.max(a.y,b.y)+(lift||3);
+  const cu=new THREE.CatmullRomCurve3([a,a.clone().lerp(mid,.35).setY(a.y+(lift||3)*.6),mid,b.clone().lerp(mid,.35).setY(b.y+(lift||3)*.6),b]);
+  const m=mesh(new THREE.TubeGeometry(cu,48,0.09,8,false),M(col,{roughness:.45}),par);m.castShadow=true;const tip=Bx(0.22,0.5,0.22,0x111111,par,b.x,b.y+0.2,b.z);if(list){list.push(m,tip)}return m}
+ /* ---- realistic hand: palm up, fingers along +x. Origin = palm centre ---- */
+ function hand(par,skin,sleeve){const g=grp(par);const sk=M(skin||0xe7b08a,{roughness:.62});
+  const palm=Sp(1,sk,g,0,0,0,28);palm.scale.set(1.6,0.58,1.3);
+  const F=[[-0.85,0.95,1.05],[-0.3,1.08,1.15],[0.3,1.02,1.1],[0.85,0.86,0.95]];/* z offset, length factor */
+  F.forEach(([z,l],i)=>{let px=1.35,py=0.05;const seg=[1.05,0.7,0.55].map(s=>s*l),r=[0.27,0.24,0.21];let ang=0;
+   seg.forEach((s,k)=>{ang+=0.18+k*0.08;const cx=px+Math.cos(ang)*s/2,cy=py+Math.sin(ang)*s/2;const c=Cy(r[k],s,sk,g,cx,cy,z*0.95,null,14);c.rotation.z=Math.PI/2+ang;Sp(r[k],sk,g,px,py,z*0.95,14);px+=Math.cos(ang)*s;py+=Math.sin(ang)*s});
+   Sp(0.2,sk,g,px,py,z*0.95,14)});
+  const th=grp(g);th.position.set(0.2,0.05,1.25);th.rotation.y=-0.9;th.rotation.z=0.25;Cy(0.3,0.9,sk,th,0.45,0,0,'x',14);Sp(0.3,sk,th,0,0,0,14);Cy(0.26,0.7,sk,th,1.2,0.05,0,'x',14);Sp(0.26,sk,th,0.9,0,0,14);Sp(0.24,sk,th,1.55,0.05,0,14);
+  const fa=Cy(0.82,4.2,sk,g,-3.3,-0.05,0,'x',22);fa.scale.set(1,1,0.8);
+  const sl=Cy(1.0,3.0,M(sleeve||0x2a6fd1,{roughness:.8}),g,-5.2,-0.05,0,'x',22);sl.scale.set(1,1,0.85);return g}
+ /* ---- camera orbit + named views ---- */
+ const T=new THREE.Vector3(...(opt.target||[0,6,0]));let st={th:0.6,ph:1.1,r:opt.r||46},goal=null,spin=false;const V=opt.views||{};
+ function place(){cam.position.set(T.x+st.r*Math.sin(st.ph)*Math.sin(st.th),T.y+st.r*Math.cos(st.ph),T.z+st.r*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(T)}
+ function size(){const w=box.clientWidth||600,h=Math.round(w*(opt.aspect||0.66));R.setSize(w,h,false);cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix()}
+ size();if(window.ResizeObserver)new ResizeObserver(size).observe(box);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});goal=null;spin=false});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
+  if(pts.size===1){st.th-=(e.clientX-p.x)*0.01;st.ph=Math.max(0.12,Math.min(1.55,st.ph-(e.clientY-p.y)*0.01))}
+  p.x=e.clientX;p.y=e.clientY;if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)st.r=Math.max(14,Math.min(90,st.r*pd/d));pd=d}});
+ const up=e=>{pts.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();st.r=Math.max(14,Math.min(90,st.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ function view(n,instant){if(n==='spin'){spin=true;goal=null;return}spin=false;const v=V[n];if(!v)return;goal={th:v[0],ph:v[1],r:v[2],t:v[3]?new THREE.Vector3(...v[3]):null};if(instant){st={th:v[0],ph:v[1],r:v[2]};if(goal.t)T.copy(goal.t);goal=null;place()}}
+ const hooks=[];let last=performance.now();
+ function frame(t){const dt=Math.min(0.2,(t-last)/1000);last=t;
+  if(spin)st.th+=dt*0.35;
+  if(goal){const k=1-Math.pow(0.002,dt);let dth=goal.th-st.th;dth=Math.atan2(Math.sin(dth),Math.cos(dth));st.th+=dth*k;st.ph+=(goal.ph-st.ph)*k;st.r+=(goal.r-st.r)*k;if(goal.t)T.lerp(goal.t,k);if(Math.abs(dth)<0.002&&Math.abs(goal.ph-st.ph)<0.002&&Math.abs(goal.r-st.r)<0.02)goal=null}
+  hooks.forEach(f=>f(dt,t));place();R.render(sc,cam);requestAnimationFrame(frame)}
+ requestAnimationFrame(frame);
+ return {R,sc,cam,M,Bx,Cy,Sp,RBox,tex,grp,mesh,sg90,pointer,hw201,setLed,uno,unoPin,unoTags,setTag,cable,hand,view,hooks,T,size,shot:()=>cv.toDataURL('image/png')}}
+/* smooth drop-in for a newly placed part */
+function dropIn(g,hooks,from){const y=g.position.y;g.position.y=y+(from||6);g.visible=true;let v=0;const f=dt=>{v+=dt*3;const k=Math.min(1,v);const e=1-Math.pow(1-k,3);g.position.y=y+(from||6)*(1-e);if(k>=1){const i=hooks.indexOf(f);if(i>=0)hooks.splice(i,1)}};hooks.push(f)}
+/* tiny sound effects */
+const SFX=(()=>{let ac=null,on=true;function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ac}
+ function tone(f,d,type,vol){const a=ctx();if(!a||!on)return;const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.value=vol||0.06;o.connect(g);g.connect(a.destination);const t=a.currentTime;g.gain.setValueAtTime(vol||0.06,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.start(t);o.stop(t+d)}
+ return {ok(){tone(660,.12);setTimeout(()=>tone(880,.16),110)},bad(){tone(200,.25,'square',.04)},click(){tone(520,.06,'triangle',.05)},done(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.22),i*120))},tick(){tone(1200,.03,'square',.015)},set(v){on=v},get on(){return on}}})();
+
+</script>
+<script>
+const BOOK={"model": "data:image/webp;base64,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", "prog": "data:image/webp;base64,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"};
+/* ================== Spy Robot · Grade 5 Project 6 · WeDo 2.0 3D lab ================== */
+const $=id=>document.getElementById(id);
+const S=['Build','Connect','Program','Test','Discover','Record sheet','Reflect','Challenges','Other designs'];
+const KEY='britus-g5-spy';
+const st=(()=>{const d={done:[],placed:0,bMist:0,bs:null,cn:{},plug:null,pair:0,prog:0,pMist:0,cm:null,cmIn:null,tested:0,dS:0,dL:0,dC:0,dq:null,quiz:{},m:null,ideas:{},im:null,sc:null,rub:{},fbk:['','',''],finished:0,ch:{},c3:null};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return d}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function msg(id,cls,h){const e=$(id);e.className='msg'+(cls?' '+cls:'');e.innerHTML=h}
+function fb(id,ok,good,bad){const e=$(id);e.style.color=ok?'var(--ok)':'var(--warn)';e.textContent=ok?good:bad}
+let cur=0;
+function drawNav(){$('nav').innerHTML=S.map((n,i)=>`<button type="button" data-go="${i}" class="${i===cur?'on':''} ${st.done.includes(i)?'done':''}">${i+1}. ${n}</button>`).join('')}
+function done(i){if(!st.done.includes(i)){st.done.push(i);save()}drawNav()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go)});
+$('snd').onclick=()=>{SFX.set(!SFX.on);$('snd').textContent=SFX.on?'🔊 Sound on':'🔇 Sound off'};
+function hud(h){$('hud').innerHTML=h}
+function banner(t){const b=$('banner');b.textContent=t;b.hidden=false;clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,3500)}
+$('bkModel').src=BOOK.model;$('bkProg').src=BOOK.prog;
+
+/* ---------- WeDo sounds (tones) ---------- */
+let AC=null;function tone(f,d,type,vol){if(!SFX.on)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.value=f;o.connect(g);g.connect(AC.destination);const t=AC.currentTime;g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d)}catch(e){}}
+function wedoSound(n){const base=[0,523,660,392,784,440,330,880,587,494,698,262,349,415,740,622,554,466,370,311,277][n]||523;[0,1,2].forEach(i=>setTimeout(()=>tone(base*(i%2?1.25:1),.16,i%2?'triangle':'square'),i*150))}
+
+/* ================== 3D scene ================== */
+const K=Kit3D({box:$('v3'),canvas:$('cv3'),target:[0,8,-6],r:60,aspect:.62,views:{
+ iso:[Math.PI-0.6,1.12,34,[0,9,0]],face:[Math.PI-0.15,1.3,24,[0,13,-1]],back:[0.3,1.15,28,[0,10,0]],room:[0.3,1.12,95,[0,14,-22]],ruler:[1.3,0.95,34,[9,0,-14]],
+ tablet:[0.15,0.8,22,[26,3,12]],fin:[2.5,1.18,50,[0,10,-6]],design:[0.35,1.1,70,[0,12,-14]]}});
+const {M,Bx,Cy,Sp,grp,tex}=K;const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const parts={};let RULER=null;
+/* ===== Lego kit parts (same kit and colours as the Joints lab): Technic beams with holes, bricks with studs ===== */
+const LG=c=>M(c,{roughness:.32,metalness:0});
+const BLU=0x2457c5;
+const holeM=M(0x1c1c1c,{roughness:.8});
+function hole(par,x,y,z,ax,depth,col){/* round Technic hole: dark hole + raised rim ring on both faces */
+ const h=Cy(0.2,depth+0.02,holeM,par,x,y,z,ax,14);h.castShadow=false;
+ [-1,1].forEach(s=>{const r=new THREE.Mesh(new THREE.TorusGeometry(0.25,0.055,6,16),LG(col));r.position.set(x,y,z);if(ax==='z')r.position.z+=s*depth/2;if(ax==='x'){r.position.x+=s*depth/2;r.rotation.y=Math.PI/2}par.add(r)})}
+/* Technic beam: dir 'y' upright or 'x' along x. Holes go through z (the face you see). */
+function tbeam(par,x,y,z,len,dir,col,rim){const w=dir==='y'?[0.72,len,0.8]:[len,0.72,0.8];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8;hole(par,dir==='x'?x+t:x,dir==='y'?y+t:y,z,'z',0.8,rim||col)}}
+/* Lego brick with studs on top; dir 'x' or 'z'. Optional Technic holes on the side */
+function brick(par,x,y,z,len,dir,col,holes){const w=dir==='x'?[len,0.96,0.8]:[0.8,0.96,len];Bx(w[0],w[1],w[2],LG(col),par,x,y,z);const n=Math.max(1,Math.round(len/0.8));
+ for(let i=0;i<n;i++){const t=-len/2+0.4+i*0.8,sx=dir==='x'?x+t:x,sz=dir==='z'?z+t:z;Cy(0.24,0.18,LG(col),par,sx,y+0.57,sz,'y',16);
+  if(holes&&i<n-1){const hx=dir==='x'?sx+0.4:x,hz=dir==='z'?sz+0.4:z;hole(par,hx,y-0.05,hz,dir==='x'?'z':'x',0.8,col)}}}
+/* base plate */
+parts.plate=grp();(()=>{Bx(30,0.5,16,M(0x7c8186,{roughness:.45}),parts.plate,-1,0.25,0);for(let i=0;i<15;i++)for(let k=0;k<8;k++)Cy(0.3,0.22,M(0x8d9297,{roughness:.4}),parts.plate,-15+i*2,0.6,-7+k*2,'y',14)})();
+
+parts.plate.visible=false;
+const LIME=0x95c11f,ORNG=0xf39c1e,WHT=0xf2f2f2,DGRY=0x55595e,LGRY=0xa7abb0,BLK=0x1c1c1c;
+function sb(par,x,y,z,w,d,h,col,noStud){Bx(w,h,d,LG(col),par,x,y+h/2,z);if(noStud)return;const nx=Math.round(w/0.8),nz=Math.round(d/0.8);
+ for(let i=0;i<nx;i++)for(let k=0;k<nz;k++)Cy(0.24,0.17,LG(col),par,x-w/2+0.4+i*0.8,y+h+0.085,z-d/2+0.4+k*0.8,'y',12)}
+/* ---------- party room: wood floor, walls, door, SURPRISE banner, balloons ---------- */
+(()=>{const big=K.sc.children.find(o=>o.isMesh&&o.geometry.parameters&&o.geometry.parameters.width===80);if(big)big.visible=false;
+ const ft=tex(512,512,(x,w,h)=>{for(let i=0;i<8;i++){x.fillStyle=['#c99b62','#bf8f57','#d3a76d','#c4955c'][i%4];x.fillRect(0,i*64,w,64);x.strokeStyle='rgba(80,50,20,.35)';x.lineWidth=2;x.strokeRect(0,i*64,w,64);for(let k=0;k<6;k++){x.strokeStyle='rgba(90,60,30,.12)';x.beginPath();x.moveTo(0,i*64+Math.random()*64);x.bezierCurveTo(w/3,i*64+Math.random()*64,2*w/3,i*64+Math.random()*64,w,i*64+Math.random()*64);x.stroke()}}});ft.wrapS=ft.wrapT=THREE.RepeatWrapping;ft.repeat.set(3,3);
+ const fl=new THREE.Mesh(new THREE.PlaneGeometry(110,90),new THREE.MeshStandardMaterial({map:ft,roughness:.75}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,-8);fl.receiveShadow=true;K.sc.add(fl);
+ const wt=tex(512,256,(x,w,h)=>{x.fillStyle='#fde9c8';x.fillRect(0,0,w,h);x.fillStyle='rgba(255,140,170,.25)';for(let i=0;i<40;i++){x.beginPath();x.arc(Math.random()*w,Math.random()*h,4+Math.random()*6,0,7);x.fill()}});
+ const wm=new THREE.MeshStandardMaterial({map:wt,roughness:.95});
+ /* back wall with a door opening at x 0 */const H=70,Z=-50;[[-31,40],[31,40]].forEach(([x,w])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,H,2),wm);m.position.set(x,H/2,Z);m.receiveShadow=true;K.sc.add(m)});const lin=new THREE.Mesh(new THREE.BoxGeometry(22,H-52,2),wm);lin.position.set(0,52+(H-52)/2,Z);K.sc.add(lin);
+ Bx(23,1.5,2.4,M(0xffffff,{roughness:.6}),K.sc,0,52.7,Z);[-11.3,11.3].forEach(x=>Bx(1.4,52,2.4,M(0xffffff,{roughness:.6}),K.sc,x,26,Z));
+ const door=grp(K.sc);door.position.set(-11,0,Z+1);Bx(21,51,1.2,M(0x8d5a2b,{roughness:.6}),door,10.5,25.5,0);Sp(0.9,M(0xd4af37,{metalness:.8,roughness:.3}),door,19,25,1);door.rotation.y=-1.25;
+ /* outside light */const sky=new THREE.Mesh(new THREE.PlaneGeometry(22,52),new THREE.MeshBasicMaterial({color:0xbfe6ff}));sky.position.set(0,26,Z-1.2);K.sc.add(sky);
+ /* banner */const bt=tex(1024,160,(x,w,h)=>{x.fillStyle='rgba(0,0,0,0)';x.clearRect(0,0,w,h);const c=['#e91e63','#ffb300','#43a047','#1e88e5','#8e24aa'];const L='SURPRISE REHAN!';for(let i=0;i<L.length;i++){const xx=20+i*66;x.fillStyle=c[i%5];x.beginPath();x.moveTo(xx,10);x.lineTo(xx+60,10);x.lineTo(xx+30,150);x.closePath();x.fill();x.fillStyle='#fff';x.font='bold 46px Arial';x.textAlign='center';x.fillText(L[i],xx+30,70)}});
+ const bn=new THREE.Mesh(new THREE.PlaneGeometry(56,9),new THREE.MeshBasicMaterial({map:bt,transparent:true}));bn.position.set(0,63,Z+1.2);K.sc.add(bn);
+ /* balloons */[[-30,0xe91e63],[-24,0x1e88e5],[24,0xffb300],[30,0x43a047],[-36,0x8e24aa]].forEach(([x,c],i)=>{const b=Sp(4,M(c,{roughness:.25}),K.sc,x,48+i%2*4,Z+5,20);b.scale.y=1.2;const s=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,40,4),M(0xffffff));s.position.set(x,26+i%2*4,Z+5);K.sc.add(s)});
+ /* gift boxes */[[-30,0xe53935],[-22,0x1e88e5]].forEach(([x,c])=>{Bx(7,7,7,M(c,{roughness:.6}),K.sc,x,3.5,-20);Bx(7.1,1.2,7.1,M(0xffd54f),K.sc,x,3.5,-20);Bx(1.2,7.1,7.1,M(0xffd54f),K.sc,x,3.5,-20)});
+ /* ruler on the floor: 0 at the sensor front, 40 cm toward the door */
+ const rt=tex(1600,96,(x,w,h)=>{x.fillStyle='#ffe066';x.fillRect(0,0,w,h);x.fillStyle='#222';x.font='bold 28px Arial';x.textAlign='center';for(let mm=0;mm<=400;mm++){const px=mm/400*(w-40)+20;const L=mm%10===0?44:mm%5===0?28:16;x.fillRect(px-1,0,mm%10===0?3:2,L);if(mm%50===0)x.fillText(mm/10,px,80)}});
+ RULER=new THREE.Mesh(new THREE.PlaneGeometry(41.03,4),new THREE.MeshStandardMaterial({map:rt,roughness:.6}));RULER.rotation.set(-Math.PI/2,0,Math.PI/2);K.sc.add(RULER)})();
+/* ---------- WeDo 2.0 parts ---------- */
+function smarthub(par){const g=grp(par);K.RBox(3.2,1.2,4.4,0.18,M(LGRY,{roughness:.5}),g,0,0.6,0);const tp=grp(g);sb(tp,0,1.2,0,3.2,4.0,0.9,WHT,true);
+ for(let i=0;i<4;i++)for(let k=0;k<5;k++)Cy(0.24,0.17,LG(WHT),tp,-1.2+i*0.8,2.18,-1.6+k*0.8,'y',12);
+ Cy(0.42,0.12,M(0x2fae4a,{roughness:.3}),g,-0.8,2.15,1.75,'y',20);const led=Sp(0.16,M(0x66ccff),g,0.9,1.9,2.1,10);
+ [[-0.6,-2.25],[0.6,-2.25]].forEach(([x,z])=>Bx(0.7,0.5,0.1,M(0x333333),g,x,0.7,z));g.userData.led=led;return g}
+function motionSensor(par){/* WeDo 2.0 motion sensor: white/grey body, dark see-through front with two lenses */const g=grp(par);K.RBox(3.0,1.7,1.6,0.16,M(WHT,{roughness:.45}),g,0,0,0);Bx(3.02,0.5,1.62,M(LGRY,{roughness:.5}),g,0,-0.62,0);
+ const win=Bx(2.6,1.25,0.1,M(0x123a5e,{roughness:.06,metalness:.2}),g,0,0.05,1.0);[-0.62,0.62].forEach(x=>{Cy(0.3,0.08,M(0x0b1c2c,{roughness:.05}),g,x,0.08,1.05,'z',18);Cy(0.12,0.09,M(0x8fb6d6,{roughness:.05,emissive:0x0a2a44}),g,x,0.08,1.08,'z',12)});
+ for(let i=0;i<3;i++)Cy(0.24,0.17,LG(WHT),g,-0.8+i*0.8,0.93,0,'y',12);return g}
+function eye(par,x,y,z){const g=grp(par);g.position.set(x,y,z);Cy(0.8,0.7,LG(WHT),g,0,0,0,'z',28);const p=Cy(0.42,0.08,M(0x111111,{roughness:.3}),g,0.12,-0.1,0.36,'z',20);Cy(0.14,0.09,M(0xffffff),g,0.32,0.1,0.38,'z',10);return g}
+function beamV(par,x,y0,len,z,col){Bx(0.72,len,0.78,LG(col),par,x,y0+len/2,z);const n=Math.round(len/0.8);for(let i=0;i<n;i++){[-1,1].forEach(s=>{const c=Cy(0.21,0.04,holeM,par,x+s*0.37,y0+0.4+i*0.8,z,'x',12);c.castShadow=false})}}
+/* ---------- the spy robot (book model) ---------- */
+const robot=grp();robot.rotation.y=Math.PI;robot.scale.setScalar(1.65);/* faces -z, toward the door */
+const BUILD_GROUPS=['feet','legs','hub','side','head','sensor','eyes','cable'];BUILD_GROUPS.forEach(k=>parts[k]=grp(robot));
+(()=>{/* feet: grey slopes */[-1.2,1.2].forEach(x=>{const s=new THREE.Shape();s.moveTo(-1.6,0);s.lineTo(1.6,0);s.lineTo(1.6,0.6);s.lineTo(0.2,1.15);s.lineTo(-1.6,1.15);s.closePath();const g=new THREE.ExtrudeGeometry(s,{depth:1.5,bevelEnabled:false});g.translate(0,0,-0.75);g.rotateY(-Math.PI/2);const m=new THREE.Mesh(g,LG(x<0?DGRY:LGRY));m.position.set(x,0,0.4);m.castShadow=true;parts.feet.add(m);for(let k=0;k<2;k++)Cy(0.24,0.17,LG(x<0?DGRY:LGRY),parts.feet,x,1.24,-0.8-k*0.8+0.4,'y',12)})})();
+(()=>{/* lime legs: a long Technic beam on the right, a short one on the left, and lime bricks */beamV(parts.legs,1.95,1.15,11.2,-0.2,LIME);beamV(parts.legs,-1.95,1.15,2.4,-0.2,LIME);sb(parts.legs,-1.2,1.15,-0.2,1.6,0.8,0.96,LIME);sb(parts.legs,1.1,1.15,-0.2,0.8,0.8,0.96,LIME)})();
+/* Smarthub standing up, studs to the front, green button on top */
+const hubO=grp(parts.hub);hubO.position.set(0,4.75,-0.05);const hubI=grp(hubO);hubI.rotation.set(-Math.PI/2,0,0);hubI.position.z=1.1;const hub=smarthub(hubI);hubO.rotation.y=Math.PI;
+(()=>{/* dark grey 1x4 Technic brick on the right side of the body */const g=grp(parts.side);Bx(0.8,3.2,0.96,LG(DGRY),g,1.55,5.0,0.55);for(let i=0;i<4;i++){Cy(0.21,0.98,holeM,g,1.55,3.8+i*0.8,0.55,'x',12);Cy(0.24,0.17,LG(DGRY),g,1.98,3.8+i*0.8,0.55,'x',12)}})();
+(()=>{/* head: white bricks and plates, orange plates above and below the sensor, a grey tile on top */const h=parts.head;sb(h,0,7.15,-0.1,3.2,1.6,0.96,WHT);sb(h,0,8.1,0.15,3.4,2.4,0.32,ORNG,true);sb(h,0,10.25,0.15,3.4,2.4,0.32,ORNG,true);sb(h,0,10.57,-0.1,3.2,2.0,0.64,WHT);Bx(1.6,0.3,0.8,LG(LGRY),h,0.6,11.4,-0.7);
+ Bx(0.8,3.6,0.8,LG(LIME),h,1.95,9.1,-0.7)})();
+const sensor=motionSensor(parts.sensor);sensor.position.set(0,9.3,0.35);
+eye(parts.eyes,-1.75,9.95,1.2);eye(parts.eyes,1.75,9.95,1.2);
+(()=>{/* sensor cable round the back to the Smarthub port */const pts=[V3(0.6,9.0,-0.5),V3(1.0,8.8,-1.4),V3(1.8,7.8,-1.9),V3(1.6,4.0,-2.0),V3(0.6,2.6,-1.5),V3(0.6,2.7,-1.15)];K.mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),40,0.11,6,false),M(0x2a2a2a,{roughness:.6}),parts.cable)})();
+robot.traverse(o=>{if(o.isMesh)o.castShadow=true});
+const SENS_Z=()=>{robot.updateMatrixWorld(true);return sensor.localToWorld(V3(0,0,0.9)).z};
+RULER.position.set(10.6,0.06,SENS_Z()-41.03/2+0.513);
+/* ---------- tablet with the WeDo app ---------- */
+const tabC=document.createElement('canvas');tabC.width=640;tabC.height=400;const tabT=new THREE.CanvasTexture(tabC);
+const tablet=grp();(()=>{K.RBox(16,0.6,10.4,0.6,M(0x222222),tablet,0,0.6,0);const scr=new THREE.Mesh(new THREE.PlaneGeometry(15,9.4),new THREE.MeshBasicMaterial({map:tabT}));scr.rotation.x=-Math.PI/2;scr.position.set(0,0.93,0);tablet.add(scr)})();tablet.rotation.x=0.4;tablet.position.set(26,1,12);
+const BL={start:{c:'#f2c230',i:'▶',n:'Start'},wait:{c:'#e86f1c',i:'⌛',n:'Wait for',inp:['motion','tilt','sec']},sound:{c:'#d8322f',i:'♪',n:'Play sound',v:1},light:{c:'#2f80ff',i:'💡',n:'Light',v:9},loop:{c:'#f2c230',i:'🔁',n:'Repeat'},motor:{c:'#1f8a3b',i:'⚙',n:'Motor on for',v:1}};
+const INP={motion:'👁 motion',tilt:'↗ tilt',sec:'⏱ seconds'};
+function drawTablet(prog,title,extra){const x=tabC.getContext('2d'),w=tabC.width,h=tabC.height;x.fillStyle='#f7f7f2';x.fillRect(0,0,w,h);x.fillStyle='#e9ecef';x.fillRect(0,0,w,46);x.fillStyle='#333';x.font='bold 22px Arial';x.fillText('WeDo 2.0 · '+(title||'Spy Robot'),16,31);
+ let px=24,py=130;(prog||[]).forEach(b=>{const d=BL[b.t];x.fillStyle=d.c;x.beginPath();x.rect(px,py,62,62);x.fill();x.fillStyle=b.t==='start'||b.t==='loop'?'#222':'#fff';x.font='30px Arial';x.textAlign='center';x.fillText(d.i,px+31,py+42);
+  const lab=d.inp?INP[b.i||'motion']:d.v!=null?b.v:null;if(lab!=null){x.fillStyle=d.inp?'#e86f1c':'#fff';x.fillRect(px+4,py+68,54,26);x.strokeStyle='#4a90e2';x.lineWidth=2;x.strokeRect(px+4,py+68,54,26);x.fillStyle=d.inp?'#fff':'#222';x.font='bold 13px Arial';x.fillText(String(lab).slice(0,9),px+31,py+86)}x.textAlign='left';px+=66;if(px>w-70){px=24;py+=110}});
+ if(extra){x.fillStyle='#333';x.font='bold 26px Arial';x.fillText(extra,24,h-30)}tabT.needsUpdate=true}
+drawTablet([]);
+
+/* ---------- people and the cat ---------- */
+function legs(par,o){/* Rehan: jeans and trainers, seen from the floor (a real person next to a small robot) */const g=grp(par);const L=[];[-4.6,4.6].forEach(x=>{const p=grp(g);p.position.set(x,90,0);Cy(4.2,46,M(o.jeans||0x2c4a7a,{roughness:.85}),p,0,-23,0,'y',16);Cy(3.6,42,M(o.jeans||0x2c4a7a,{roughness:.85}),p,0,-66,0,'y',16);
+  const sh=grp(p);sh.position.set(0,-88,2.6);K.RBox(8.2,4.2,13,1.6,M(o.shoe||0xffffff,{roughness:.6}),sh,0,0,0);Bx(8.3,1.2,13.1,M(0xd32f2f),sh,0,-1.5,0);Bx(5,0.6,5,M(0x1565c0),sh,0,2.0,2.5);L.push(p)});
+ g.userData.L=L;g.userData.toe=()=>g.position.z+9.1;/* front of the shoes when both feet are side by side */
+ g.userData.walk=(ph)=>{const s=Math.sin(ph)*0.06;L[0].rotation.x=s;L[1].rotation.x=-s};return g}
+const rehan=legs(K.sc,{});rehan.visible=false;/* walks toward +z, toes point +z */
+function mkCat(par){const g=grp(par);const fur=M(0xff9f43,{roughness:.9});const b=Sp(4,fur,g,0,6,0,16);b.scale.set(1,0.8,1.7);Sp(2.6,fur,g,0,9,6.2,14);[[-1.3,1],[1.3,1]].forEach(([x])=>{const e=new THREE.Mesh(new THREE.ConeGeometry(0.9,1.8,8),fur);e.position.set(x,11.3,6);g.add(e)});[-1.8,1.8].forEach(x=>[-3.5,3.5].forEach(z=>Cy(0.8,5,fur,g,x,2.5,z,'y',8)));const t=Cy(0.6,8,fur,g,0,8,-7.5,'y',8);t.rotation.x=-0.7;[-0.9,0.9].forEach(x=>Sp(0.35,M(0x2e7d32,{emissive:0x0a3a0a}),g,x,9.6,8.5,8));return g}
+const cat=mkCat(K.sc);cat.visible=false;
+const handG=K.hand(K.sc);handG.visible=false;handG.scale.setScalar(4);
+
+/* ================== sensor + program runner ================== */
+const SENSE=15;/* the WeDo 2.0 motion sensor sees about 15 cm */
+const sim={walkers:[],t:0};
+function objDist(){/* nearest object in front of the sensor, in cm */const sz=SENS_Z();let d=99;
+ if(rehan.visible){d=Math.min(d,sz-rehan.userData.toe())}
+ if(cat.visible&&Math.abs(cat.position.x)<10){d=Math.min(d,sz-(cat.position.z+9))}
+ if(handG.visible&&Math.abs(handG.position.x)<8){d=Math.min(d,sz-handG.position.z-2)}
+ return Math.max(0,d)}
+let prevD=99,trig=0,TRIG=SENSE;
+function fired(mode){const d=objDist();let f=false;if(mode==='near')f=d<=5&&prevD>5;else if(mode==='far')f=d>TRIG&&prevD<=TRIG;else f=d<=TRIG&&prevD>TRIG;return f}
+/* run a WeDo program: list of blocks; loop repeats the blocks after it */
+let R=null;
+function runProg(prog,o){o=o||{};const li=prog.findIndex(b=>b.t==='loop');R={prog,pc:1,loopAt:li,t:0,wait:0,o,beeps:0,flashes:0,lights:[],mode:o.mode||'change',stopped:false};setLED(3);}
+function setLED(n){const C=[0x000000,0xff4fa0,0x8e44ad,0x2f80ff,0x66ccff,0x1de9b6,0x2fae4a,0xf2c230,0xff8f00,0xff1f1f,0xffffff];const c=C[n]||0;hub.userData.led.material=M(c,{emissive:c,emissiveIntensity:n?1:0})}
+function stepProg(dt){if(!R||R.stopped)return;const r=R;if(r.wait>0){r.wait-=dt;return}
+ let guard=0;while(guard++<20){if(r.pc>=r.prog.length){if(r.loopAt>=0)r.pc=r.loopAt+1;else{r.stopped=true;r.o.onEnd&&r.o.onEnd(r);return}}
+  const b=r.prog[r.pc];
+  if(b.t==='wait'){const inp=b.i||'motion';if(inp==='sec'){r.wait=b.v||1;r.pc++;return}if(inp==='tilt')return;/* nothing tilts the robot */
+   if(fired(r.mode)){r.pc++;trig=1;continue}return}
+  if(b.t==='sound'){if(!r.o.silent)wedoSound(b.v||1);r.beeps++;r.o.onSignal&&r.o.onSignal('sound',b.v);r.pc++;r.wait=0.6;return}
+  if(b.t==='light'){setLED(b.v);r.lights.push(b.v);r.o.onSignal&&r.o.onSignal('light',b.v);r.pc++;r.wait=0.5;return}
+  if(b.t==='motor'){r.pc++;r.wait=b.v||1;return}
+  if(b.t==='loop'){r.pc++;continue}
+  r.pc++}}
+K.hooks.push(dt=>{sim.t+=dt;sim.walkers.forEach(w=>w.step(dt));stepProg(dt);prevD=objDist();
+ if(cur===3&&rehan.visible){$('tDist').textContent=prevD>40?'nothing seen':prevD.toFixed(0)+' cm'}});
+/* Rehan walks from the door toward the robot; stop(): called when the robot signals */
+function walk(who,z0,z1,speed,opts){const w={who,z:z0,z1,speed,ph:0,done:false,step(dt){if(this.done)return;const dir=Math.sign(this.z1-this.z);this.z+=dir*speed*dt;if((this.z1-this.z)*dir<=0){this.z=this.z1;this.done=true;opts&&opts.end&&opts.end()}who.position.z=this.z;this.ph+=dt*speed*0.35;who.userData.walk&&who.userData.walk(this.ph);if(who===cat)cat.position.y=Math.abs(Math.sin(this.ph*2))*0.6}};sim.walkers.push(w);return w}
+function clearWalk(){TRIG=SENSE;sim.walkers=[];rehan.visible=cat.visible=handG.visible=false;R=null;prevD=99;setLED(st.pair?3:0)}
+function rehanAt(z){rehan.visible=true;rehan.position.set(0,0,z);rehan.userData.walk(0)}
+/* place Rehan so his toe is at a given distance (cm) from the sensor */
+function toeZ(){return rehan.userData.toe()-rehan.position.z}
+
+/* ================== 1. Build ================== */
+const BUILD=[
+ {id:'feet',tray:'Grey slope bricks',task:'The feet: two grey slope bricks.',q:'Why does the robot need wide feet?',o:['So it stands up and does not fall over','So it can run','To make a sound'],a:0,ok:'A wide base keeps a tall model stable.'},
+ {id:'legs',tray:'Lime green Technic beams',task:'The legs: lime beams and bricks.',q:'What do the long lime beams do?',o:['They hold the body up, like bones in your legs','They detect motion','They light up'],a:0,ok:'Beams make a strong frame.'},
+ {id:'hub',tray:'Smarthub',task:'The body: the Smarthub, standing up.',q:'What does the Smarthub do in the spy robot?',o:['It is the brain: it reads the sensor and plays the signal on the tablet','It is only a decoration','It is the motor'],a:0,ok:'The Smarthub talks to the tablet by Bluetooth.'},
+ {id:'side',tray:'Dark grey Technic brick',task:'The side: a dark grey 1×4 Technic brick.',q:'What does this brick join together?',o:['The Smarthub to the lime leg beam','The two eyes','The cable'],a:0,ok:'Technic bricks join studs and beams.'},
+ {id:'head',tray:'White bricks + orange plates',task:'The head frame: white bricks and orange plates.',q:'The orange plates go above and below a part. Which part?',o:['The motion sensor, so it sits safely in the head','The batteries','The tablet'],a:0,ok:'The plates make a frame for the sensor.'},
+ {id:'sensor',tray:'Motion sensor',task:'The motion sensor, facing forward.',q:'Which way must the motion sensor face?',o:['Forward, toward the door where people arrive','Up, toward the ceiling','Backward, toward the wall'],a:0,ok:'It can only see what is in front of its window.',why:{1:'Rehan comes through the door, not from the ceiling.',2:'Then it would only see the wall.'}},
+ {id:'eyes',tray:'Round eye bricks',task:'The two big eyes.',q:'Do the eyes help the robot see?',o:['No: they are for fun. The motion sensor does the seeing','Yes: they are cameras','Yes: they are lights'],a:0,ok:'The eyes are decoration. The sensor is the real "eye".'},
+ {id:'cable',tray:'Sensor cable',task:'Plug the sensor cable into the Smarthub.',q:'Where does the sensor cable go?',o:['Into a port on the Smarthub','Into the tablet','Into an eye'],a:0,ok:'The spy robot is built!'}];
+const EXTRA=[['x1','Medium motor','The book robot has no motor: it only needs to see and signal.'],['x2','Tilt sensor','A tilt sensor feels tipping. We need to see someone coming.'],['x3','Wheels','The spy robot stands still and watches.'],['x4','Arduino Uno','That is another kit: Grade 5 uses WeDo 2.0.'],['x5','9 V battery','The Smarthub uses AA batteries.']];
+let bSel=null,bStrike=0;
+const TRAY=[...new Set(BUILD.map(b=>b.tray))].map(l=>({id:'t:'+l,lab:l})).concat(EXTRA.map(b=>({id:b[0],lab:b[1]}))).sort((a,b)=>a.lab.localeCompare(b.lab));
+function showParts(){BUILD.forEach((b,i)=>parts[b.id].visible=i<st.placed)}
+function bOpts(i){const b=BUILD[i];const idx=b.o.map((x,j)=>j);const r=i%idx.length;return idx.slice(r).concat(idx.slice(0,r))}
+function drawBuild(){const n=BUILD.length,c=st.placed,want=BUILD[c];
+ if(st.bs)fb('bsm',st.bs==='motion','✔ The WeDo 2.0 motion sensor sees objects in front of it. That is the robot\'s "eye".','A tilt sensor feels tipping, and a motor makes movement. Which part can see?');
+ $('bSteps').innerHTML=BUILD.map((b,i)=>`<li class="${i<c?'dn':i===c?'cur':''}">${i<=c?b.task:'<span class="small">…</span>'}${i<c?` <span class="small">(${b.tray})</span>`:''}</li>`).join('');
+ $('tray').innerHTML=TRAY.map(p=>{const usedAll=p.id.startsWith('t:')&&BUILD.every((b,i)=>b.tray!==p.lab||i<c);return`<button type="button" class="btn ${usedAll?'used':''} ${bSel===p.id?'sel':''}" data-part="${p.id}">${p.lab}</button>`}).join('');
+ const q=$('bQ');if(bSel&&c<n){q.hidden=false;q.innerHTML=`<div class="q">${want.q}</div><div class="choices">${bOpts(c).map(j=>`<button type="button" class="btn" data-bo="${j}">${want.o[j]}</button>`).join('')}</div>`}else q.hidden=true;
+ hud(`<div class="h">Step <b>${Math.min(c+1,n)}</b> of ${n} · mistakes <b>${st.bMist||0}</b></div>`);
+ if(c>=n){if(st.bs==='motion'){msg('mB','good',`✔ The spy robot is built in ${n} steps with ${st.bMist||0} mistake${st.bMist===1?'':'s'}! Turn it to check it against the book picture.`);$('nB').disabled=false;done(0)}else msg('mB','','Robot built! Now answer the brainstorm question at the top.')}}
+function bMiss(t){bStrike++;st.bMist=(st.bMist||0)+1;save();SFX.bad();const b=BUILD[st.placed];msg('mB','bad',t+(bStrike>=3?`<br>💡 Hint: you need the <b>${b.tray}</b>.`:''));drawBuild()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-bs]');if(!b)return;st.bs=b.dataset.bs;save();st.bs==='motion'?SFX.ok():SFX.bad();drawBuild()});
+$('tray').addEventListener('click',e=>{const el=e.target.closest('[data-part]');if(!el||st.placed>=BUILD.length)return;const id=el.dataset.part,want=BUILD[st.placed];
+ if(id==='t:'+want.tray){bSel=id;SFX.click();msg('mB','',`Right part: <b>${want.tray}</b>. Now answer the question.`);drawBuild();return}
+ bSel=null;const x=EXTRA.find(p=>p[0]===id);bMiss(x?'Not in this robot: '+x[2]:'Not this part for this step. Look at the book picture.')});
+$('bQ').addEventListener('click',e=>{const el=e.target.closest('[data-bo]');if(!el)return;const want=BUILD[st.placed],j=+el.dataset.bo;
+ if(j===want.a){st.placed++;save();SFX.ok();bSel=null;bStrike=0;parts[want.id].visible=true;dropIn(parts[want.id],K.hooks,3);K.view(want.id==='cable'?'back':want.id==='sensor'||want.id==='eyes'?'face':'iso');msg('mB','good','✔ '+want.ok);drawBuild()}
+ else bMiss((want.why&&want.why[j])||'Not quite. Look at the 3D model and the book picture.')});
+
+/* ================== 2. Connect ================== */
+function cnDraw(){const c=st.cn;if(c.b)fb('cn1',c.b==='b0','✔ 2 AA batteries, or the rechargeable battery pack.','Look inside the battery box: it takes the same batteries as a TV remote.');
+ $('plugRow').innerHTML=`<span><b>Motion sensor →</b></span><div class="seg">${['A','B'].map(p=>`<button data-pg="${p}" class="${st.plug===p?'on':''}">Port ${p}</button>`).join('')}</div>`;
+ if(st.plug)fb('cn2',true,'✔ Plugged in. The WeDo app finds the sensor in either port.','');
+ if(c.l)fb('cn3',c.l==='l0','✔ It blinks while it waits. When it connects, the light stays blue.','Watch the light after you press the green button.');
+ const ready=c.b==='b0'&&st.plug&&c.l==='l0';$('pairBox').hidden=!ready;if(ready)$('pairRow').innerHTML=`<button class="btn ${st.pair?'sel':''}" data-pair="1">${st.pair?'✔':'📶'} Smarthub_1 (Spy robot)</button>`;
+ if(ready&&st.pair){msg('mW','good','✔ The Smarthub is connected. Its light is blue.');$('nW').disabled=false;done(1)}else msg('mW','',ready?'Now connect the Smarthub.':'Answer each part.');setLED(st.pair?3:0)}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-cn]');if(a){const k=a.dataset.cn;st.cn[k[0]]=k;save();(k==='b0'||k==='l0')?SFX.ok():SFX.bad();cnDraw();return}
+ const p=e.target.closest('[data-pg]');if(p){st.plug=p.dataset.pg;save();SFX.click();cnDraw();return}
+ const r=e.target.closest('[data-pair]');if(r){st.pair=1;save();SFX.ok();K.view('iso');cnDraw()}});
+
+/* ================== 3. Program (book) ================== */
+const BOOKP=[{t:'start'},{t:'wait',i:'motion'},{t:'sound',v:1}];
+const work=[];let pTries=0;
+function blockHtml(b,i,inProg,owner){const d=BL[b.t];const cls=b.t==='start'?'st':b.t==='loop'?'lp':b.t==='sound'?'sn':b.t==='wait'?'wt':b.t==='light'?'li':'mo';const o=owner||'';
+ return`<button type="button" class="wb ${cls}" ${inProg?`data-${o}pi="${i}"`:`data-${o}pb="${b.t}"`} title="${d.n}" aria-label="${d.n}"><span class="i">${d.i}</span>${inProg?'':`<span>${d.n}</span>`}${inProg&&d.v!=null?`<input type="number" min="0" max="20" value="${b.v}" data-${o}pv="${i}" aria-label="${d.n} number">`:''}${inProg&&d.inp?`<select data-${o}ps="${i}" aria-label="Wait for what">${d.inp.map(k=>`<option value="${k}" ${b.i===k?'selected':''}>${INP[k]}</option>`).join('')}</select>`:''}</button>`}
+function mkEditor(list,palId,progId,owner,onChange){const dr=()=>{$(palId).innerHTML=Object.keys(BL).map(t=>blockHtml({t},0,false,owner)).join('');$(progId).innerHTML=list.map((b,i)=>blockHtml(b,i,true,owner)).join('')||'<span class="small">Click blocks to add them here.</span>';onChange&&onChange()};
+ $(palId).addEventListener('click',e=>{const b=e.target.closest(`[data-${owner}pb]`);if(!b)return;const t=b.getAttribute(`data-${owner}pb`);list.push(BL[t].inp?{t,i:'sec',v:1}:BL[t].v!=null?{t,v:t==='light'?3:1}:{t});SFX.click();dr()});
+ $(progId).addEventListener('click',e=>{if(e.target.matches('input,select'))return;const b=e.target.closest(`[data-${owner}pi]`);if(!b)return;list.splice(+b.getAttribute(`data-${owner}pi`),1);SFX.click();dr()});
+ $(progId).addEventListener('change',e=>{const v=e.target.getAttribute(`data-${owner}pv`),s=e.target.getAttribute(`data-${owner}ps`);if(v!=null)list[+v].v=+e.target.value;if(s!=null)list[+s].i=e.target.value;onChange&&onChange()});return dr}
+const drawProg=mkEditor(work,'pal','prog','',()=>{drawTablet(work);if(pTries>=2&&!st.prog)msg('mP','','💡 Book: Start → Wait for (motion sensor) → Play sound 1');if(st.prog){$('nP').disabled=false;done(2)}});
+$('pClr').onclick=()=>{work.length=0;drawProg()};
+const same=(x,b)=>x.t===b.t&&(b.v==null||x.v===b.v)&&(b.i==null||(x.i||'sec')===b.i);
+$('pRun').onclick=()=>{const a=work,b=BOOKP;const ok=a.length===b.length&&a.every((x,i)=>same(x,b[i]));
+ if(!ok){pTries++;st.pMist=(st.pMist||0)+1;save();SFX.bad();let k=0;while(k<Math.min(a.length,b.length)&&same(a[k],b[k]))k++;
+  const hints=['The program must begin with the Start block.','Then the robot must WAIT until the motion sensor sees someone: choose 👁 motion in the orange box.','Then play sound number 1.'];
+  msg('mP','bad',(k>=b.length?'Remove the extra blocks at the end.':a[k]&&a[k].t===b[k].t?`Block ${k+1}: check its ${b[k].i?'input (👁 motion)':'number'}.`:hints[k])+(pTries>=2?'<br>💡 Book: Start → Wait for (motion sensor) → Play sound 1':''));return}
+ st.prog=1;save();SFX.ok();clearWalk();K.view('iso');msg('mP','','✔ Program correct! Wave your hand in front of the sensor…');handG.visible=true;handG.position.set(0,15,-40);handG.rotation.set(0,0,0);
+ runProg(work,{onSignal:()=>{msg('mP','good','✔ The robot saw the hand and played sound 1! In the next step Rehan comes home…')}});const w=walk(handG,-40,-SENS_Z()*0-12,14,{end:()=>{}});w.who=handG;drawProg()};
+
+/* ================== 4. Test: Rehan arrives ================== */
+function startTest(){clearWalk();K.view('room');TRIG=12+Math.floor(Math.random()*4);/* this sensor triggers between 12 and 15 cm */
+ rehanAt(-60);const sz=SENS_Z();$('tState').textContent='watching the door…';
+ runProg(BOOKP,{onSignal:()=>{sim.walkers=[];rehan.userData.walk(0);rehan.userData.L.forEach(l=>l.rotation.x=0);const d=Math.round(objDist());st.cm=d;st.tested=1;save();$('tState').innerHTML='<b style="color:var(--acc)">♪ BEEP! Rehan detected</b>';banner('🎉 SURPRISE!');setTimeout(()=>K.view('ruler'),900);$('tMeas').hidden=false;$('tAgain').disabled=false;msg('mT','good','The robot beeped and Rehan stopped. Read the ruler under the front of his shoe.')}});
+ walk(rehan,-60,sz-1,18,{})}
+$('tGo').onclick=()=>{if(!st.prog){msg('mT','bad','Finish the program first.');return}SFX.click();startTest()};$('tAgain').onclick=()=>{startTest()};
+$('tCmB').onclick=()=>{const v=parseFloat($('tCm').value);if(st.cm==null){msg('mT','bad','Start the robot first.');return}st.cmIn=v;save();
+ const ok=Math.abs(v-st.cm)<=1;fb('tCmM',ok,`✔ ${st.cm} cm. The WeDo 2.0 motion sensor only sees things that are close: about 15 cm or less.`,`Look again at the ruler under the front of Rehan's shoe (it says ${st.cm>10?'between 10 and 15':'less than 10'}).`);if(ok){SFX.ok();$('nT').disabled=false;done(3)}else SFX.bad()};
+
+/* ================== 5. Discover ================== */
+let dLoop=0;
+$('dSndRun').onclick=()=>{const n=Math.max(1,Math.min(20,+$('dSnd').value||1));clearWalk();handG.visible=true;handG.position.set(0,15,-40);K.view('iso');runProg([{t:'start'},{t:'wait',i:'motion'},{t:'sound',v:n}],{onSignal:()=>{fb('dSndM',true,`✔ Sound ${n}. Every number is a different sound.`,'');st.dS=1;save();dChk()}});walk(handG,-40,-12,14)};
+document.querySelectorAll('[data-dl]').forEach(b=>b.onclick=()=>{dLoop=+b.dataset.dl;document.querySelectorAll('[data-dl]').forEach(x=>x.classList.toggle('on',x===b))});
+$('dLoopRun').onclick=()=>{clearWalk();K.view('room');const prog=dLoop?[{t:'start'},{t:'loop'},{t:'wait',i:'motion'},{t:'sound',v:1}]:[{t:'start'},{t:'wait',i:'motion'},{t:'sound',v:1}];let n=0;
+ runProg(prog,{onSignal:()=>{n++}});const sz=SENS_Z();let k=0;const next=()=>{if(k>=3){setTimeout(()=>{fb('dLoopM',dLoop&&n===3,`✔ With a loop the robot beeped for all 3 people.`,n===1?`Only 1 beep for 3 people: without a loop the program ends after the first signal.`:`${n} beeps.`);if(dLoop&&n===3){st.dL=1;save();dChk()}},600);return}
+  rehanAt(-60);rehan.userData.walk(0);walk(rehan,-60,sz-6,26,{end:()=>{setTimeout(()=>{walk(rehan,sz-6,-60,40,{end:()=>{k++;sim.walkers=[];next()}})},500)}})};next()};
+$('dColRun').onclick=()=>{const n=Math.max(0,Math.min(10,+$('dCol').value||0));clearWalk();handG.visible=true;handG.position.set(0,15,-40);K.view('face');runProg([{t:'start'},{t:'wait',i:'motion'},{t:'light',v:n}],{onSignal:()=>{const name=['off','pink','purple','blue','light blue','turquoise','green','yellow','orange','red','white'][n];fb('dColM',n===9,`✔ 9 = red. A red light is a clear, silent signal.`,`That is ${name}. Try another number: red is near the end.`);if(n===9){st.dC=1;save();dChk()}}});walk(handG,-40,-12,14)};
+document.querySelectorAll('[data-dq]').forEach(b=>b.onclick=()=>{st.dq=b.dataset.dq;save();st.dq==='light'?SFX.ok():SFX.bad();dChk()});
+function dChk(){if(st.dS)fb('dSndM',true,'✔ Every number is a different sound.','');if(st.dL)fb('dLoopM',true,'✔ With a loop the robot keeps watching and signals for everyone.','');if(st.dC)fb('dColM',true,'✔ 9 = red.','');
+ if(st.dq)fb('dQm',st.dq==='light','✔ A light is silent, so the surprise is safe.','Would that keep the party a surprise?');const ok=st.dS&&st.dL&&st.dC&&st.dq==='light';$('nD').disabled=!ok;msg('mD',ok?'good':'',ok?'✔ You tried sounds, a loop and light!':'Try A, B and C, then answer the question.');if(ok)done(4)}
+
+/* ================== 6. Record sheet ================== */
+const Q=[{q:'1. Were you able to build it on your own or did you use the instructions for the design model?',o:['Own','Example'],any:1},{q:'2. Were you able to program the model on your own or did you use the instructions?',o:['Own','Example'],any:1},{q:'3. Does your model work?',o:['Yes','No'],a:0,e:'It beeped when Rehan came close.'}];
+const IDEAS=[['museum','A museum display case',1],['shop','A shop door',1],['baby','A baby\'s room door',1],['garage','The garage',1],['toast','Making toast',0],['plants','Watering plants',0]];
+function drawRec(){$('quiz').innerHTML=Q.map((x,i)=>{const c=st.quiz[i];return`<div class="q">${x.q}</div><div class="choices">${x.o.map((o,j)=>`<button type="button" class="btn ${c===j?(x.any||j===x.a?'right':'wrong'):''}" data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div>${x.any||c==null?'':`<div class="fb" style="color:${c===x.a?'var(--ok)':'var(--warn)'}">${c===x.a?'✔ '+x.e:'Test it again in Step 4.'}</div>`}`}).join('');
+ $('rCm').textContent=st.cm!=null?st.cm:'?';if(st.m!=null&&document.activeElement!==$('rM'))$('rM').value=st.m;
+ if(st.m!=null){const ok=st.cm!=null&&Math.abs(st.m-st.cm/100)<0.0001;fb('rMM',ok,`✔ ${st.cm} ÷ 100 = ${(st.cm/100).toFixed(2)} m. There are 100 cm in 1 metre.`,'Divide by 100: 100 cm = 1 m.')}
+ $('rIdeas').innerHTML=IDEAS.map(([k,n,y])=>`<span role="button" tabindex="0" class="${st.ideas[k]?'got':''}" data-id="${k}">${st.ideas[k]?(y?'✔ ':'✘ '):''}${n}</span>`).join('');
+ const nIdeas=IDEAS.filter(x=>x[2]&&st.ideas[x[0]]).length,bad=IDEAS.some(x=>!x[2]&&st.ideas[x[0]]);
+ const ok=[0,1].every(i=>st.quiz[i]!=null)&&st.quiz[2]===0&&st.cm!=null&&Math.abs((st.m||0)-st.cm/100)<0.0001&&nIdeas>=3&&!bad;$('nQ').disabled=!ok;msg('mQ',ok?'good':'',ok?'✔ Record sheet complete!':bad?'Making toast and watering plants are not security jobs!':'Answer every question and choose three security ideas.');if(ok)done(5)}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('[data-o]');if(!b)return;st.quiz[b.dataset.q]=+b.dataset.o;save();SFX.click();drawRec()});
+$('rMB').onclick=()=>{st.m=parseFloat($('rM').value);save();(st.cm!=null&&Math.abs(st.m-st.cm/100)<0.0001)?SFX.ok():SFX.bad();drawRec()};
+$('rIdeas').addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(!b)return;const k=b.dataset.id;st.ideas[k]=st.ideas[k]?0:1;save();SFX.click();drawRec()});
+
+/* ================== 7. Reflect ================== */
+const RUB=[['Rate how well you were able to understand this challenge.',['Even with the help I didn’t get it.','After a little help, I got it.','I need some more practice.','I need a challenge so I can help someone else.']],
+ ['Rate how well you presented and communicated.',['I feel it was difficult to present my STEM model.','I can present my model to my friends with a little support.','I can present my model to my friends and can communicate most of my ideas.','I can present my model effectively and can support others.']],
+ ['Rate how well did you understand building the model in the robotics kit.',['It is difficult for me to build and program the model using the robotics kit.','I need guidance and support to understand the project in the robotics kit.','I can assemble the model in the robotics kit without any support.','I can understand and program it with ease.']],
+ ['Rate how you feel about this project.',['☹️','😐','🙂','😄']],
+ ['Rate the Sustainable Development Goal.',['I don’t think this project can help the goal.','I think this project can help the goal a little.','I think this project will help this goal a lot.','I think this project can help exceed the goal expectations.']]];
+function drawRub(){if(st.im)fb('imm',st.im==='aim','✔ The sensor only sees what is in front of its window, so aim it where people walk.','Would the sensor still see Rehan?');
+ if(st.sc)fb('scm',st.sc==='club','✔ Clubs, fairs and sharing ideas help a community innovate (SDG 9).','Which choice helps new ideas grow?');
+ ['fb1','fb2','fb3'].forEach((id,i)=>{if(document.activeElement!==$(id))$(id).value=st.fbk[i]||''});
+ $('rub').innerHTML=RUB.map((r,i)=>`<div><div class="rq">${i+1}. ${r[0]}</div><div class="lv" role="radiogroup" aria-label="${r[0]}">${r[1].map((t,j)=>`<button type="button" role="radio" aria-checked="${st.rub[i]===j}" class="${st.rub[i]===j?'on':''}" data-r="${i}" data-l="${j}">${t}</button>`).join('')}</div></div>`).join('');
+ const n=Object.keys(st.rub).length;const ready=n>=RUB.length&&st.sc==='club'&&st.im==='aim';$('finish').disabled=!ready;msg('mA','',n<RUB.length?`${n} of ${RUB.length} rubric rows done.`:!ready?'Answer the questions above.':'All done. Press Finish!')}
+['fb1','fb2','fb3'].forEach((id,i)=>$(id).addEventListener('input',()=>{st.fbk[i]=$(id).value;save()}));
+$('rub').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;st.rub[b.dataset.r]=+b.dataset.l;save();SFX.click();drawRub()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sc]');if(b){st.sc=b.dataset.sc;save();st.sc==='club'?SFX.ok():SFX.bad();drawRub()}const c=e.target.closest('[data-im]');if(c){st.im=c.dataset.im;save();st.im==='aim'?SFX.ok():SFX.bad();drawRub()}});
+function showFin(){st.placed=BUILD.length;showParts();clearWalk();rehanAt(SENS_Z()-14-toeZ());setLED(9);K.view('fin',true);setTimeout(()=>{$('finImg').src=K.shot();$('fin').hidden=false},600)}
+$('finish').onclick=()=>{st.finished=1;save();done(6);SFX.done();showFin();setTimeout(()=>$('fin').scrollIntoView({behavior:'smooth',block:'center'}),700)};
+
+/* ================== 8. Challenges ================== */
+function star(k,id,h){msg(id,'good',h);if(!st.ch[k]){st.ch[k]=1;save()}SFX.done();drawStars();banner('⭐ Challenge complete!')}
+function drawStars(){const n=['c0','c1','c2','c3'].filter(k=>st.ch[k]).length;$('stars').textContent=n;document.querySelectorAll('[data-st]').forEach(e=>{const on=!!st.ch[e.dataset.st];e.textContent=on?'★':'☆';e.closest('.ch').classList.toggle('won',on)});if(n)done(7)}
+const c0w=[];const drawC0=mkEditor(c0w,'c0pal','c0prog','c',()=>drawTablet(c0w,'Loop challenge'));$('c0clr').onclick=()=>{c0w.length=0;drawC0()};
+function guests(n,prog,cb){clearWalk();K.view('room');let beeps=0,k=0;runProg(prog,{onSignal:t=>{if(t==='sound')beeps++}});const sz=SENS_Z();const next=()=>{if(k>=n){setTimeout(()=>cb(beeps),700);return}rehanAt(-60);walk(rehan,-60,sz-6,30,{end:()=>{setTimeout(()=>{walk(rehan,sz-6,-60,45,{end:()=>{k++;sim.walkers=[];next()}})},400)}})};next()}
+$('c0run').onclick=()=>{const p=c0w;if(!p.length||p[0].t!=='start'){SFX.bad();msg('c0msg','bad','Start with the Start block.');return}msg('c0msg','','4 guests are coming…');
+ guests(4,p,beeps=>{const li=p.findIndex(b=>b.t==='loop');const ok=beeps===4&&li>=0;if(ok)star('c0','c0msg','⭐ 4 guests, 4 beeps! The Repeat block makes the robot watch again after every signal.');else{SFX.bad();msg('c0msg','bad',`${beeps} beep${beeps===1?'':'s'} for 4 guests. ${li<0?'Add a Repeat block before the Wait block.':'Put the Wait (👁 motion) and Play sound blocks AFTER the Repeat block.'}`)}})};
+$('c1run').onclick=()=>{const c=+$('c1c').value,n=+$('c1n').value,s=$('c1s').checked;clearWalk();handG.visible=true;handG.position.set(0,15,-40);K.view('face');let k=0;
+ const prog=[{t:'start'},{t:'wait',i:'motion'}];for(let i=0;i<n;i++){prog.push({t:'light',v:c},{t:'light',v:0})}if(s)prog.push({t:'sound',v:1});
+ runProg(prog,{onEnd:()=>{setLED(3);if(c===9&&n===3&&!s)star('c1','c1msg','⭐ Three red flashes and not a sound: a perfect silent alarm!');else{SFX.bad();msg('c1msg','bad',[c!==9?'Red is colour 9.':'',n!==3?'It must flash 3 times.':'',s?'A silent alarm makes no sound: untick the sound.':''].filter(Boolean).join(' '))}}});walk(handG,-40,-12,14)};
+const C2=[['23 cm','m',0.23],['8 cm','mm',80],['1.5 m','cm',150],['450 mm','cm',45]];const c2v={};
+$('c2q').innerHTML=C2.map(([a,u],i)=>`<div class="row"><span style="min-width:80px"><b>${a}</b> =</span><input type="number" step="any" data-c2="${i}" style="width:100px;font:inherit;padding:6px;border-radius:8px;border:2px solid var(--line)"> ${u}</div>`).join('');
+$('c2q').addEventListener('input',e=>{const i=e.target.dataset.c2;if(i!=null)c2v[i]=parseFloat(e.target.value)});
+$('c2chk').onclick=()=>{const bad=C2.map((x,i)=>Math.abs((c2v[i]??NaN)-x[2])<1e-9?null:i).filter(x=>x!=null);if(!bad.length)star('c2','c2msg','⭐ All four are right! 1 m = 100 cm and 1 cm = 10 mm.');else{SFX.bad();msg('c2msg','bad',`Check ${bad.map(i=>C2[i][0]).join(', ')}. Remember: 1 m = 100 cm and 1 cm = 10 mm.`)}};
+document.querySelectorAll('[data-c3]').forEach(b=>b.onclick=()=>{st.c3=b.dataset.c3;save();document.querySelectorAll('[data-c3]').forEach(x=>x.classList.toggle('on',x===b))});
+$('c3run').onclick=()=>{if(!st.c3){msg('c3msg','bad','Choose a mode first.');return}clearWalk();K.view('room');const mode=st.c3;let sig=[];runProg([{t:'start'},{t:'loop'},{t:'wait',i:'motion'},{t:'sound',v:1}],{mode,onSignal:()=>sig.push(cat.visible?'cat':'rehan')});
+ const sz=SENS_Z();cat.visible=true;cat.position.set(-30,0,sz-12-9);cat.rotation.y=Math.PI/2;
+ /* the cat crosses in front, 12 cm away */const cw={t:0,step(dt){this.t+=dt;cat.position.x=-30+this.t*14;cat.position.y=Math.abs(Math.sin(this.t*6))*0.6;if(cat.position.x>30&&!this.d){this.d=1;cat.visible=false;rehanAt(-60);walk(rehan,-60,sz-3,24,{end:()=>setTimeout(fin,600)})}}};sim.walkers.push(cw);
+ const fin=()=>{const c=sig.includes('cat'),r=sig.includes('rehan');if(!c&&r)star('c3','c3msg','⭐ "Object near" ignored the cat 12 cm away and beeped only when Rehan came really close (5 cm). No false alarm!');else{SFX.bad();msg('c3msg','bad',c?'The cat set off the alarm: this mode reacts to anything within 15 cm. Try another mode.':'Rehan came close but nothing happened. "Object far" waits for something to go AWAY.')}}};
+
+/* ================== 9. Other designs ================== */
+const props=grp();
+const DES=[['museum','Museum','🏛️ Museum guard','The robot watches a golden statue. A hand reaches in → alarm sound and red light.'],['cookie','At home','🍪 Snack spy','The robot guards the cookie jar. A hand comes close → "caught you!" sound.'],['class','At school','🏫 Door counter','A loop counts every student who walks in. No alarm, just a count on the tablet.'],['cat','Pet care','🐈 Cat flap helper','When the cat comes to the door, the light turns green to tell the family.']];
+const PR={};(()=>{const m=grp(props);Cy(5,12,M(0xeeeeee,{roughness:.5}),m,0,6,-26,'y',24);const st2=grp(m);st2.position.set(0,12,-26);Sp(2.2,M(0xd4af37,{metalness:.9,roughness:.25}),st2,0,8,0,16);Cy(1.6,6,M(0xd4af37,{metalness:.9,roughness:.25}),st2,0,3,0,'y',16);Cy(3,1,M(0xd4af37,{metalness:.9,roughness:.25}),st2,0,0.5,0,'y',20);PR.museum=m;
+ const c=grp(props);const jar=Cy(5,9,M(0xcfefff,{transparent:true,opacity:.5,roughness:.05}),c,0,4.5,-24,'y',24);Cy(5.3,1.4,M(0xc62828),c,0,9.6,-24,'y',24);for(let i=0;i<6;i++)Cy(1.8,0.5,M(0xb07a3a,{roughness:.8}),c,(i%3-1)*2,1+Math.floor(i/3)*0.7*2,-24+(i%2)*1.2,'y',14);PR.cookie=c;
+ const cl=grp(props);PR.class=cl;const ct=grp(props);PR.cat=ct;Object.values(PR).forEach(g=>g.visible=false)})();
+let dSel=null;
+$('dList').innerHTML=DES.map(([k,t,h,p])=>`<div class="ex" data-dex="${k}"><span class="tag">${t}</span><h3>${h}</h3><p style="margin:2px 0 6px">${p}</p><div class="row"><button class="btn" data-ds="${k}">▶ Show me</button></div><div class="small" id="dm_${k}"></div></div>`).join('');
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ds]');if(!b)return;const k=b.dataset.ds;dSel=k;SFX.click();Object.entries(PR).forEach(([id,g])=>g.visible=id===k);document.querySelectorAll('[data-dex]').forEach(x=>x.classList.toggle('sel',x.dataset.dex===k));clearWalk();const sz=SENS_Z();
+ if(k==='museum'||k==='cookie'){K.view('design');handG.visible=true;handG.position.set(0,15,-60);runProg([{t:'start'},{t:'wait',i:'motion'},{t:'sound',v:k==='museum'?9:4},{t:'light',v:9}],{onSignal:t=>{$('dm_'+k).textContent=t==='sound'?(k==='museum'?'🚨 Alarm! The guard is coming.':'🍪 Caught you!'):$('dm_'+k).textContent}});walk(handG,-60,sz-8,16)}
+ if(k==='class'){K.view('room');let n=0;guests(3,[{t:'start'},{t:'loop'},{t:'wait',i:'motion'},{t:'sound',v:2}],()=>{});const iv=setInterval(()=>{if(R&&R.beeps!==n){n=R.beeps;drawTablet([{t:'start'},{t:'loop'},{t:'wait',i:'motion'},{t:'sound',v:2}],'Door counter','Students: '+n);$('dm_class').textContent='Students counted: '+n}if(!R||n>=3)clearInterval(iv)},200)}
+ if(k==='cat'){K.view('room');cat.visible=true;cat.rotation.y=0;cat.position.set(0,0,-60);runProg([{t:'start'},{t:'wait',i:'motion'},{t:'light',v:6}],{onSignal:()=>{$('dm_cat').textContent='💚 Green light: the cat is at the door. Let her in!'}});walk(cat,-60,sz-4-9,14)}});
+$('dTry').onclick=()=>{const w=$('dWhere').value,s=$('dSig').value,m=$('dMode').value;const L=[];
+ L.push({fridge:'🧊 Snack spy: put the robot on the shelf facing the fridge door.',desk:'🗄 Desk drawer: point the sensor at the drawer handle, about 10 cm away.',garden:'🌿 Garden gate: outside, a person is far away. The sensor only sees about 15 cm, so put it right next to the gate post.',class:'🏫 Classroom door: use a loop and count people instead of an alarm.'}[w]);
+ L.push({sound:'♪ Sound: easy to hear, but everyone knows you caught them.',light:'💡 Light: a silent signal, good for secrets.',both:'♪+💡 Both: the strongest alarm.',motor:'⚙ A motor waving a flag: fun! Add the medium motor and a Motor on for block.'}[s]);
+ L.push({change:'Object detected: reacts to anything that comes into view.',near:'Object near: only when something is really close, so fewer false alarms.',far:'Object far: waits until something goes away. Use it to know when someone LEAVES.'}[m]);
+ msg('dChk','good',L.join('<br>'));SFX.ok()};
+try{$('dPlan').value=localStorage.getItem(KEY+'-plan')||''}catch(e){}
+$('dSave').onclick=()=>{try{localStorage.setItem(KEY+'-plan',$('dPlan').value)}catch(e){}SFX.ok();$('dSaved').textContent='✔ Saved on this device.'};
+
+/* ================== navigation ================== */
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>K.view(b.dataset.v));
+function go(i){cur=i;document.querySelectorAll('.panel').forEach((p,k)=>p.classList.toggle('on',k===i));drawNav();hud('');clearWalk();Object.values(PR).forEach(g=>g.visible=false);showParts();
+ if(i===0){drawBuild();K.view('iso')}
+ if(i===1){cnDraw();K.view('back')}
+ if(i===2){drawProg();K.view('tablet')}
+ if(i===3){$('tMeas').hidden=st.cm==null;$('tAgain').disabled=st.cm==null;if(st.cmIn!=null)$('tCm').value=st.cmIn;if(st.done.includes(3))$('nT').disabled=false;rehanAt(-60);K.view('room')}
+ if(i===4){dChk();K.view('iso')}
+ if(i===5){drawRec();K.view('ruler')}
+ if(i===6){drawRub();if(st.finished)showFin();else K.view('fin')}
+ if(i===7){drawStars();drawC0();if(st.c3)document.querySelectorAll('[data-c3]').forEach(x=>x.classList.toggle('on',x.dataset.c3===st.c3));K.view('room')}
+ if(i===8){K.view('design')}
+ window.scrollTo(0,0)}
+drawBuild();cnDraw();drawProg();
+go(Math.min(...[0,1,2,3,4,5,6].filter(i=>!st.done.includes(i)),7));
+
+</script>
+</body>
+</html>
