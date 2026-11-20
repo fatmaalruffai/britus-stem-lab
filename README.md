@@ -18,9 +18,13 @@ This project is made as a virtual lab for the **STEM Nexus Arabia curriculum**.
 | 4 | Ring the Bell (Project 4, Early Electronics Kit) | `labs/bell/` |
 | 4 | Night Fishing (Project 5, Early Electronics Kit) | `labs/fishing/` |
 | 4 | Wet Diaper Alarm (Project 6, Early Electronics Kit) | `labs/diaper/` |
+| 4 | Safety First (Project 7, Early Electronics Kit) | `labs/safety/` |
+| 4 | Don't Lie (Project 8, Early Electronics Kit) | `labs/dontlie/` |
 | 5 | Plants and Pollinators (Project 3) | `labs/pollinators/` |
 | 5 | Cleaning the Ocean (Project 4, LEGO WeDo 2.0) | `labs/ocean/` |
 | 5 | Sort to Recycle (Project 5, LEGO WeDo 2.0) | `labs/recycle/` |
+| 5 | Spy Robot (Project 6, LEGO WeDo 2.0) | `labs/spy/` |
+| 5 | Volcano Alert (Project 7, LEGO WeDo 2.0) | `labs/volcano/` |
 | 5 | Virtual Robotics Lab | `labs/robotics/` |
 | 7 | Touchless Hand Wash Timer | `labs/handwash/` |
 | 7 | Touchless Inventions | `labs/touchless/` |
